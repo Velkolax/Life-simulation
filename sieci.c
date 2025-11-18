@@ -18,13 +18,13 @@ typedef struct
     float* polaczenia;
 } SiecNeuronowa;
 
-inline float relu(float wartosc)
+float relu(float wartosc)
 {
     if(wartosc > 0) return wartosc;
     else return 0;
 }
 
-inline float losowa(float min, float max)
+float losowa(float min, float max)
 {
     return min + (max - min) * ((float)rand() / RAND_MAX);
 }
