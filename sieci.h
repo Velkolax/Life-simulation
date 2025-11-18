@@ -38,7 +38,7 @@ SiecNeuronowa budujSiec(int liczbaWarstw, int* warstwy)
         liczbaNeuronow += warstwy[i+1];
         liczbaPolaczen += warstwy[i] * warstwy[i+1];
     }
-    float* pamiec = malloc((liczbaNeuronow + liczbaPolaczen) * sizeof(float));
+    float* pamiec = (float*)malloc((liczbaNeuronow + liczbaPolaczen) * sizeof(float));
     SiecNeuronowa sn;
     sn.liczbaWarstw = liczbaWarstw;
     sn.warstwy = warstwy;
@@ -87,7 +87,7 @@ float* przepuscPrzezSiec(SiecNeuronowa* wsn, float* dane)
     int wymaganyY = liczbaWarstw;
     if(wymaganyX > xMacierzy) xMacierzy = wymaganyX;
     if(wymaganyY > yMacierzy) yMacierzy = wymaganyY;
-    macierz = realloc(macierz, xMacierzy * yMacierzy * sizeof(float));
+    macierz = (float*)realloc(macierz, xMacierzy * yMacierzy * sizeof(float));
     
     // wklejamy dane
     memcpy(macierz, dane, warstwy[0] * sizeof(float)); // zakładamy że dane mają rozmiar pierwszej warstwy
@@ -118,7 +118,7 @@ float* przepuscPrzezSiec(SiecNeuronowa* wsn, float* dane)
     }
 
     // wklejamy wynik do bufora
-    float* wynik = malloc(warstwy[liczbaWarstw - 1] * sizeof(float));
+    float* wynik = (float*)malloc(warstwy[liczbaWarstw - 1] * sizeof(float));
     memcpy(wynik, macierz + ((liczbaWarstw - 1) * xMacierzy), warstwy[liczbaWarstw - 1] * sizeof(float));
     return wynik;
 }
