@@ -6,6 +6,26 @@
 
 #include <random>
 
+int GenerateRandomTrait(int range) {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::uniform_int_distribution<> disChange(0,range);
+    return disChange(gen);
+}
+
+Bacteria::Bacteria() {
+    int layers[] = {3, 5, 5, 5, 3};
+    NeuralNetwork nn = buildNetwork(5,layers);
+    initializeRandom(&nn);
+    network = nn;
+    lifeTime = GenerateRandomTrait(200);
+    maxEnergy = GenerateRandomTrait(500);
+    energyLevel = maxEnergy;
+    venomLevel = 0;
+    upgradeLevel = 0;
+    std::fill_n(memory, 12, 0);
+
+}
 
 Bacteria Bacteria::Crossover(const Bacteria &bacteria2) const {
     const auto bac = Bacteria(CrossOver(this->network,bacteria2.network),
@@ -28,6 +48,8 @@ void MutateTrait(int& val, double mutationRate, int strength, int minVal, int ma
         val = std::max(minVal, std::min(val, maxVal));
     }
 }
+
+
 
 void Bacteria::Mutate() {
     constexpr double MUTATION_RATE = 0.1;

@@ -34,6 +34,7 @@ private:
 class Bacteria
 {
 public:
+    Bacteria();
     Bacteria(const NeuralNetwork &network, int lifeTime, int energyLevel, int maxEnergy, int upgradeLevel, int venomLevel) : network(network),lifeTime(lifeTime), energyLevel(energyLevel), maxEnergy(maxEnergy), upgradeLevel(upgradeLevel), venomLevel(venomLevel)
     {
         std::fill_n(memory, 12, 0);
