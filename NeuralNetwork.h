@@ -20,6 +20,8 @@ extern float* matrix;
 // Activation
 inline float relu(float value) { return value * (value > 0); }
 
+NeuralNetwork CrossOver(NeuralNetwork nn1, NeuralNetwork nn2);
+static NeuralNetwork MutateNetwork(NeuralNetwork nn);
 // Random
 float randomFloat(float min, float max);
 

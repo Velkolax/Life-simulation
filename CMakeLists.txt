@@ -5,8 +5,13 @@ set(CMAKE_CXX_STANDARD 20)
 include_directories(Life-simulation)
 
 add_executable(Life_simulation
-        sieci.h
+        NeuralNetwork.h
+        NeuralNetwork.c
         Bacteria.cpp
-        Bacteria.h)
+        Bacteria.h
+        LifeSimulator.cpp
+        LifeSimulator.h
+        main.cpp
+)
 target_link_libraries(Life_simulation m)
 
