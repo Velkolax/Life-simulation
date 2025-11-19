@@ -11,6 +11,7 @@ add_executable(Life_simulation
         Bacteria.h
         LifeSimulator.cpp
         LifeSimulator.h
+        main.cpp
 )
 target_link_libraries(Life_simulation m)
 

@@ -10,7 +10,10 @@
 
 
 class LifeSimulator {
+private:
     std::vector<Bacteria> bacteria;
+public:
+    explicit LifeSimulator(int bacteriaCount){InitSimulation(bacteriaCount);}
     void InitSimulation(int bacteriaCount);
     void Run();
     void Step(int dt);
