@@ -34,7 +34,6 @@ void Bacteria::Mutate() {
 
     this->network = MutateNetwork(this->network);
     MutateTrait(maxEnergy, MUTATION_RATE, 50, 100, 5000);
-    MutateTrait(venomLevel, MUTATION_RATE, 2, 0, 100);
     MutateTrait(upgradeLevel, MUTATION_RATE, 1, 0, 10);
     MutateTrait(lifeTime, MUTATION_RATE, 10, 50, 1000);
 }

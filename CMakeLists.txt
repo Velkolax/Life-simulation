@@ -8,6 +8,9 @@ add_executable(Life_simulation
         NeuralNetwork.h
         NeuralNetwork.c
         Bacteria.cpp
-        Bacteria.h)
+        Bacteria.h
+        LifeSimulator.cpp
+        LifeSimulator.h
+)
 target_link_libraries(Life_simulation m)
 
