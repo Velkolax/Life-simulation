@@ -38,6 +38,37 @@ NeuralNetwork buildNetwork(int layerCount, int* layers)
     return nn;
 }
 
+NeuralNetwork childNetwork(NeuralNetwork* nn1, NeuralNetwork* nn2, float mutation)
+{
+    NeuralNetwork res = {0};
+    if(mutation < 0. || mutation > 1.)
+    {
+        printf("Mutation must be a value between 0 and 1");
+        return res;
+    }
+    if(nn1->layerCount != nn2->layerCount || memcmp(nn1->layers, nn2->layers, nn1->layerCount * sizeof(int)))
+    {
+        printf("Different structure of provided networks");
+        return res;
+    }
+    res = buildNetwork(nn1->layerCount, nn1->layers);
+
+    float mutationBottom = 1. - mutation;
+    float mutationTop = 1. + mutation;
+
+    for(int i = 0; i < nn1->neuronCount; i++)
+    {
+        res.neurons[i] = (nn1->neurons[i] + nn2->neurons[i]) / 2 * randomFloat(mutationBottom, mutationTop);
+    }
+
+    for(int i = 0; i < nn1->connectionCount; i++)
+    {
+        res.connections[i] = (nn1->connections[i] + nn2->connections[i]) / 2 * randomFloat(mutationBottom, mutationTop);
+    }
+
+    return res;
+}
+
 float* forwardPass(NeuralNetwork* nn, float* input)
 {
     int L = nn->layerCount;
@@ -95,8 +126,6 @@ float* forwardPass(NeuralNetwork* nn, float* input)
 
 void initializeRandom(NeuralNetwork* nn)
 {
-    srand((unsigned int)time(NULL));
-
     int neuronIndex = 0;
     int connectionIndex = 0;
 
@@ -156,4 +185,9 @@ void printMatrix(NeuralNetwork* nn)
 
         printf("\n");
     }
+}
+
+void freeNetwork(NeuralNetwork* nn)
+{
+    free(nn->neurons);
 }

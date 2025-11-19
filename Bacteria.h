@@ -6,7 +6,7 @@
 #ifndef LIFE_SIMULATION_BACTERIA_H
 #define LIFE_SIMULATION_BACTERIA_H
 
-#include "sieci.h"
+#include "NeuralNetwork.h"
 
 enum class SightType : unsigned char
 {
@@ -32,13 +32,13 @@ private:
 class Bacteria
 {
 public:
-    Bacteria(SiecNeuronowa network, int lifeTime, int energyLevel, int upgradeLevel, int venomLevel) : network(network),lifeTime(lifeTime), energyLevel(energyLevel), upgradeLevel(upgradeLevel), venomLevel(venomLevel)
+    Bacteria(NeuralNetwork network, int lifeTime, int energyLevel, int upgradeLevel, int venomLevel) : network(network),lifeTime(lifeTime), energyLevel(energyLevel), upgradeLevel(upgradeLevel), venomLevel(venomLevel)
     {
         for (auto& a : memory) { a = 0; }
     }
 
 private:
-    SiecNeuronowa network;
+    NeuralNetwork network;
     char memory[12];
     Sight view[5][5];
 

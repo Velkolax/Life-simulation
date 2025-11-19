@@ -18,13 +18,16 @@ extern int matrixY;
 extern float* matrix;
 
 // Activation
-inline float relu(float value) noexcept { return value * (value > 0); }
+inline float relu(float value) { return value * (value > 0); }
 
 // Random
 float randomFloat(float min, float max);
 
 // Build network
 NeuralNetwork buildNetwork(int layerCount, int* layers);
+
+// Merge networks
+NeuralNetwork childNetwork(NeuralNetwork* nn1, NeuralNetwork* nn2, float mutation);
 
 // Forward pass
 float* forwardPass(NeuralNetwork* nn, float* input);
@@ -35,5 +38,8 @@ void initializeRandom(NeuralNetwork* nn);
 // Debug printout
 void printNetwork(NeuralNetwork* nn);
 void printMatrix(NeuralNetwork* nn);
+
+// Free memory
+void freeNetwork(NeuralNetwork* nn);
 
 #endif
