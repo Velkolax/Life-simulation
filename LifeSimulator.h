@@ -13,6 +13,7 @@ class LifeSimulator {
     std::vector<Bacteria> bacteria;
     void InitSimulation(int bacteriaCount);
     void Run();
+    void Step(int dt);
 };
 
 

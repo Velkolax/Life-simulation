@@ -23,6 +23,7 @@ Bacteria::Bacteria() {
     energyLevel = maxEnergy;
     venomLevel = 0;
     upgradeLevel = 0;
+    currentlifeTime = lifeTime;
     std::fill_n(memory, 12, 0);
 
 }
@@ -59,4 +60,16 @@ void Bacteria::Mutate() {
     MutateTrait(upgradeLevel, MUTATION_RATE, 1, 0, 10);
     MutateTrait(lifeTime, MUTATION_RATE, 10, 50, 1000);
 }
+
+void Bacteria::PassingOfTime(int dt) {
+    currentlifeTime -= dt;
+}
+
+bool Bacteria::CheckIfDead() {
+    if (currentlifeTime<=0) {
+        return true;
+    }
+    return false;
+}
+
 

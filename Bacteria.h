@@ -35,7 +35,7 @@ class Bacteria
 {
 public:
     Bacteria();
-    Bacteria(const NeuralNetwork &network, int lifeTime, int energyLevel, int maxEnergy, int upgradeLevel, int venomLevel) : network(network),lifeTime(lifeTime), energyLevel(energyLevel), maxEnergy(maxEnergy), upgradeLevel(upgradeLevel), venomLevel(venomLevel)
+    Bacteria(const NeuralNetwork &network, int lifeTime, int energyLevel, int maxEnergy, int upgradeLevel, int venomLevel) : network(network),lifeTime(lifeTime), energyLevel(energyLevel), maxEnergy(maxEnergy), upgradeLevel(upgradeLevel), venomLevel(venomLevel), currentlifeTime(lifeTime)
     {
         std::fill_n(memory, 12, 0);
     }
@@ -52,7 +52,8 @@ public:
     }
     [[nodiscard]] Bacteria Crossover(const Bacteria &bacteria2) const;
     void Mutate();
-
+    void PassingOfTime(int dt);
+    bool CheckIfDead();
 
 private:
     NeuralNetwork network{};
@@ -65,6 +66,7 @@ private:
     int maxEnergy;
     int upgradeLevel;
     int venomLevel;
+    int currentlifeTime;
 };
 
 
