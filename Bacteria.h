@@ -10,6 +10,8 @@
 
 #include "NeuralNetwork.h"
 
+typedef unsigned char property;
+
 enum class SightType : unsigned char
 {
     Stranger,
@@ -36,8 +38,8 @@ class Bacteria
 public:
     Bacteria();
     ~Bacteria();
-    Bacteria(NeuralNetwork network, int lifeTime, int energyLevel, int maxEnergy, int upgradeLevel, int venomLevel);
-    Bacteria( Bacteria* bacteria1, Bacteria* bacteria2);
+    Bacteria(NeuralNetwork network, property lifeTime, property energyLevel, property maxEnergy, property upgradeLevel, property venomLevel);
+    Bacteria(Bacteria* bacteria1, Bacteria* bacteria2);
 
     Bacteria Crossover(Bacteria* bacteria2);
     void Mutate();
@@ -52,12 +54,12 @@ private:
     Sight view[5][5];
 
 
-    int lifeTime;
-    int energyLevel;
-    int maxEnergy;
-    int upgradeLevel;
-    int venomLevel;
-    int currentlifeTime;
+    property lifespan;
+    property energyLevel;
+    property maxEnergy;
+    property upgradeLevel;
+    property venomLevel;
+    property currentlifeTime;
 };
 
 

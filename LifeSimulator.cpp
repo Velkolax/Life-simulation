@@ -14,8 +14,10 @@ void LifeSimulator::InitSimulation(int bacteriaCount)
     }
 }
 
-void LifeSimulator::Run() {
-    while (!bacterias.empty()) {
+void LifeSimulator::Run()
+{
+    while (!bacterias.empty())
+    {
         Step(1);
         getchar();
     }
@@ -47,8 +49,8 @@ std::pair<T*, T*> pickTwoPointers(std::vector<T>& vec) {
     return {&vec[i1], &vec[i2]};
 }
 
-void LifeSimulator::Step(int dt) {
-
+void LifeSimulator::Step(int dt)
+{
     std::cout << bacterias.size() << std::endl;
     PrintAllRemainingTimes();
 
