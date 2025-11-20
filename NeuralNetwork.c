@@ -198,5 +198,7 @@ void printMatrix(NeuralNetwork* nn)
 
 void freeNetwork(NeuralNetwork* nn)
 {
+    if (nn->neurons == NULL) return;
     free(nn->neurons);
+    nn->neurons = NULL;
 }

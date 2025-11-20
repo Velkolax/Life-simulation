@@ -33,6 +33,11 @@ Bacteria::Bacteria()
 
 }
 
+Bacteria::~Bacteria()
+{
+    // freeNetwork(&network);
+}
+
 Bacteria::Bacteria(NeuralNetwork network, int lifeTime, int energyLevel, int maxEnergy, int upgradeLevel, int venomLevel) : network(network),lifeTime(lifeTime), energyLevel(energyLevel), maxEnergy(maxEnergy), upgradeLevel(upgradeLevel), venomLevel(venomLevel), currentlifeTime(lifeTime)
 {
     std::fill_n(memory, 12, 0);

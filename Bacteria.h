@@ -35,6 +35,7 @@ class Bacteria
 {
 public:
     Bacteria();
+    ~Bacteria();
     Bacteria(NeuralNetwork network, int lifeTime, int energyLevel, int maxEnergy, int upgradeLevel, int venomLevel);
     Bacteria( Bacteria* bacteria1, Bacteria* bacteria2);
 
