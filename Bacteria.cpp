@@ -14,8 +14,8 @@ int GenerateRandomTrait(int range) {
 }
 
 Bacteria::Bacteria() {
-    int layers[] = {3, 5, 5, 5, 3};
-    NeuralNetwork nn = buildNetwork(5,layers);
+    int layers[] = {2,3,2};
+    NeuralNetwork nn = buildNetwork(std::size(layers),layers);
     initializeRandom(&nn);
     network = nn;
     lifeTime = GenerateRandomTrait(10);
@@ -30,8 +30,20 @@ Bacteria::Bacteria() {
 }
 
 //TODO: Add networks to crossover. I got random memory leaks from this
-Bacteria Bacteria::Crossover(const Bacteria *bacteria2) const {
-    const auto bac = Bacteria(this->network,
+Bacteria Bacteria::Crossover(Bacteria *bacteria2)  {
+    srand((unsigned int)time(NULL));
+    int layers[] = {2, 3, 2};
+    int layerCount = sizeof(layers)/sizeof(layers[0]);
+    NeuralNetwork nn1 = buildNetwork(layerCount, layers);
+    initializeRandom(&nn1);
+    printNetwork(&nn1);
+    printf("\n");
+    NeuralNetwork nn2 = buildNetwork(layerCount, layers);
+    initializeRandom(&nn2);
+    printNetwork(&nn2);
+    printf("\n");
+    NeuralNetwork net = childNetwork(&network,&nn2,0.2);
+     auto bac = Bacteria(this->network,
         (this->lifeTime+bacteria2->lifeTime)/2,
         (this->energyLevel+bacteria2->energyLevel)/2,
         (this->maxEnergy+bacteria2->maxEnergy)/2,
@@ -55,7 +67,7 @@ void MutateTrait(int& val, double mutationRate, int strength, int minVal, int ma
 
 
 void Bacteria::Mutate() {
-    constexpr double MUTATION_RATE = 0.1;
+    double MUTATION_RATE = 0.1;
 
     // this->network = MutateNetwork(this->network);
     MutateTrait(maxEnergy, MUTATION_RATE, 50, 100, 5000);

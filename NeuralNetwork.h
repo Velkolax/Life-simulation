@@ -4,7 +4,6 @@
 
 #include <stdio.h>
 
-/* To mówi kompilatorowi C++: "Nie zmieniaj nazw tych funkcji, one są z C" */
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -22,10 +21,8 @@ extern "C" {
     extern int matrixX;
     extern int matrixY;
     extern float* matrix;
+    static int* globalLayers;
 
-    // Activation
-    // ZMIANA: dodano 'static'. Dzięki temu funkcja jest widoczna w każdym pliku,
-    // który includuje ten nagłówek, bez błędu linkera.
     static inline float relu(float value) { return value * (value > 0); }
 
     // Random

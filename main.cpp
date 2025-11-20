@@ -6,6 +6,8 @@
 
 #include "LifeSimulator.h"
 
+
+
 int main()
 {
     // srand((unsigned int)time(NULL));
