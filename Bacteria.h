@@ -6,6 +6,8 @@
 #ifndef LIFE_SIMULATION_BACTERIA_H
 #define LIFE_SIMULATION_BACTERIA_H
 
+#define MEMORY_SIZE 16
+
 #include <algorithm>
 
 #include "NeuralNetwork.h"
@@ -35,30 +37,32 @@ class Bacteria
 {
 public:
     Bacteria();
-    Bacteria(const NeuralNetwork &network, int lifeTime, int energyLevel, int maxEnergy, int upgradeLevel, int venomLevel) : network(network),lifeTime(lifeTime), energyLevel(energyLevel), maxEnergy(maxEnergy), upgradeLevel(upgradeLevel), venomLevel(venomLevel), currentlifeTime(lifeTime)
+    Bacteria(NeuralNetwork network, int lifeTime, int energyLevel, int maxEnergy, int upgradeLevel, int venomLevel) : network(network),lifeTime(lifeTime), energyLevel(energyLevel), maxEnergy(maxEnergy), upgradeLevel(upgradeLevel), venomLevel(venomLevel), currentlifeTime(lifeTime)
     {
-        std::fill_n(memory, 12, 0);
+        std::fill_n(memory, MEMORY_SIZE, 0);
+
     }
-    Bacteria(const Bacteria* bacteria1, const Bacteria* bacteria2)
+    Bacteria(Bacteria* bacteria1, Bacteria* bacteria2)
     {
-        const Bacteria bac = bacteria1->Crossover(bacteria2);
+        Bacteria bac = bacteria1->Crossover(bacteria2);
         network = bac.network;
         lifeTime = bac.lifeTime;
         energyLevel = bac.energyLevel;
         maxEnergy = bac.maxEnergy;
         upgradeLevel = bac.upgradeLevel;
         venomLevel = bac.venomLevel;
-        std::fill_n(memory, 12, 0);
+        std::fill_n(memory, MEMORY_SIZE, 0);
     }
-    [[nodiscard]] Bacteria Crossover(const Bacteria* bacteria2) const;
+    [[nodiscard]] Bacteria Crossover(Bacteria* bacteria2);
     void Mutate();
     void PassingOfTime(int dt);
     bool CheckIfDead();
     void Print();
 
-private:
     NeuralNetwork network{};
-    char memory[12]{};
+
+private:
+    char memory[MEMORY_SIZE]{};
     Sight view[5][5];
 
 

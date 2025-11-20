@@ -19,7 +19,7 @@ void LifeSimulator::Run() {
 }
 
 template <typename T>
-std::pair<const T*, const T*> pickTwoPointers(const std::vector<T>& vec) {
+std::pair<T*, T*> pickTwoPointers(std::vector<T>& vec) {
     if (vec.size() < 2) {
         throw std::runtime_error("Za malo elementow");
     }

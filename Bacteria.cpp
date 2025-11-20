@@ -29,14 +29,14 @@ Bacteria::Bacteria() {
 
 }
 
-//TODO: Add networks to crossover. I got random memory leaks from this
-Bacteria Bacteria::Crossover(const Bacteria *bacteria2) const {
-    const auto bac = Bacteria(this->network,
-        (this->lifeTime+bacteria2->lifeTime)/2,
-        (this->energyLevel+bacteria2->energyLevel)/2,
-        (this->maxEnergy+bacteria2->maxEnergy)/2,
-        (this->upgradeLevel+bacteria2->upgradeLevel)/2,
-        (this->venomLevel+bacteria2->venomLevel/2));
+Bacteria Bacteria::Crossover(Bacteria *bacteria2)
+{
+    auto bac = Bacteria(childNetwork(&(this->network), &(bacteria2->network), 0),
+        (this->lifeTime + bacteria2->lifeTime) / 2,
+        (this->energyLevel + bacteria2->energyLevel) / 2,
+        (this->maxEnergy + bacteria2->maxEnergy) / 2,
+        (this->upgradeLevel + bacteria2->upgradeLevel) / 2,
+        (this->venomLevel + bacteria2->venomLevel) / 2);
     return bac;
 }
 
