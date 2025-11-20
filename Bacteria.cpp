@@ -3,7 +3,7 @@
 //
 
 #include "Bacteria.h"
-
+#include <iostream>
 #include <random>
 
 int GenerateRandomTrait(int range) {
@@ -17,7 +17,6 @@ Bacteria::Bacteria() {
     int layers[] = {3, 5, 5, 5, 3};
     NeuralNetwork nn = buildNetwork(5,layers);
     initializeRandom(&nn);
-    printNetwork(&nn);
     network = nn;
     lifeTime = GenerateRandomTrait(200);
     maxEnergy = GenerateRandomTrait(500);
@@ -26,6 +25,7 @@ Bacteria::Bacteria() {
     upgradeLevel = 0;
     currentlifeTime = lifeTime;
     std::fill_n(memory, 12, 0);
+    this->Print();
 
 }
 
@@ -72,6 +72,20 @@ bool Bacteria::CheckIfDead() {
         return true;
     }
     return false;
+}
+
+void Bacteria::Print()
+{
+    std::cout << "--------------------------------------------" << std::endl;
+    std::cout << "BACTERIA" << std::endl;
+    std::cout << "LIFETIME: " << lifeTime<< std::endl;
+    std::cout << "ENERGYLEVEL: " << energyLevel<< std::endl;
+    std::cout << "MAXENERGY: " << maxEnergy<< std::endl;
+    std::cout << "UPGRADELEVEL: " << upgradeLevel<< std::endl;
+    std::cout << "VENOMLEVEL: " << venomLevel<< std::endl;
+    std::cout << "NETWORK:" << std::endl<< std::endl;
+    printNetwork(&network);
+    std::cout << "--------------------------------------------" << std::endl;
 }
 
 

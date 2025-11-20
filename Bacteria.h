@@ -54,6 +54,7 @@ public:
     void Mutate();
     void PassingOfTime(int dt);
     bool CheckIfDead();
+    void Print();
 
 private:
     NeuralNetwork network{};
