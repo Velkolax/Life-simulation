@@ -33,6 +33,7 @@ Bacteria::Bacteria()
 
 }
 
+
 Bacteria Bacteria::Crossover(Bacteria *bacteria2)
 {
      auto bac = Bacteria(childNetwork(&network, &bacteria2->network, 0.2),
@@ -41,6 +42,7 @@ Bacteria Bacteria::Crossover(Bacteria *bacteria2)
         (this->maxEnergy+bacteria2->maxEnergy)/2,
         (this->upgradeLevel+bacteria2->upgradeLevel)/2,
         (this->venomLevel+bacteria2->venomLevel/2));
+    bac.Print();
     return bac;
 }
 
