@@ -33,19 +33,9 @@ Bacteria::Bacteria()
 
 }
 
-//TODO: Add networks to crossover. I got random memory leaks from this
 Bacteria Bacteria::Crossover(Bacteria *bacteria2)
 {
-    /*NeuralNetwork nn1 = buildNetwork(layerCount, layers);
-    initializeRandom(&nn1);
-    printNetwork(&nn1);
-    printf("\n");
-    NeuralNetwork nn2 = buildNetwork(layerCount, layers);
-    initializeRandom(&nn2);
-    printNetwork(&nn2);
-    printf("\n");*/
-    NeuralNetwork net = childNetwork(&network, &bacteria2->network, 0.2);
-     auto bac = Bacteria(net,
+     auto bac = Bacteria(childNetwork(&network, &bacteria2->network, 0.2),
         (this->lifeTime+bacteria2->lifeTime)/2,
         (this->energyLevel+bacteria2->energyLevel)/2,
         (this->maxEnergy+bacteria2->maxEnergy)/2,
