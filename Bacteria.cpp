@@ -29,6 +29,7 @@ Bacteria::Bacteria() {
 
 }
 
+//TODO: Add networks to crossover. I got random memory leaks from this
 Bacteria Bacteria::Crossover(const Bacteria *bacteria2) const {
     const auto bac = Bacteria(this->network,
         (this->lifeTime+bacteria2->lifeTime)/2,
