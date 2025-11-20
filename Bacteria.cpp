@@ -6,19 +6,20 @@
 #include <iostream>
 #include <random>
 
-int layers[] = {2,3,2};
+int layers[] = {2, 3, 2};
 int layerCount = sizeof(layers)/sizeof(layers[0]);
 
-int GenerateRandomTrait(int range) {
+int GenerateRandomTrait(int range)
+{
     static std::random_device rd;
     static std::mt19937 gen(rd());
     std::uniform_int_distribution<> disChange(0,range);
     return disChange(gen);
 }
 
-Bacteria::Bacteria() {
-
-    NeuralNetwork nn = buildNetwork(layerCount,layers);
+Bacteria::Bacteria()
+{
+    NeuralNetwork nn = buildNetwork(layerCount, layers);
     initializeRandom(&nn);
     network = nn;
     lifeTime = GenerateRandomTrait(10);
@@ -32,10 +33,9 @@ Bacteria::Bacteria() {
 
 }
 
-//TODO: Add networks to crossover. I got random memory leaks from this
-Bacteria Bacteria::Crossover(Bacteria *bacteria2)  {
-    NeuralNetwork net = childNetwork(&network,&bacteria2->network,0.2);
-     auto bac = Bacteria(net,
+Bacteria Bacteria::Crossover(Bacteria *bacteria2)
+{
+     auto bac = Bacteria(childNetwork(&network, &bacteria2->network, 0.2),
         (this->lifeTime+bacteria2->lifeTime)/2,
         (this->energyLevel+bacteria2->energyLevel)/2,
         (this->maxEnergy+bacteria2->maxEnergy)/2,

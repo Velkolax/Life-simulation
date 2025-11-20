@@ -6,8 +6,10 @@
 #include <iostream>
 #include <random>
 
-void LifeSimulator::InitSimulation(int bacteriaCount) {
-    for (int i=0;i<bacteriaCount;i++) {
+void LifeSimulator::InitSimulation(int bacteriaCount)
+{
+    for (int i=0;i<bacteriaCount;i++)
+    {
         bacterias.emplace_back();
     }
 }

@@ -37,7 +37,7 @@ public:
     Bacteria();
     // ~Bacteria();
 
-    Bacteria( NeuralNetwork &network, int lifeTime, int energyLevel, int maxEnergy, int upgradeLevel, int venomLevel) : network(network),lifeTime(lifeTime), energyLevel(energyLevel), maxEnergy(maxEnergy), upgradeLevel(upgradeLevel), venomLevel(venomLevel), currentlifeTime(lifeTime)
+    Bacteria(NeuralNetwork network, int lifeTime, int energyLevel, int maxEnergy, int upgradeLevel, int venomLevel) : network(network),lifeTime(lifeTime), energyLevel(energyLevel), maxEnergy(maxEnergy), upgradeLevel(upgradeLevel), venomLevel(venomLevel), currentlifeTime(lifeTime)
     {
         std::fill_n(memory, 12, 0);
     }
@@ -52,7 +52,7 @@ public:
         venomLevel = bac.venomLevel;
         std::fill_n(memory, 12, 0);
     }
-    [[nodiscard]] Bacteria Crossover(Bacteria* bacteria2) ;
+    Bacteria Crossover(Bacteria* bacteria2);
     void Mutate();
     void PassingOfTime(int dt);
     bool CheckIfDead();
