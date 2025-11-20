@@ -8,11 +8,13 @@
 
 void LifeSimulator::InitSimulation(int bacteriaCount)
 {
-    for (int i=0;i<bacteriaCount;i++)
+    bacterias.reserve(bacteriaCount);
+    for(int i = 0; i < bacteriaCount; i++)
     {
-        printf("\033[31mCREATION %d\033[0m\n", i);
+        //printf("\033[31mCREATION %d\033[0m\n", i);
         bacterias.emplace_back();
-        printf("\033[31mCREATION END %d\033[0m\n", i);
+        bacterias.back().defaultInitialization();
+        //printf("\033[31mCREATION END %d\033[0m\n", i);
     }
 }
 

@@ -18,7 +18,7 @@ int GenerateRandomTrait(int range)
     return disChange(gen);
 }
 
-Bacteria::Bacteria()
+/*Bacteria::Bacteria()
 {
     network = buildNetwork(layerCount, layers);
     initializeRandom(&network);
@@ -31,14 +31,14 @@ Bacteria::Bacteria()
     std::fill_n(memory, MEMORY_SIZE, 0);
     this->Print();
     printf("Default Bacteria constructor end\n");
-}
+}*/
 
-Bacteria::~Bacteria()
+/*Bacteria::~Bacteria()
 {
     printf("\033[35mBUMP\033[0m\n");
     getchar();
     freeNetwork(&network);
-}
+}*/
 
 Bacteria::Bacteria(NeuralNetwork network, property lifespan, property energyLevel, property maxEnergy, property upgradeLevel, property venomLevel) : network(network),lifespan(lifespan), energyLevel(energyLevel), maxEnergy(maxEnergy), upgradeLevel(upgradeLevel), venomLevel(venomLevel), currentlifeTime(lifespan)
 {
@@ -123,4 +123,21 @@ void Bacteria::Print()
     std::cout << "--------------------------------------------" << std::endl;
 }
 
+void Bacteria::defaultInitialization()
+{
+    network = buildNetwork(layerCount, layers);
+    initializeRandom(&network);
+    lifespan = GenerateRandomTrait(10);
+    maxEnergy = GenerateRandomTrait(250);
+    energyLevel = maxEnergy;
+    venomLevel = 0;
+    upgradeLevel = 0;
+    currentlifeTime = lifespan;
+    std::fill_n(memory, MEMORY_SIZE, 0);
+    this->Print();
+}
 
+void Bacteria::kill()
+{
+    freeNetwork(&network);
+}

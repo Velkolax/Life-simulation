@@ -38,8 +38,8 @@ private:
 class Bacteria
 {
 public:
-    Bacteria();
-    ~Bacteria();
+    Bacteria() = default;
+    ~Bacteria() = default;
     Bacteria(NeuralNetwork network, property lifeTime, property energyLevel, property maxEnergy, property upgradeLevel, property venomLevel);
     Bacteria(Bacteria* bacteria1, Bacteria* bacteria2);
 
@@ -49,6 +49,9 @@ public:
     int GetCurrentLifeTime();
     bool CheckIfDead();
     void Print();
+
+    void defaultInitialization();
+    void kill();
 
 private:
     NeuralNetwork network{};
