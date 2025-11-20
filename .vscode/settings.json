@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "neuralnetwork.h": "c"
+        "neuralnetwork.h": "c",
+        "string.h": "c",
+        "stdlib.h": "c"
     }
 }
