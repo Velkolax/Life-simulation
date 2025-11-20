@@ -20,30 +20,32 @@ int GenerateRandomTrait(int range)
 
 Bacteria::Bacteria()
 {
-    NeuralNetwork nn = buildNetwork(layerCount, layers);
-    initializeRandom(&nn);
-    network = nn;
+    network = buildNetwork(layerCount, layers);
+    initializeRandom(&network);
     lifespan = GenerateRandomTrait(10);
-    maxEnergy = GenerateRandomTrait(500);
+    maxEnergy = GenerateRandomTrait(250);
     energyLevel = maxEnergy;
     venomLevel = 0;
     upgradeLevel = 0;
     currentlifeTime = lifespan;
-    std::fill_n(memory, 12, 0);
+    std::fill_n(memory, MEMORY_SIZE, 0);
     this->Print();
+    printf("Default Bacteria constructor end\n");
 }
 
 Bacteria::~Bacteria()
 {
+    printf("\033[35mBUMP\033[0m\n");
+    getchar();
     freeNetwork(&network);
 }
 
 Bacteria::Bacteria(NeuralNetwork network, property lifespan, property energyLevel, property maxEnergy, property upgradeLevel, property venomLevel) : network(network),lifespan(lifespan), energyLevel(energyLevel), maxEnergy(maxEnergy), upgradeLevel(upgradeLevel), venomLevel(venomLevel), currentlifeTime(lifespan)
 {
-    std::fill_n(memory, 12, 0);
+    std::fill_n(memory, MEMORY_SIZE, 0);
 }
 
-Bacteria::Bacteria( Bacteria* bacteria1, Bacteria* bacteria2)
+Bacteria::Bacteria(Bacteria* bacteria1, Bacteria* bacteria2)
 {
     Bacteria bac = bacteria1->Crossover(bacteria2);
     network = bac.network;
@@ -53,7 +55,7 @@ Bacteria::Bacteria( Bacteria* bacteria1, Bacteria* bacteria2)
     upgradeLevel = bac.upgradeLevel;
     venomLevel = bac.venomLevel;
     currentlifeTime = lifespan;
-    std::fill_n(memory, 12, 0);
+    std::fill_n(memory, MEMORY_SIZE, 0);
 }
 
 Bacteria Bacteria::Crossover(Bacteria *bacteria2)
@@ -67,7 +69,7 @@ Bacteria Bacteria::Crossover(Bacteria *bacteria2)
     return bac;
 }
 
-void MutateTrait(property val, double mutationRate, int strength, property minVal, property maxVal) {
+void MutateTrait(property& val, double mutationRate, int strength, property minVal, property maxVal) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
     static std::uniform_real_distribution<> disChance(0.0,1.0);
@@ -85,7 +87,7 @@ void Bacteria::Mutate() {
     double MUTATION_RATE = 0.1;
 
     // this->network = MutateNetwork(this->network);
-    MutateTrait(maxEnergy, MUTATION_RATE, 50, 100, 5000);
+    MutateTrait(maxEnergy, MUTATION_RATE, 50, 100, 250);
     MutateTrait(upgradeLevel, MUTATION_RATE, 1, 0, 10);
     MutateTrait(lifespan, MUTATION_RATE, 10, 50, 100);
 }

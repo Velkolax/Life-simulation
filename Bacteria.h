@@ -6,11 +6,13 @@
 #ifndef LIFE_SIMULATION_BACTERIA_H
 #define LIFE_SIMULATION_BACTERIA_H
 
+#define MEMORY_SIZE 16
+
 #include <algorithm>
 
 #include "NeuralNetwork.h"
 
-typedef unsigned char property;
+typedef int property;
 
 enum class SightType : unsigned char
 {
@@ -50,7 +52,7 @@ public:
 
 private:
     NeuralNetwork network{};
-    char memory[12]{};
+    char memory[MEMORY_SIZE]{};
     Sight view[5][5];
 
 

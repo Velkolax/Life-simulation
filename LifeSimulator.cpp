@@ -10,12 +10,15 @@ void LifeSimulator::InitSimulation(int bacteriaCount)
 {
     for (int i=0;i<bacteriaCount;i++)
     {
+        printf("\033[31mCREATION %d\033[0m\n", i);
         bacterias.emplace_back();
+        printf("\033[31mCREATION END %d\033[0m\n", i);
     }
 }
 
 void LifeSimulator::Run()
 {
+    printf("\033[34mCHECKPOINT 1\033[0m\n");
     while (!bacterias.empty())
     {
         Step(1);
@@ -51,7 +54,7 @@ std::pair<T*, T*> pickTwoPointers(std::vector<T>& vec) {
 
 void LifeSimulator::Step(int dt)
 {
-    std::cout << bacterias.size() << std::endl;
+    std::cout << bacterias.size() << "\n";
     PrintAllRemainingTimes();
 
     auto [b1,b2] = pickTwoPointers(bacterias);
