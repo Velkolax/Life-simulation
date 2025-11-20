@@ -18,7 +18,7 @@ Bacteria::Bacteria() {
     NeuralNetwork nn = buildNetwork(5,layers);
     initializeRandom(&nn);
     network = nn;
-    lifeTime = GenerateRandomTrait(200);
+    lifeTime = GenerateRandomTrait(10);
     maxEnergy = GenerateRandomTrait(500);
     energyLevel = maxEnergy;
     venomLevel = 0;
@@ -60,7 +60,7 @@ void Bacteria::Mutate() {
     // this->network = MutateNetwork(this->network);
     MutateTrait(maxEnergy, MUTATION_RATE, 50, 100, 5000);
     MutateTrait(upgradeLevel, MUTATION_RATE, 1, 0, 10);
-    MutateTrait(lifeTime, MUTATION_RATE, 10, 50, 1000);
+    MutateTrait(lifeTime, MUTATION_RATE, 1, 5, 10);
 }
 
 void Bacteria::PassingOfTime(int dt) {
