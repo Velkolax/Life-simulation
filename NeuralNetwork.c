@@ -4,11 +4,13 @@
 #include <math.h>
 #include <time.h>
 
+
 int matrixX = 0;
 int matrixY = 0;
 float* matrix = NULL;
 
-
+int resultBufforSize = 0;
+float* resultBuffor = NULL;
 
 
 float randomFloat(float min, float max)
@@ -120,10 +122,15 @@ float* forwardPass(NeuralNetwork* nn, float* input)
     }
 
     // Copy result
-    float* output = (float*)malloc(layers[L - 1] * sizeof(float));
-    memcpy(output, matrix + ((L - 1) * matrixX), layers[L - 1] * sizeof(float));
+    int size = layers[L - 1] * sizeof(float);
+    if(resultBufforSize < size)
+    {
+        resultBuffor = (float*)realloc(resultBuffor, size);
+        resultBufforSize = size;
+    }
+    memcpy(resultBuffor, matrix + ((L - 1) * matrixX), size);
 
-    return output;
+    return resultBuffor;
 }
 
 void initializeRandom(NeuralNetwork* nn)
