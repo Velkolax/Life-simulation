@@ -21,6 +21,16 @@ void LifeSimulator::Run() {
     }
 }
 
+void LifeSimulator::PrintAllRemainingTimes()
+{
+    std::cout << "LIFETIMES:" << std::endl;
+    for (auto& b : bacterias)
+    {
+        std::cout << " " << b.GetCurrentLifeTime();
+    }
+    std::cout << std::endl;
+}
+
 template <typename T>
 std::pair<T*, T*> pickTwoPointers(std::vector<T>& vec) {
     if (vec.size() < 2) {
@@ -40,9 +50,14 @@ std::pair<T*, T*> pickTwoPointers(std::vector<T>& vec) {
 void LifeSimulator::Step(int dt) {
 
     std::cout << bacterias.size() << std::endl;
+    PrintAllRemainingTimes();
+
     auto [b1,b2] = pickTwoPointers(bacterias);
-    bacterias.push_back(Bacteria(b1,b2));
+    Bacteria bac = Bacteria(b1,b2);
+    bacterias.push_back(bac);
+    bac.Print();
     for (auto it = bacterias.begin(); it != bacterias.end(); ) {
+        it->Mutate();
         it->PassingOfTime(dt);
         if (it->CheckIfDead()) {
             it = bacterias.erase(it);

@@ -33,6 +33,23 @@ Bacteria::Bacteria()
 
 }
 
+Bacteria::Bacteria(NeuralNetwork network, int lifeTime, int energyLevel, int maxEnergy, int upgradeLevel, int venomLevel) : network(network),lifeTime(lifeTime), energyLevel(energyLevel), maxEnergy(maxEnergy), upgradeLevel(upgradeLevel), venomLevel(venomLevel), currentlifeTime(lifeTime)
+{
+    std::fill_n(memory, 12, 0);
+}
+
+Bacteria::Bacteria( Bacteria* bacteria1, Bacteria* bacteria2)
+{
+    Bacteria bac = bacteria1->Crossover(bacteria2);
+    network = bac.network;
+    lifeTime = bac.lifeTime;
+    energyLevel = bac.energyLevel;
+    maxEnergy = bac.maxEnergy;
+    upgradeLevel = bac.upgradeLevel;
+    venomLevel = bac.venomLevel;
+    currentlifeTime = lifeTime;
+    std::fill_n(memory, 12, 0);
+}
 
 Bacteria Bacteria::Crossover(Bacteria *bacteria2)
 {
@@ -42,7 +59,6 @@ Bacteria Bacteria::Crossover(Bacteria *bacteria2)
         (this->maxEnergy+bacteria2->maxEnergy)/2,
         (this->upgradeLevel+bacteria2->upgradeLevel)/2,
         (this->venomLevel+bacteria2->venomLevel/2));
-    bac.Print();
     return bac;
 }
 
@@ -66,11 +82,16 @@ void Bacteria::Mutate() {
     // this->network = MutateNetwork(this->network);
     MutateTrait(maxEnergy, MUTATION_RATE, 50, 100, 5000);
     MutateTrait(upgradeLevel, MUTATION_RATE, 1, 0, 10);
-    MutateTrait(lifeTime, MUTATION_RATE, 1, 5, 10);
+    MutateTrait(lifeTime, MUTATION_RATE, 10, 50, 100);
 }
 
 void Bacteria::PassingOfTime(int dt) {
     currentlifeTime -= dt;
+}
+
+int Bacteria::GetCurrentLifeTime()
+{
+    return this->currentlifeTime;
 }
 
 bool Bacteria::CheckIfDead() {
@@ -85,6 +106,7 @@ void Bacteria::Print()
     std::cout << "--------------------------------------------" << std::endl;
     std::cout << "BACTERIA" << std::endl;
     std::cout << "LIFETIME: " << lifeTime<< std::endl;
+    std::cout << "CURRENT_LIFETIME" << currentlifeTime << std::endl;
     std::cout << "ENERGYLEVEL: " << energyLevel<< std::endl;
     std::cout << "MAXENERGY: " << maxEnergy<< std::endl;
     std::cout << "UPGRADELEVEL: " << upgradeLevel<< std::endl;

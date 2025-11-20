@@ -17,6 +17,7 @@ public:
     explicit LifeSimulator(int bacteriaCount){InitSimulation(bacteriaCount);}
     void InitSimulation(int bacteriaCount);
     void Run();
+    void PrintAllRemainingTimes();
     void Step(int dt);
 };
 
