@@ -52,7 +52,7 @@ public:
         venomLevel = bac.venomLevel;
         std::fill_n(memory, 12, 0);
     }
-    [[nodiscard]] Bacteria Crossover(Bacteria* bacteria2) ;
+    Bacteria Crossover(Bacteria* bacteria2);
     void Mutate();
     void PassingOfTime(int dt);
     bool CheckIfDead();

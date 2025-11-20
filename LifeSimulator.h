@@ -9,7 +9,8 @@
 #include "Bacteria.h"
 
 
-class LifeSimulator {
+class LifeSimulator
+{
 private:
     std::vector<Bacteria> bacterias;
 public:
