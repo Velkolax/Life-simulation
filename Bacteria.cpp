@@ -17,6 +17,7 @@ Bacteria::Bacteria() {
     int layers[] = {3, 5, 5, 5, 3};
     NeuralNetwork nn = buildNetwork(5,layers);
     initializeRandom(&nn);
+    printNetwork(&nn);
     network = nn;
     lifeTime = GenerateRandomTrait(200);
     maxEnergy = GenerateRandomTrait(500);
@@ -29,7 +30,7 @@ Bacteria::Bacteria() {
 }
 
 Bacteria Bacteria::Crossover(const Bacteria &bacteria2) const {
-    const auto bac = Bacteria(CrossOver(this->network,bacteria2.network),
+    const auto bac = Bacteria(this->network,
         (this->lifeTime+bacteria2.lifeTime)/2,
         (this->energyLevel+bacteria2.energyLevel)/2,
         (this->maxEnergy+bacteria2.maxEnergy)/2,
@@ -55,7 +56,7 @@ void MutateTrait(int& val, double mutationRate, int strength, int minVal, int ma
 void Bacteria::Mutate() {
     constexpr double MUTATION_RATE = 0.1;
 
-    this->network = MutateNetwork(this->network);
+    // this->network = MutateNetwork(this->network);
     MutateTrait(maxEnergy, MUTATION_RATE, 50, 100, 5000);
     MutateTrait(upgradeLevel, MUTATION_RATE, 1, 0, 10);
     MutateTrait(lifeTime, MUTATION_RATE, 10, 50, 1000);
