@@ -39,9 +39,9 @@ public:
     {
         std::fill_n(memory, 12, 0);
     }
-    Bacteria(const Bacteria& bacteria1, const Bacteria& bacteria2)
+    Bacteria(const Bacteria* bacteria1, const Bacteria* bacteria2)
     {
-        const Bacteria bac = bacteria1.Crossover(bacteria2);
+        const Bacteria bac = bacteria1->Crossover(bacteria2);
         network = bac.network;
         lifeTime = bac.lifeTime;
         energyLevel = bac.energyLevel;
@@ -50,7 +50,7 @@ public:
         venomLevel = bac.venomLevel;
         std::fill_n(memory, 12, 0);
     }
-    [[nodiscard]] Bacteria Crossover(const Bacteria &bacteria2) const;
+    [[nodiscard]] Bacteria Crossover(const Bacteria* bacteria2) const;
     void Mutate();
     void PassingOfTime(int dt);
     bool CheckIfDead();
