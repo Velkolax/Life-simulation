@@ -30,7 +30,6 @@ Bacteria::Bacteria()
     currentlifeTime = lifeTime;
     std::fill_n(memory, 12, 0);
     this->Print();
-
 }
 
 Bacteria::~Bacteria()
@@ -63,7 +62,7 @@ Bacteria Bacteria::Crossover(Bacteria *bacteria2)
         (this->energyLevel+bacteria2->energyLevel)/2,
         (this->maxEnergy+bacteria2->maxEnergy)/2,
         (this->upgradeLevel+bacteria2->upgradeLevel)/2,
-        (this->venomLevel+bacteria2->venomLevel/2));
+        (this->venomLevel+bacteria2->venomLevel)/2);
     return bac;
 }
 
