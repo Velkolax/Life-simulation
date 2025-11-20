@@ -9,6 +9,8 @@ int matrixY = 0;
 float* matrix = NULL;
 
 
+
+
 float randomFloat(float min, float max)
 {
     return min + (max - min) * ((float)rand() / RAND_MAX);
@@ -46,7 +48,7 @@ NeuralNetwork childNetwork(NeuralNetwork* nn1, NeuralNetwork* nn2, float mutatio
         printf("Mutation must be a value between 0 and 1");
         return res;
     }
-    if(nn1->layerCount != nn2->layerCount || memcmp(nn1->layers, nn2->layers, nn1->layerCount * sizeof(int)))
+    if(nn1->layerCount != nn2->layerCount || memcmp(nn1->layers, nn2->layers, nn1->layerCount * sizeof(int)) != 0)
     {
         printf("Different structure of provided networks");
         return res;
