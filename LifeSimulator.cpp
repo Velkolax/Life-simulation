@@ -59,9 +59,8 @@ void LifeSimulator::Step(int dt)
     std::cout << bacterias.size() << "\n";
     PrintAllRemainingTimes();
 
-    auto [b1,b2] = pickTwoPointers(bacterias);
-    Bacteria bac = Bacteria(b1,b2);
-    bacterias.push_back(bac);
+    /*auto [b1, b2] = pickTwoPointers(bacterias);
+    bacterias.push_back(Bacteria(b1, b2));*/
 
     // std::cout << "PARENT1: ############################################" << std::endl;
     // b1->Print();
@@ -69,15 +68,17 @@ void LifeSimulator::Step(int dt)
     // b2->Print();
     // std::cout << "CHILD: ############################################" << std::endl;
     // bac.Print();
-    for (auto it = bacterias.begin(); it != bacterias.end(); ) {
-        it->Mutate();
+    for (auto it = bacterias.begin(); it != bacterias.end(); )
+    {
+        
+        /*it->Mutate();
         it->PassingOfTime(dt);
         if (it->CheckIfDead()) {
             it = bacterias.erase(it);
         }
         else {
             ++it;
-        }
+        }*/
     }
 }
 

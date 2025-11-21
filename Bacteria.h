@@ -12,7 +12,8 @@
 
 #include "NeuralNetwork.h"
 
-typedef int property;
+typedef short property;
+typedef short statistic;
 
 enum class SightType : unsigned char
 {
@@ -54,17 +55,22 @@ public:
     void kill();
 
 private:
-    NeuralNetwork network{};
-    char memory[MEMORY_SIZE]{};
+    NeuralNetwork network;
+    char memory[MEMORY_SIZE];
     Sight view[5][5];
 
+    // statystyki to zasoby i wiedza o bakterii
+    statistic currentlifeTime;
+    statistic protein;
+    statistic energy;
+    statistic acid;
 
-    property lifespan;
-    property energyLevel;
+    // property mogą być podnoszone przez białka
+    property lifespan; // przedłuża życie ale zwiększa podatność na choroby (nagła śmierć)
+    property maxProtein; 
     property maxEnergy;
-    property upgradeLevel;
-    property venomLevel;
-    property currentlifeTime;
+    property maxAcid;
+    property reflex; // zwiększa częstotliwość ruchów ale spowalnia poruszanie
 };
 
 
