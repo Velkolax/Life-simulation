@@ -40,7 +40,7 @@ int GenerateRandomTrait(int range)
     freeNetwork(&network);
 }*/
 
-Bacteria::Bacteria(NeuralNetwork network, property lifespan, property energyLevel, property maxEnergy, property upgradeLevel, property venomLevel) : network(network),lifespan(lifespan), energyLevel(energyLevel), maxEnergy(maxEnergy), upgradeLevel(upgradeLevel), venomLevel(venomLevel), currentlifeTime(lifespan)
+Bacteria::Bacteria(NeuralNetwork network, property lifespan, property energyLevel, property maxEnergy, property upgradeLevel, property venomLevel) : network(network),lifespan(lifespan), energy(energyLevel), maxEnergy(maxEnergy), protein(upgradeLevel), acid(venomLevel), currentlifeTime(lifespan)
 {
     std::fill_n(memory, MEMORY_SIZE, 0);
 }
@@ -50,10 +50,9 @@ Bacteria::Bacteria(Bacteria* bacteria1, Bacteria* bacteria2)
     Bacteria bac = bacteria1->Crossover(bacteria2);
     network = bac.network;
     lifespan = bac.lifespan;
-    energyLevel = bac.energyLevel;
+    energy = bac.energy;
     maxEnergy = bac.maxEnergy;
-    upgradeLevel = bac.upgradeLevel;
-    venomLevel = bac.venomLevel;
+    acid = bac.acid;
     currentlifeTime = lifespan;
     std::fill_n(memory, MEMORY_SIZE, 0);
 }
@@ -62,10 +61,10 @@ Bacteria Bacteria::Crossover(Bacteria *bacteria2)
 {
      auto bac = Bacteria(childNetwork(&network, &bacteria2->network, 0.2),
         (this->lifespan+bacteria2->lifespan)/2,
-        (this->energyLevel+bacteria2->energyLevel)/2,
+        (this->maxProtein+bacteria2->maxProtein)/2,
         (this->maxEnergy+bacteria2->maxEnergy)/2,
-        (this->upgradeLevel+bacteria2->upgradeLevel)/2,
-        (this->venomLevel+bacteria2->venomLevel)/2);
+        (this->maxAcid+bacteria2->maxAcid)/2,
+        (this->reflex+bacteria2->reflex)/2);
     return bac;
 }
 
@@ -84,12 +83,13 @@ void MutateTrait(property& val, double mutationRate, int strength, property minV
 
 
 void Bacteria::Mutate() {
-    double MUTATION_RATE = 0.1;
+    double MUTATION_RATE = 0.5;
 
     // this->network = MutateNetwork(this->network);
     MutateTrait(maxEnergy, MUTATION_RATE, 50, 100, 250);
-    MutateTrait(upgradeLevel, MUTATION_RATE, 1, 0, 10);
-    MutateTrait(lifespan, MUTATION_RATE, 10, 50, 100);
+    MutateTrait(maxProtein, MUTATION_RATE, 1, 0, 10);
+    MutateTrait(lifespan, MUTATION_RATE, 100, 50, 1000);
+    MutateTrait(reflex, MUTATION_RATE, 10, 50, 100);
 }
 
 void Bacteria::PassingOfTime(int dt) {
@@ -114,10 +114,10 @@ void Bacteria::Print()
     std::cout << "BACTERIA" << std::endl;
     std::cout << "LIFETIME: " << lifespan<< std::endl;
     std::cout << "CURRENT_LIFETIME" << currentlifeTime << std::endl;
-    std::cout << "ENERGYLEVEL: " << energyLevel<< std::endl;
+    std::cout << "ENERGYLEVEL: " << energy<< std::endl;
     std::cout << "MAXENERGY: " << maxEnergy<< std::endl;
-    std::cout << "UPGRADELEVEL: " << upgradeLevel<< std::endl;
-    std::cout << "VENOMLEVEL: " << venomLevel<< std::endl;
+    std::cout << "UPGRADELEVEL: " << protein<< std::endl;
+    std::cout << "VENOMLEVEL: " << acid<< std::endl;
     std::cout << "NETWORK:" << std::endl<< std::endl;
     printNetwork(&network);
     std::cout << "--------------------------------------------" << std::endl;
@@ -129,9 +129,9 @@ void Bacteria::defaultInitialization()
     initializeRandom(&network);
     lifespan = GenerateRandomTrait(10);
     maxEnergy = GenerateRandomTrait(250);
-    energyLevel = maxEnergy;
-    venomLevel = 0;
-    upgradeLevel = 0;
+    energy = maxEnergy;
+    acid = 0;
+    protein = 0;
     currentlifeTime = lifespan;
     std::fill_n(memory, MEMORY_SIZE, 0);
     this->Print();
