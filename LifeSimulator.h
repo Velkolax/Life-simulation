@@ -6,7 +6,6 @@
 #define LIFE_SIMULATION_LIFESIMULATOR_H
 #include <vector>
 
-#include "Bacteria.h"
 
 
 class LifeSimulator

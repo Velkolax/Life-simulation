@@ -2,10 +2,11 @@
 // Created by tk2 on 11/18/25.
 //
 
-#include "Bacteria.h"
 #include <iostream>
 #include <random>
 #include <algorithm>
+
+#include "board.h"
 
 int layers[] = {2, 3, 2};
 int layerCount = sizeof(layers)/sizeof(layers[0]);
@@ -122,7 +123,7 @@ void Bacteria::Print()
     std::cout << "--------------------------------------------" << std::endl;
 }
 
-void Bacteria::defaultInitialization()
+void Bacteria::defaultInitialization(Hexagon *hex)
 {
     network = buildNetwork(layerCount, layers);
     initializeRandom(&network);
@@ -132,6 +133,7 @@ void Bacteria::defaultInitialization()
     acid = 0;
     protein = 0;
     currentlifeTime = lifespan;
+    this->hex = hex;
     std::fill_n(memory, MEMORY_SIZE, 0);
     this->Print();
 }
