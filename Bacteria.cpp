@@ -69,8 +69,7 @@ Bacteria Bacteria::Crossover(Bacteria *bacteria2)
 }
 
 void MutateTrait(property& val, double mutationRate, int strength, property minVal, property maxVal) {
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
+
     static std::uniform_real_distribution<> disChance(0.0,1.0);
 
     if (disChance(gen) <= mutationRate) {
@@ -83,7 +82,7 @@ void MutateTrait(property& val, double mutationRate, int strength, property minV
 
 
 void Bacteria::Mutate() {
-    double MUTATION_RATE = 0.5;
+    double MUTATION_RATE = 0.01;
 
     // this->network = MutateNetwork(this->network);
     MutateTrait(maxEnergy, MUTATION_RATE, 50, 100, 250);

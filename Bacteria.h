@@ -9,6 +9,7 @@
 #define MEMORY_SIZE 16
 
 #include <algorithm>
+#include <random>
 
 #include "NeuralNetwork.h"
 
@@ -34,7 +35,8 @@ private:
     int upgradeCount;
 };
 
-
+static std::random_device rd;
+static std::mt19937 gen(rd());
 
 class Bacteria
 {
