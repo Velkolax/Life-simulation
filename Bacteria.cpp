@@ -123,8 +123,9 @@ void Bacteria::Print()
     std::cout << "--------------------------------------------" << std::endl;
 }
 
-void Bacteria::defaultInitialization(Hexagon *hex)
+void Bacteria::defaultInitialization(Hexagon *hex,Board *board)
 {
+    this->board = board;
     network = buildNetwork(layerCount, layers);
     initializeRandom(&network);
     lifespan = GenerateRandomTrait(10);

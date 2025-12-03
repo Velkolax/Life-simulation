@@ -59,6 +59,7 @@ void Game::Init()
     Renderer->width = Width;
     Renderer->height = Height;
     Renderer->size = Renderer->getSize(board);
+
     RefreshSprites();
 
 }
@@ -259,9 +260,6 @@ void Game::RefreshOutline()
 void Game::Render()
 {
     Renderer -> DrawBoard(board, this->Width, this->Height,board->getCurrentPlayerId());
-    if (provinceSelector!=nullptr)
-    {
-        Text->RenderText("Money:"+std::to_string(GetSelectedCastleReserves()) ,10.0f, 10.0f, 1.0f);
-        Text->RenderText("Income:"+std::to_string(GetSelectedCastleIncome()),this->Width/2,10.0f,1.0f);
-    }
+    board->moveBacteriasRandomly();
+    RefreshSprites();
 }

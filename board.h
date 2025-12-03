@@ -9,6 +9,7 @@
 #include <unistd.h>
 
 #include "board.h"
+#include "board.h"
 #include "NeuralNetwork.h"
 
 
@@ -179,6 +180,8 @@ public:
     void InitializeNeighbour(int recursion, bool includeMiddle);
     void InitializeCountries(uint8 countriesCount, int minCountrySize, int maxCountrySize);
     void spawnTrees(double treeRatio);
+    void moveBacteriasRandomly();
+    void moveBacteria(int direction);
     void spawnBacteria(int bacteriaCount);
     //void InitializeFromFile();
 
@@ -248,6 +251,7 @@ class Bacteria
 public:
     Bacteria() = default;
     ~Bacteria() = default;
+    void moveBacteria(int direction);
     Bacteria(NeuralNetwork network, property lifeTime, property energyLevel, property maxEnergy, property upgradeLevel, property venomLevel);
     Bacteria(Bacteria* bacteria1, Bacteria* bacteria2);
     Bacteria Crossover(Bacteria* bacteria2);
@@ -257,7 +261,7 @@ public:
     bool CheckIfDead();
     void Print();
 
-    void defaultInitialization(Hexagon *hex);
+    void defaultInitialization(Hexagon *hex,Board *board);
     void kill();
 
 private:
@@ -265,6 +269,7 @@ private:
     char memory[MEMORY_SIZE];
     Sight view[5][5];
     Hexagon* hex;
+    Board *board;
     // statystyki to zasoby i wiedza o bakterii
     statistic currentlifeTime;
     statistic protein;

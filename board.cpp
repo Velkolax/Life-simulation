@@ -245,6 +245,26 @@ void Board::spawnTrees(double treeRatio)
     }
 }
 
+void Board::moveBacteriasRandomly()
+{
+    std::uniform_int_distribution<int> randOrigin(0, 5);
+    for (auto& b: bacterias)
+    {
+        b.moveBacteria(randOrigin(gen));
+    }
+}
+
+void Bacteria::moveBacteria(int direction)
+{
+    std::vector<Hexagon*> neigh = hex->neighbours(board, 0);
+    hex->setResident(Resident::Empty);
+    if (neigh.size()==6 && neigh[direction]->getResident()!=Resident::PalmTree && neigh[direction]->getResident()!=Resident::Water)
+    {
+        neigh[direction]->setResident(Resident::PalmTree);
+        hex = neigh[direction];
+    }
+
+}
 
 void Board::spawnBacteria(int bacteriaCount)
 {
@@ -262,7 +282,7 @@ void Board::spawnBacteria(int bacteriaCount)
             int x = board[range[i]].getX();
             int y = board[range[i]].getY();
             bacterias.emplace_back();
-            bacterias.back().defaultInitialization(getHexagon(x,y));
+            bacterias.back().defaultInitialization(getHexagon(x,y),this);
             board[range[i]].setResident(Resident::PalmTree);
         }
     }
