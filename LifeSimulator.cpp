@@ -1,4 +1,4 @@
-//
+/*//
 // Created by knotp on 19.11.2025.
 //
 
@@ -80,5 +80,5 @@ void LifeSimulator::Step(int dt)
             ++it;
         }
     }
-}
+}*/
 
