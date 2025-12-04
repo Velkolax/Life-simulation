@@ -1,4 +1,4 @@
-//
+/*//
 // Created by knotp on 19.11.2025.
 //
 
@@ -21,4 +21,4 @@ public:
 };
 
 
-#endif //LIFE_SIMULATION_LIFESIMULATOR_H
+#endif //LIFE_SIMULATION_LIFESIMULATOR_H*/
