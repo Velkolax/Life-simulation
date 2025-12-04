@@ -34,18 +34,7 @@ void Game::Init()
     // set render-specific controls
     Renderer = new SpriteRenderer(ResourceManager::GetShader("sprite"));
     // load textures
-    ResourceManager::LoadTexture("textures/soilder1_256.png",true,"soilder1");
-    ResourceManager::LoadTexture("textures/soldier2_256.png",true,"soilder2");
     ResourceManager::LoadTexture("textures/square-16.png", true, "hexagon");
-    ResourceManager::LoadTexture("textures/placeholder.png",true,"placeholder");
-    ResourceManager::LoadTexture("textures/exclamation.png",true,"exclamation");
-    ResourceManager::LoadTexture("textures/castle_256.png",true,"castle");
-    ResourceManager::LoadTexture("textures/pineTree_512.png",true,"pine");
-    ResourceManager::LoadTexture("textures/palmTree_256.png",true,"palm");
-    ResourceManager::LoadTexture("textures/tower_512.png",true,"tower");
-    ResourceManager::LoadTexture("textures/gravestone_512.png",true,"gravestone");
-    ResourceManager::LoadTexture("textures/shield_placeholder.png",true,"shield_placeholder");
-    ResourceManager::LoadTexture("textures/b.png",true,"border_placeholder");
     ResourceManager::LoadTexture("textures/bacteria.png",true,"bacteria");
     ResourceManager::LoadTexture("textures/apple.png",true,"apple");
     ResourceManager::LoadTexture("textures/explosion.png",true,"explosion");
@@ -53,11 +42,13 @@ void Game::Init()
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load(24);
     int bacteriaCount = 1000;
-    board = new Board(100, 100, this);
-    int total = 100*100;
+    int x = 100;
+    int y = 100;
+    board = new Board(x, y, this);
+    int total = x*y;
     board->InitializeRandom(total * 0.5, total * 0.9);
 
-    board->spawnBacteria(100);
+    board->spawnBacteria(bacteriaCount);
     board->spawnFood(0.1);
     Renderer->width = Width;
     Renderer->height = Height;
