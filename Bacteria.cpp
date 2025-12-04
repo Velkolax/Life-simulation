@@ -82,6 +82,12 @@ void Bacteria::moveBacteria(int direction)
 
 }
 
+void Bacteria::deleteBacteria()
+{
+    hex->setResident(Resident::Empty);
+    hex = nullptr;
+}
+
 void MutateTrait(property& val, double mutationRate, int strength, property minVal, property maxVal) {
 
     static std::uniform_real_distribution<> disChance(0.0,1.0);
@@ -141,7 +147,7 @@ void Bacteria::defaultInitialization(Hexagon *hex,Board *board)
     this->board = board;
     network = buildNetwork(layerCount, layers);
     initializeRandom(&network);
-    lifespan = GenerateRandomTrait(10);
+    lifespan = GenerateRandomTrait(1000);
     maxEnergy = GenerateRandomTrait(250);
     energy = maxEnergy;
     acid = 0;

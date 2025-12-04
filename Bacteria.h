@@ -36,6 +36,7 @@ public:
     Bacteria() = default;
     ~Bacteria() = default;
     void moveBacteria(int direction);
+    void deleteBacteria();
     Bacteria(NeuralNetwork network, property lifeTime, property energyLevel, property maxEnergy, property upgradeLevel, property venomLevel);
     Bacteria(Bacteria* bacteria1, Bacteria* bacteria2);
     Bacteria Crossover(Bacteria* bacteria2);

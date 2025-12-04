@@ -256,7 +256,18 @@ void Board::moveBacteriasRandomly()
     }
 }
 
-
+void Board::passTime()
+{
+    for (auto& b : bacterias)
+    {
+        b.PassingOfTime(1);
+        if (b.CheckIfDead())
+        {
+            b.deleteBacteria();
+        }
+    }
+    std::erase_if(bacterias,[](Bacteria b){return b.CheckIfDead();});
+}
 
 void Board::spawnBacteria(int bacteriaCount)
 {

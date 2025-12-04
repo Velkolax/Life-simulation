@@ -178,6 +178,7 @@ public:
     void InitializeCountries(uint8 countriesCount, int minCountrySize, int maxCountrySize);
     void spawnTrees(double treeRatio);
     void moveBacteriasRandomly();
+    void passTime();
     void moveBacteria(int direction);
     void spawnBacteria(int bacteriaCount);
     //void InitializeFromFile();

@@ -261,5 +261,6 @@ void Game::Render()
 {
     Renderer -> DrawBoard(board, this->Width, this->Height,board->getCurrentPlayerId());
     board->moveBacteriasRandomly();
+    board->passTime();
     RefreshSprites();
 }
