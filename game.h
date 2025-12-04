@@ -48,6 +48,7 @@ public:
     bool                    isFirstProvinceSet = false;
     Hexagon                 *selectedHex = nullptr;
     Hexagon                 *provinceSelector = nullptr;
+    bool                    canYouRender;
     std::vector<Bacteria>   bacterias;
 
     Board *board;
@@ -65,6 +66,7 @@ public:
     void RefreshOutline();
     void Update(float dt);
     void Resize(int width, int height);
+    void Tick();
     void Render();
     std::map<int,bool> clickedMovingKeys{
         {GLFW_KEY_W,false},
