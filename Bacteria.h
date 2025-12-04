@@ -1,4 +1,4 @@
-//
+/*//
 // Created by tk2 on 11/18/25.
 //
 
@@ -74,4 +74,4 @@ private:
 };
 
 
-#endif //LIFE_SIMULATION_BACTERIA_H
+#endif //LIFE_SIMULATION_BACTERIA_H*/
