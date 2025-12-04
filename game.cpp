@@ -47,6 +47,7 @@ void Game::Init()
     ResourceManager::LoadTexture("textures/shield_placeholder.png",true,"shield_placeholder");
     ResourceManager::LoadTexture("textures/b.png",true,"border_placeholder");
     ResourceManager::LoadTexture("textures/bacteria.png",true,"bacteria");
+    ResourceManager::LoadTexture("textures/apple.png",true,"apple");
 
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load(24);
@@ -56,6 +57,7 @@ void Game::Init()
     board->InitializeRandom(total * 0.5, total * 0.9);
 
     board->spawnBacteria(100);
+    board->spawnFood(0.1);
     Renderer->width = Width;
     Renderer->height = Height;
     Renderer->size = Renderer->getSize(board);

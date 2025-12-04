@@ -177,6 +177,7 @@ public:
     void InitializeNeighbour(int recursion, bool includeMiddle);
     void InitializeCountries(uint8 countriesCount, int minCountrySize, int maxCountrySize);
     void spawnTrees(double treeRatio);
+    void spawnFood(double foodRatio);
     void moveBacteriasRandomly();
     void passTime();
     void moveBacteria(int direction);

@@ -42,8 +42,10 @@ inline std::map<Resident,std::string> warriorToTexture = {
     {Resident::StrongTower,"placeholder"},
     {Resident::Gravestone,"gravestone"},
     {Resident::PalmTree,"bacteria"},
-    {Resident::PineTree,"bacteria"},
+    {Resident::PineTree,"apple"},
 };
+
+
 
 
 

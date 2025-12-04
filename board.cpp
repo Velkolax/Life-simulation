@@ -247,6 +247,24 @@ void Board::spawnTrees(double treeRatio)
     }
 }
 
+void Board::spawnFood(double foodRatio)
+{
+    int count = board.size();
+    std::vector<int> range(count);
+    std::iota(range.begin(), range.end(), 0);
+    std::erase_if(range,[this](int i){return this->board[i].getResident()!=Resident::Empty;});
+
+    std::shuffle(range.begin(),range.end(),gen);
+    for (int i=0;i<range.size()*foodRatio;i++)
+    {
+        if (empty(board[range[i]].getResident()))
+        {
+            board[range[i]].setResident(Resident::PineTree);
+        }
+
+    }
+}
+
 void Board::moveBacteriasRandomly()
 {
     std::uniform_int_distribution<int> randOrigin(0, 5);
