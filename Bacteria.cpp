@@ -2,10 +2,11 @@
 // Created by tk2 on 11/18/25.
 //
 
-#include "Bacteria.h"
 #include <iostream>
 #include <random>
 #include <algorithm>
+
+#include "board.h"
 
 int layers[] = {2, 3, 2};
 int layerCount = sizeof(layers)/sizeof(layers[0]);
@@ -69,8 +70,7 @@ Bacteria Bacteria::Crossover(Bacteria *bacteria2)
 }
 
 void MutateTrait(property& val, double mutationRate, int strength, property minVal, property maxVal) {
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
+
     static std::uniform_real_distribution<> disChance(0.0,1.0);
 
     if (disChance(gen) <= mutationRate) {
@@ -83,7 +83,7 @@ void MutateTrait(property& val, double mutationRate, int strength, property minV
 
 
 void Bacteria::Mutate() {
-    double MUTATION_RATE = 0.5;
+    double MUTATION_RATE = 0.01;
 
     // this->network = MutateNetwork(this->network);
     MutateTrait(maxEnergy, MUTATION_RATE, 50, 100, 250);
@@ -123,8 +123,9 @@ void Bacteria::Print()
     std::cout << "--------------------------------------------" << std::endl;
 }
 
-void Bacteria::defaultInitialization()
+void Bacteria::defaultInitialization(Hexagon *hex,Board *board)
 {
+    this->board = board;
     network = buildNetwork(layerCount, layers);
     initializeRandom(&network);
     lifespan = GenerateRandomTrait(10);
@@ -133,6 +134,7 @@ void Bacteria::defaultInitialization()
     acid = 0;
     protein = 0;
     currentlifeTime = lifespan;
+    this->hex = hex;
     std::fill_n(memory, MEMORY_SIZE, 0);
     this->Print();
 }

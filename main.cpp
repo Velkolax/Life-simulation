@@ -1,42 +1,189 @@
+#include <iostream>
+
 #include "NeuralNetwork.h"
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <time.h>
 
+#include "game.h"
 #include "LifeSimulator.h"
+#include "resource_manager.h"
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+
+// The Width of the screen
+unsigned int SCREEN_WIDTH = 800;
+// The height of the screen
+unsigned int SCREEN_HEIGHT = 600;
+bool fullScreen = false;
+bool fPressed = false;
 
 
 
-int main()
+Game *Anti = new Game(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+int main(int argc, char *argv[])
 {
-    /*srand((unsigned int)time(NULL));
-    int layers[] = {2, 3, 2};
-    int layerCount = sizeof(layers)/sizeof(layers[0]);
-    NeuralNetwork nn1 = buildNetwork(layerCount, layers);
-    initializeRandom(&nn1);
-    printNetwork(&nn1);
-    printf("\n");
-    NeuralNetwork nn2 = buildNetwork(layerCount, layers);
-    initializeRandom(&nn2);
-    printNetwork(&nn2);
-    printf("\n");
-    
-    NeuralNetwork child1 = childNetwork(&nn1, &nn2, 0); // brak mutacji
-    printNetwork(&child1);
-    printf("\n");
-    
-    NeuralNetwork child2 = childNetwork(&nn1, &nn2, 0.2); // mała mutacja
-    printNetwork(&child2);
-    printf("\n");
-    
-    freeNetwork(&nn1);
-    freeNetwork(&nn2);
-    freeNetwork(&child1);
-    freeNetwork(&child2);
-    
-    getchar();*/
-    auto sim = LifeSimulator(100);
-    sim.Run();
+
+
+    // OPENGL
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+    glfwWindowHint(GLFW_RESIZABLE, false);
+
+    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Anti", nullptr, nullptr);
+    glfwMakeContextCurrent(window);
+
+    glfwSwapInterval(1); // FPS zsynchronizowany z odświeżaniem monitora (zazwyczaj 60 FPS)
+
+    // glad: load all OpenGL function pointers
+    // ---------------------------------------
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return -1;
+    }
+
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+
+
+    // OpenGL configuration
+    // --------------------
+    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // initialize game
+    // ---------------
+    Anti->Init();
+    // deltaTime variables
+    // -------------------
+    float deltaTime = 0.0f;
+    float lastFrame = 0.0f;
+
+    while (!glfwWindowShouldClose(window))
+    {
+        // calculate delta time
+        // --------------------
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+        glfwPollEvents();
+
+        // manage user input
+        // -----------------
+        Anti->ProcessInput(deltaTime);
+
+        // update game state
+        // -----------------
+        Anti->Update(deltaTime);
+
+        // render
+        // ------
+        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        Anti->Render();
+
+        glfwSwapBuffers(window);
+    }
+
+    // delete all resources as loaded using the resource manager
+    // ---------------------------------------------------------
+    ResourceManager::Clear();
+    delete Anti;
+    glfwTerminate();
     return 0;
+}
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
+    // when a user presses the escape key, we set the WindowShouldClose property to true, closing the application
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+    if (key == GLFW_KEY_F && action == GLFW_PRESS && !fullScreen && !fPressed)
+    {
+        glfwSetWindowMonitor(window,glfwGetPrimaryMonitor(),0,0,glfwGetVideoMode(glfwGetPrimaryMonitor())->width,glfwGetVideoMode(glfwGetPrimaryMonitor())->height,GLFW_DONT_CARE);
+        fPressed = true;
+    }
+    else if (key == GLFW_KEY_F && action == GLFW_RELEASE && !fullScreen && fPressed){fPressed=false;fullScreen=true;}
+    else if (key == GLFW_KEY_F && action == GLFW_PRESS && fullScreen && !fPressed)
+    {
+        glfwSetWindowMonitor(window,NULL,0,0,SCREEN_WIDTH,SCREEN_HEIGHT,GLFW_DONT_CARE);
+        fPressed = true;
+    }
+    else if (key == GLFW_KEY_F && action == GLFW_RELEASE && fullScreen && fPressed){fullScreen=false;fPressed=false;}
+    // std::cout << "PRESSED: " << fPressed << " FULLSCREEN: " << fullScreen << std::endl;
+    if (key > 0 && key < 1024)
+    {
+        if (action == GLFW_PRESS)
+        {
+            if (Anti->pressedKey==-1)
+                Anti->pressedKey = key;
+            if (Anti->clickedMovingKeys.contains(key))
+            {
+                Anti->clickedMovingKeys[key]=true;
+            }
+        }
+        else if (action == GLFW_RELEASE)
+        {
+            Anti->pressedKey = -1;
+            if (Anti->clickedMovingKeys.contains(key))
+            {
+                Anti->clickedMovingKeys[key]=false;
+            }
+        }
+
+    }
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+        Anti -> mousePressed = true;
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        Anti -> cursorPosX = xpos;
+        Anti -> cursorPosY = ypos;
+    }
+    // else if(action == GLFW_RELEASE){
+    //     Anti -> mousePressed = false;
+    // }
+
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    if (width!=Anti->Width || height!=Anti->Height)
+    {
+        glViewport(0, 0, width, height);
+        Anti->Resize(width, height);
+    }
+
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    // std::cout << "SCROLL: " << xoffset << " " << yoffset << std::endl;
+    if(yoffset==-1)
+    {
+        Anti->scroll = -1;
+    }
+    else if(yoffset==1)
+    {
+        Anti->scroll = 1;
+    }
 }

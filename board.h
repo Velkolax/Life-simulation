@@ -1,0 +1,285 @@
+#pragma once
+#include <cstring>
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <functional>
+#include <unordered_set>
+#include <random>
+#include <unistd.h>
+
+#include "board.h"
+#include "board.h"
+#include "NeuralNetwork.h"
+
+
+#define BIG_NUMBER 10000000
+
+typedef int16_t coord;
+typedef uint16_t ucoord;
+typedef unsigned char uint8;
+
+// NIE ZMIENIAĆ KOLEJNOŚCI WARTOŚCI ANI NIE DODAWAĆ NOWYCH BEZ ZGODY
+enum class Resident : uint8
+{
+    Water,
+    Empty,
+
+    Warrior1,
+    Warrior2,
+    Warrior3,
+    Warrior4,
+
+    Warrior1Moved,
+    Warrior2Moved,
+    Warrior3Moved,
+    Warrior4Moved,
+
+    Farm, // dziwne nazewnictwo z wiki
+    Castle,
+    Tower,
+    StrongTower,
+
+    PalmTree,
+    PineTree,
+    Gravestone
+};
+
+inline bool water(Resident resident) noexcept { return resident == Resident::Water; };
+inline bool empty(Resident resident) noexcept { return resident == Resident::Empty; };
+inline bool warrior(Resident resident) noexcept { return resident >= Resident::Warrior1 && resident <= Resident::Warrior4Moved; };
+inline bool unmovedWarrior(Resident resident) noexcept { return resident >= Resident::Warrior1 && resident <= Resident::Warrior4; };
+inline bool movedWarrior(Resident resident) noexcept { return resident >= Resident::Warrior1Moved && resident <= Resident::Warrior4Moved; };
+inline bool building(Resident resident) noexcept { return resident >= Resident::Farm && resident <= Resident::StrongTower; };
+inline bool farm(Resident resident) noexcept { return resident == Resident::Farm; };
+inline bool castle(Resident resident) noexcept { return resident == Resident::Castle; };
+inline bool tower(Resident resident) noexcept { return resident == Resident::Tower || resident == Resident::StrongTower; };
+inline bool tree(Resident resident) noexcept { return resident == Resident::PalmTree || resident == Resident::PineTree; };
+inline bool gravestone(Resident resident) noexcept { return resident == Resident::Gravestone; };
+
+inline Resident move(Resident resident) noexcept { return (unmovedWarrior(resident)) ? (Resident)((int)resident + 4) : Resident::Empty; };
+inline Resident unmove(Resident resident) noexcept { return (movedWarrior(resident)) ? (Resident)((int)resident - 4) : Resident::Empty; };
+
+
+inline int8_t incomeBoard[] =
+{
+    0, //Water,
+    0, //Empty, 0 bo 1 jest domyślnie liczony za każde pole
+
+    -2, //Warrior1,
+    -6, //Warrior2,
+    -18, //Warrior3,
+    -38, //Warrior4,
+
+    -2, //Warrior1Moved,
+    -6, //Warrior2Moved,
+    -18, //Warrior3Moved,
+    -36, //Warrior4Moved,
+
+    4, //Farm,
+    0, //Castle,
+    -1, //Tower,
+    -6, //StrongTower,
+
+    -1, //PalmTree,
+    -1, //PineTree,
+    0, //Gravestone
+};
+
+/*struct Point
+{
+    coord x;
+    coord y;
+};*/
+
+inline std::mt19937 gen; // generator liczb losowych
+
+class Hexagon; // deklaracje by nie było problemu z mieszaniem kolejności
+class Board;
+class Player;
+class Country;
+class Bacteria;
+class Sight;
+
+class Game; // kosmita 👽👽👽
+
+void markAll(std::vector<Hexagon*> hexagons);
+void unmarkAll(std::vector<Hexagon*> hexagons);
+
+int calculateIncome(std::vector<Hexagon*> hexagons);
+
+class Hexagon
+{
+private:
+    const coord x;
+    const coord y;
+    uint8 ownerId; // zakładamy że nie będzie więcej niż 255 graczy
+    Resident resident; // enum o wymuszonym rozmiarze bajta
+
+    bool isMarked = false; // do renderowania, oznacza czy heks ma być zaznaczony czy nie
+public:
+    Hexagon();
+    Hexagon(coord x, coord y);
+    Hexagon(coord x, coord y, uint8 ownerId, Resident resident);
+
+    inline coord getX() const noexcept { return x; }
+    inline coord getY() const noexcept { return y; }
+    inline uint8 getOwnerId() const noexcept { return ownerId; }
+    inline void setOwnerId(uint8 ownerId) noexcept { this->ownerId = ownerId; }
+    inline Resident getResident() const noexcept { return resident; }
+    inline void setResident(Resident resident) noexcept { this->resident = resident; }
+
+    int price(Board* board, Resident resident);
+    bool isNearWater(Board* board);
+    bool bordersPineAndOtherTree(Board* board);
+    void rot(Board* board);
+    void rotOnlyTrees(Board* board);
+    int countFarms(Board* board);
+    void setCastle(Board* board, int money);
+    int removeCastle(Board* board, bool eliminateCastleless = true);
+    //int removeCastleAndCalculate(Board* board, uint oldownerId);
+
+    std::vector<Hexagon*> neighbours(Board* board, int recursion = 0, bool includeSelf = false, std::function<bool(Hexagon*)> filter = nullptr);
+    std::vector<Hexagon*> doubleFilterNeighbours(Board* board, int recursion, bool includeSelf, std::function<bool(Hexagon*)> expansionFilter, std::function<bool(Hexagon*)> resultFilter);
+    std::vector<Hexagon*> province(Board* board);
+    std::vector<Hexagon*> calculateProvince(Board *board);
+    bool isNextToTowerOrCastle(Board* board, uint8 id);
+    std::unordered_set<Hexagon*> getAllProtectedAreas(Board* board);
+    int calculateProvinceIncome(Board* board);
+    bool allows(Board* board, Resident resident, uint8 ownerId);
+    std::vector<Hexagon*> possiblePlacements(Board* board, Resident resident);
+    void removeTree(Board* board);
+    bool place(Board* board, Resident resident, Hexagon* placement, bool send);
+    std::vector<Hexagon *> possibleMovements(Board *board);
+    bool move(Board *board, Hexagon *destination, bool send);
+
+    inline void mark() noexcept { isMarked = true; }
+    inline void unmark() noexcept { isMarked = false; }
+    inline bool marked() const noexcept { return isMarked; }
+};
+
+class Board
+{
+private:
+    const coord width;
+    const coord height;
+    std::vector<Hexagon> board;
+
+    uint8 lastPlayerId = 1;
+    uint8 currentPlayerId = 1;
+
+    std::vector<Country> countries;
+    std::vector<uint8> leaderboard;
+    std::vector<Bacteria>bacterias;
+    Game* game;
+
+public:
+    // inicjalizatory
+    Board(coord width, coord height, Game* game);
+    void InitializeRandom(int min, int max);
+    void InitializeNeighbour(int recursion, bool includeMiddle);
+    void InitializeCountries(uint8 countriesCount, int minCountrySize, int maxCountrySize);
+    void spawnTrees(double treeRatio);
+    void moveBacteriasRandomly();
+    void moveBacteria(int direction);
+    void spawnBacteria(int bacteriaCount);
+    //void InitializeFromFile();
+
+    // gettery/settery
+    inline coord getWidth() const noexcept { return width; }
+    inline coord getHeight() const noexcept { return height; }
+    inline Hexagon* getHexagon(coord x, coord y) { return (x < 0 || y < 0 || x >= width || y >= height) ? nullptr : &(board[y * width + x]); }
+    inline Hexagon* getHexagon(int i) { return (i < 0 || i >= width * height) ? nullptr : &(board[i]); }
+    std::unordered_set<Hexagon*> getHexesOfCountry(uint8 id); // z getterami do getterów bo wyrwę jaja i wygotuję w rosole
+
+    inline Country* getCountry(uint8 id) noexcept { return (id == 0) ? nullptr : &countries[id-1]; }
+    inline std::vector<Country>& getCountries() noexcept { return countries; }
+    inline void leaderboardInsert(uint8 id) { leaderboard.insert(leaderboard.begin(), id); }
+    inline bool leaderboardContains(uint8 id) { for(int i = 0; i < leaderboard.size(); i++) { if(id == leaderboard[i]) return true; } return false; }
+    void eliminateCountry(uint8 id);
+
+    inline const Game* getGame() const noexcept { return game; }
+    inline int getCurrentPlayerId() const noexcept { return currentPlayerId; }
+
+    void nextTurn(bool send); // Definicja w game.cpp
+    void propagateTrees();
+    void sendBoard(int receivingSocket = -1);
+    void sendGameOver(int receivingSocket = -1);
+};
+
+class Country
+{
+    Player* player;
+
+    std::unordered_map<Hexagon*, int> castles; // zamki i pieniądze
+
+public:
+    Country(std::vector<Hexagon*> castles);
+    int tempMoneyStorage = 0;
+    inline std::unordered_map<Hexagon*, int>& getCastles() noexcept { return castles; }
+    inline void setPlayer(Player* player) noexcept { this->player = player; }
+};
+
+typedef short property;
+typedef short statistic;
+
+enum class SightType : unsigned char
+{
+    Stranger,
+    Energy,
+    Upgrade,
+    Empty
+};
+
+class Sight
+{
+public:
+    Sight() : type(SightType::Empty), energyCount(0), upgradeCount(0) {}
+    Sight(SightType type, int energyCount, int upgradeCount): type(type), energyCount(energyCount), upgradeCount(upgradeCount){}
+private:
+    SightType type;
+    int energyCount;
+    int upgradeCount;
+};
+
+// static std::random_device rd;
+// static std::mt19937 gen(rd());
+#define MEMORY_SIZE 16
+
+class Bacteria
+{
+public:
+    Bacteria() = default;
+    ~Bacteria() = default;
+    void moveBacteria(int direction);
+    Bacteria(NeuralNetwork network, property lifeTime, property energyLevel, property maxEnergy, property upgradeLevel, property venomLevel);
+    Bacteria(Bacteria* bacteria1, Bacteria* bacteria2);
+    Bacteria Crossover(Bacteria* bacteria2);
+    void Mutate();
+    void PassingOfTime(int dt);
+    int GetCurrentLifeTime();
+    bool CheckIfDead();
+    void Print();
+
+    void defaultInitialization(Hexagon *hex,Board *board);
+    void kill();
+
+private:
+    NeuralNetwork network;
+    char memory[MEMORY_SIZE];
+    Sight view[5][5];
+    Hexagon* hex;
+    Board *board;
+    // statystyki to zasoby i wiedza o bakterii
+    statistic currentlifeTime;
+    statistic protein;
+    statistic energy;
+    statistic acid;
+
+    // property mogą być podnoszone przez białka
+    property lifespan; // przedłuża życie ale zwiększa podatność na choroby (nagła śmierć)
+    property maxProtein;
+    property maxEnergy;
+    property maxAcid;
+    property reflex; // zwiększa częstotliwość ruchów ale spowalnia poruszanie
+};
