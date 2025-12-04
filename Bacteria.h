@@ -12,8 +12,8 @@
 
 #include "NeuralNetwork.h"
 
-typedef short property;
-typedef short statistic;
+typedef int16_t property;
+typedef int16_t statistic;
 
 enum class SightType : unsigned char
 {
