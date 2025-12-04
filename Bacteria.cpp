@@ -76,6 +76,7 @@ void Bacteria::moveBacteria(int direction)
     hex->setResident(Resident::Empty);
     if (neigh.size()==6 && neigh[direction]->getResident()!=Resident::PalmTree && neigh[direction]->getResident()!=Resident::Water)
     {
+        if (neigh[direction]->getResident()==Resident::PineTree) energy+=100;
         neigh[direction]->setResident(Resident::PalmTree);
         hex = neigh[direction];
     }
@@ -113,6 +114,7 @@ void Bacteria::Mutate() {
 
 void Bacteria::PassingOfTime(int dt) {
     currentlifeTime -= dt;
+    energy-=dt;
 }
 
 int Bacteria::GetCurrentLifeTime()
@@ -121,7 +123,7 @@ int Bacteria::GetCurrentLifeTime()
 }
 
 bool Bacteria::CheckIfDead() {
-    if (currentlifeTime<=0) {
+    if (currentlifeTime<=0 || energy<=0) {
         return true;
     }
     return false;
@@ -147,8 +149,8 @@ void Bacteria::defaultInitialization(Hexagon *hex,Board *board)
     this->board = board;
     network = buildNetwork(layerCount, layers);
     initializeRandom(&network);
-    lifespan = GenerateRandomTrait(1000);
-    maxEnergy = GenerateRandomTrait(250);
+    lifespan = GenerateRandomTrait(2000);
+    maxEnergy = GenerateRandomTrait(50);
     energy = maxEnergy;
     acid = 0;
     protein = 0;
