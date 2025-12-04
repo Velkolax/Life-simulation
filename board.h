@@ -173,6 +173,7 @@ private:
 public:
     // inicjalizatory
     Board(coord width, coord height, Game* game);
+    std::vector<Bacteria*> getBacterias();
     void InitializeRandom(int min, int max);
     void InitializeNeighbour(int recursion, bool includeMiddle);
     void InitializeCountries(uint8 countriesCount, int minCountrySize, int maxCountrySize);

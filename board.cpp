@@ -85,6 +85,16 @@ Board::Board(coord width, coord height, Game* game) : width(width), height(heigh
     }
 }
 
+std::vector<Bacteria*> Board::getBacterias()
+{
+    std::vector<Bacteria*> bac;
+    for (auto& b: bacterias)
+    {
+        bac.push_back(&b);
+    }
+    return bac;
+}
+
 void Board::InitializeNeighbour(int recursion, bool includeMiddle)
 {
     Hexagon* middle = getHexagon(getWidth() / 2, getHeight() / 2);

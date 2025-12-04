@@ -48,6 +48,7 @@ void Game::Init()
     ResourceManager::LoadTexture("textures/b.png",true,"border_placeholder");
     ResourceManager::LoadTexture("textures/bacteria.png",true,"bacteria");
     ResourceManager::LoadTexture("textures/apple.png",true,"apple");
+    ResourceManager::LoadTexture("textures/explosion.png",true,"explosion");
 
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load(24);
@@ -83,10 +84,13 @@ void Game::Resize(int width, int height)
     ResourceManager::GetShader("sprite").Use().SetMatrix4("projection", projection);
 }
 
+
+
 void Game::Tick()
 {
     board->moveBacteriasRandomly();
     board->passTime();
+    step+=1;
 }
 
 
@@ -284,5 +288,11 @@ void Game::RefreshOutline()
 void Game::Render()
 {
     Renderer -> DrawBoard(board, this->Width, this->Height,board->getCurrentPlayerId());
+    Text->RenderText("KROK: "+std::to_string(step),10,10,1.0f);
+    Text->RenderText("LICZBA BAKTERII: "+std::to_string(board->getBacterias().size()),10,40,1.0f);
+    if (board->getBacterias().empty())
+    {
+        Text->RenderText("KONIEC SYMULACJI",Width/2,10,1.0f);
+    }
     RefreshSprites();
 }

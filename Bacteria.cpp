@@ -86,7 +86,7 @@ void Bacteria::moveBacteria(int direction)
 
 void Bacteria::deleteBacteria()
 {
-    hex->setResident(Resident::Empty);
+    hex->setResident(Resident::PineTree);
     hex = nullptr;
 }
 
