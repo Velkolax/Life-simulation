@@ -83,6 +83,12 @@ void Game::Resize(int width, int height)
     ResourceManager::GetShader("sprite").Use().SetMatrix4("projection", projection);
 }
 
+void Game::Tick()
+{
+    board->moveBacteriasRandomly();
+    board->passTime();
+}
+
 
 void Game::ProcessInput(float dt)
 {
@@ -112,6 +118,22 @@ void Game::ProcessInput(float dt)
     {
         Renderer -> addToDisplacementX(-10);
     }
+    if (pressedKey==GLFW_KEY_SPACE)
+    {
+        this->Tick();
+    }
+    if(pressedKey==GLFW_KEY_ENTER)
+    {
+        enterPressed = true;
+
+    }
+    if(pressedKey!=GLFW_KEY_ENTER && enterPressed)
+    {
+        enterPressed = false;
+        this->Tick();
+
+    }
+
 }
 
 int Game::GetSelectedCastleReserves()
@@ -262,7 +284,5 @@ void Game::RefreshOutline()
 void Game::Render()
 {
     Renderer -> DrawBoard(board, this->Width, this->Height,board->getCurrentPlayerId());
-    board->moveBacteriasRandomly();
-    board->passTime();
     RefreshSprites();
 }
