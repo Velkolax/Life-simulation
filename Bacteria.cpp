@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "board.h"
+#include "Bacteria.h"
 
 int layers[] = {2, 3, 2};
 int layerCount = sizeof(layers)/sizeof(layers[0]);
@@ -67,6 +68,18 @@ Bacteria Bacteria::Crossover(Bacteria *bacteria2)
         (this->maxAcid+bacteria2->maxAcid)/2,
         (this->reflex+bacteria2->reflex)/2);
     return bac;
+}
+
+void Bacteria::moveBacteria(int direction)
+{
+    std::vector<Hexagon*> neigh = hex->neighbours(board, 0);
+    hex->setResident(Resident::Empty);
+    if (neigh.size()==6 && neigh[direction]->getResident()!=Resident::PalmTree && neigh[direction]->getResident()!=Resident::Water)
+    {
+        neigh[direction]->setResident(Resident::PalmTree);
+        hex = neigh[direction];
+    }
+
 }
 
 void MutateTrait(property& val, double mutationRate, int strength, property minVal, property maxVal) {

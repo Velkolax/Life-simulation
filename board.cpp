@@ -4,6 +4,8 @@
 #include <set>
 #include <algorithm>
 
+#include "Bacteria.h"
+
 
 void markAll(std::vector<Hexagon *> hexagons)
 {
@@ -254,17 +256,7 @@ void Board::moveBacteriasRandomly()
     }
 }
 
-void Bacteria::moveBacteria(int direction)
-{
-    std::vector<Hexagon*> neigh = hex->neighbours(board, 0);
-    hex->setResident(Resident::Empty);
-    if (neigh.size()==6 && neigh[direction]->getResident()!=Resident::PalmTree && neigh[direction]->getResident()!=Resident::Water)
-    {
-        neigh[direction]->setResident(Resident::PalmTree);
-        hex = neigh[direction];
-    }
 
-}
 
 void Board::spawnBacteria(int bacteriaCount)
 {

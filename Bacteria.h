@@ -1,19 +1,11 @@
-/*//
-// Created by tk2 on 11/18/25.
-//
-
-
-#ifndef LIFE_SIMULATION_BACTERIA_H
-#define LIFE_SIMULATION_BACTERIA_H
-
-#define MEMORY_SIZE 16
-
-#include <algorithm>
-
+#pragma once
 #include "NeuralNetwork.h"
 
-typedef int16_t property;
-typedef int16_t statistic;
+
+typedef short property;
+typedef short statistic;
+class Board;
+class Hexagon;
 
 enum class SightType : unsigned char
 {
@@ -34,16 +26,18 @@ private:
     int upgradeCount;
 };
 
-
+// static std::random_device rd;
+// static std::mt19937 gen(rd());
+#define MEMORY_SIZE 16
 
 class Bacteria
 {
 public:
     Bacteria() = default;
     ~Bacteria() = default;
+    void moveBacteria(int direction);
     Bacteria(NeuralNetwork network, property lifeTime, property energyLevel, property maxEnergy, property upgradeLevel, property venomLevel);
     Bacteria(Bacteria* bacteria1, Bacteria* bacteria2);
-
     Bacteria Crossover(Bacteria* bacteria2);
     void Mutate();
     void PassingOfTime(int dt);
@@ -51,14 +45,15 @@ public:
     bool CheckIfDead();
     void Print();
 
-    void defaultInitialization();
+    void defaultInitialization(Hexagon *hex,Board *board);
     void kill();
 
 private:
     NeuralNetwork network;
     char memory[MEMORY_SIZE];
     Sight view[5][5];
-
+    Hexagon* hex;
+    Board *board;
     // statystyki to zasoby i wiedza o bakterii
     statistic currentlifeTime;
     statistic protein;
@@ -67,11 +62,8 @@ private:
 
     // property mogą być podnoszone przez białka
     property lifespan; // przedłuża życie ale zwiększa podatność na choroby (nagła śmierć)
-    property maxProtein; 
+    property maxProtein;
     property maxEnergy;
     property maxAcid;
     property reflex; // zwiększa częstotliwość ruchów ale spowalnia poruszanie
 };
-
-
-#endif //LIFE_SIMULATION_BACTERIA_H*/
