@@ -162,12 +162,9 @@ private:
     const coord height;
     std::vector<Hexagon> board;
 
-    uint8 lastPlayerId = 1;
-    uint8 currentPlayerId = 1;
+    unsigned int step = 0;
 
-    std::vector<Country> countries;
-    std::vector<uint8> leaderboard;
-    std::vector<Bacteria>bacterias;
+    std::vector<Bacteria> bacterias;
     Game* game;
 
 public:
@@ -179,6 +176,9 @@ public:
     void InitializeCountries(uint8 countriesCount, int minCountrySize, int maxCountrySize);
     void spawnTrees(double treeRatio);
     void spawnFood(double foodRatio);
+
+    void tickTask();
+
     void moveBacteriasRandomly();
     void passTime();
     void moveBacteria(int direction);
