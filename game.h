@@ -7,8 +7,10 @@
 #include <iostream>
 #include <ranges>
 
+
 #include "board.h"
 #include "text_renderer.h"
+
 
 
 // Represents the current state of the game
@@ -17,6 +19,13 @@ enum class GameState
     GAME_ACTIVE,
     GAME_MENU,
     GAME_WIN
+};
+
+struct Counters
+{
+    uint32_t aliveCount;
+    uint32_t stackTop;
+    uint32_t padding[2];
 };
 
 // Game holds all game-related state and functionality.
@@ -34,12 +43,8 @@ public:
     int                     scroll = 0;
     unsigned int            Width, Height;
     bool                    enterPressed = false;
-    bool                    isHexSelected = false;
-    bool                    isFirstProvinceSet = false;
-    Hexagon                 *selectedHex = nullptr;
-    Hexagon                 *provinceSelector = nullptr;
-    bool                    canYouRender;
-    std::vector<Bacteria>   bacterias;
+
+    GLuint ssboBacteria,ssboGrid,ssboFreeList,ssboCounters;
 
     Board *board;
     TextRenderer  *Text;
@@ -48,6 +53,8 @@ public:
     ~Game();
     // initialize game state (load all shaders/textures/levels)
     void Init();
+    void ssbo_barrier();
+    void InitSsbos();
     // game loop
     void ProcessInput(float dt);
     int GetSelectedCastleReserves();

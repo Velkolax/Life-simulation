@@ -7,7 +7,6 @@
 #include <time.h>
 
 #include "game.h"
-#include "LifeSimulator.h"
 #include "resource_manager.h"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
@@ -129,19 +128,19 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     {
         if (action == GLFW_PRESS)
         {
-            if (Anti->pressedKey==-1)
-                Anti->pressedKey = key;
-            if (Anti->clickedMovingKeys.contains(key))
+            if (sim->pressedKey==-1)
+                sim->pressedKey = key;
+            if (sim->clickedMovingKeys.contains(key))
             {
-                Anti->clickedMovingKeys[key]=true;
+                sim->clickedMovingKeys[key]=true;
             }
         }
         else if (action == GLFW_RELEASE)
         {
-            Anti->pressedKey = -1;
-            if (Anti->clickedMovingKeys.contains(key))
+            sim->pressedKey = -1;
+            if (sim->clickedMovingKeys.contains(key))
             {
-                Anti->clickedMovingKeys[key]=false;
+                sim->clickedMovingKeys[key]=false;
             }
         }
 
@@ -151,24 +150,24 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
-        Anti -> mousePressed = true;
+        sim -> mousePressed = true;
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
-        Anti -> cursorPosX = xpos;
-        Anti -> cursorPosY = ypos;
+        sim -> cursorPosX = xpos;
+        sim -> cursorPosY = ypos;
     }
     // else if(action == GLFW_RELEASE){
-    //     Anti -> mousePressed = false;
+    //     sim -> mousePressed = false;
     // }
 
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    if (width!=Anti->Width || height!=Anti->Height)
+    if (width!=sim->Width || height!=sim->Height)
     {
         glViewport(0, 0, width, height);
-        Anti->Resize(width, height);
+        sim->Resize(width, height);
     }
 
 }
@@ -178,10 +177,10 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     // std::cout << "SCROLL: " << xoffset << " " << yoffset << std::endl;
     if(yoffset==-1)
     {
-        Anti->scroll = -1;
+        sim->scroll = -1;
     }
     else if(yoffset==1)
     {
-        Anti->scroll = 1;
+        sim->scroll = 1;
     }
 }

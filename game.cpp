@@ -3,6 +3,9 @@
 #include <set>
 
 #include <ft2build.h>
+
+#include "BacteriaData.h"
+
 #include FT_FREETYPE_H
 
 #include "resource_manager.h"
@@ -10,6 +13,7 @@
 
 // Game-related State data
 SpriteRenderer* Renderer;
+SpriteRenderer* Renderer_2;
 
 
 
@@ -24,16 +28,8 @@ Game::~Game()
 
 void Game::Init()
 {
-    // load shaders
-    ResourceManager::LoadShader("shaders/instance.vs","shaders/instance.fs",nullptr,"sprite");
-    // configure shaders
-    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->Width), 
-        static_cast<float>(this->Height), 0.0f, -1.0f, 1.0f);
-    ResourceManager::GetShader("sprite").Use().SetInteger("image", 0);
-    ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
-    // set render-specific controls
-    Renderer = new SpriteRenderer(ResourceManager::GetShader("sprite"));
-    // load textures
+    ResourceManager::LoadShader("shaders/render_resident.vs.glsl","shaders/render_resident.fs.glsl",nullptr,"sprite");
+    ResourceManager::LoadShader("shaders/render_hex.vs.glsl","shaders/render_resident.fs.glsl",nullptr,"hex");
     ResourceManager::LoadTexture("textures/square-16.png", true, "hexagon");
     ResourceManager::LoadTexture("textures/bacteria.png",true,"bacteria");
     ResourceManager::LoadTexture("textures/apple.png",true,"apple");
@@ -50,13 +46,68 @@ void Game::Init()
 
     board->spawnBacteria(bacteriaCount);
     board->spawnFood(0.1);
-    Renderer->width = Width;
-    Renderer->height = Height;
-    Renderer->size = Renderer->getSize(board);
-
-    RefreshSprites();
-
+    Renderer = new SpriteRenderer(board);
+    InitSsbos();
 }
+
+void Game::ssbo_barrier() {
+    // https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glMemoryBarrier.xhtml
+    glMemoryBarrier(GL_ALL_BARRIER_BITS);
+}
+
+void Game::InitSsbos()
+{
+    int boardSize = board->getHeight()*board->getWidth();
+    std::vector<BacteriaData> b;
+    std::vector<uint32_t> freePlaces(boardSize,0);
+    std::vector<int32_t> boardData(boardSize, 0);
+
+
+    int id = 0;
+    for (int i=0;i<boardSize;i++)
+    {
+        Hexagon *h = board->getHexagon(i);
+        if (bacteria(h->getResident()))
+        {
+            b.emplace_back(h->getPos(),id,1,100);
+            boardData[i]=id+1;
+            id++;
+        }
+    }
+    for (int i=id;i<boardSize;i++)
+    {
+        b.emplace_back(glm::ivec2(-2137,-2137),id,0,0);
+        freePlaces.push_back(i);
+    }
+    Counters counters;
+    counters.aliveCount = id;
+    counters.stackTop = boardSize-id;
+
+    for (int i=0;i<boardSize;i++)
+    {
+        Hexagon *h = board->getHexagon(i);
+        if (wall(h->getResident())) boardData[i]=-1;
+    }
+
+    auto createSSBO = [](GLuint& id, int binding, const void* data, size_t size) {
+        glGenBuffers(1, &id);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, size, data, GL_DYNAMIC_DRAW);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, id);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    };
+
+    for (int i=0;i<boardData.size();i++) std::cout << boardData[i] << std::endl;
+    createSSBO(ssboGrid,      1, boardData.data(), boardData.size() * sizeof(int32_t));
+    createSSBO(ssboBacteria,    0, b.data(),    b.size() * sizeof(BacteriaData));
+
+    createSSBO(ssboFreeList,  2, freePlaces.data(),  freePlaces.size() * sizeof(uint32_t));
+    createSSBO(ssboCounters,  3, &counters,        sizeof(Counters));
+
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+}
+
+
 
 void Game::Update(float dt)
 {
@@ -79,7 +130,7 @@ void Game::Tick()
 {
     //board->moveBacteriasRandomly();
     //board->passTime();
-    board->tick();
+    //board->tick();
     //step+=1;
 }
 
@@ -92,25 +143,25 @@ void Game::ProcessInput(float dt)
         float centerX = this->Width / 2.0f;
         float centerY = this->Height / 2.0f;
 
-        Renderer->Zoom(zoomFactor, centerX, centerY);
+        Renderer->Zoom(zoomFactor, centerX, centerY,board);
 
         scroll = 0;
     }
     if (clickedMovingKeys[GLFW_KEY_W])
     {
-        Renderer -> addToDisplacementY(10);
+        Renderer -> addToDisplacementY(board,10);
     }
     if (clickedMovingKeys[GLFW_KEY_A])
     {
-        Renderer ->addToDisplacementX(10);
+        Renderer ->addToDisplacementX(board,10);
     }
     if (clickedMovingKeys[GLFW_KEY_S])
     {
-        Renderer -> addToDisplacementY(-10);
+        Renderer -> addToDisplacementY(board,-10);
     }
     if (clickedMovingKeys[GLFW_KEY_D])
     {
-        Renderer -> addToDisplacementX(-10);
+        Renderer -> addToDisplacementX(board,-10);
     }
     if (pressedKey==GLFW_KEY_SPACE)
     {
@@ -129,159 +180,51 @@ void Game::ProcessInput(float dt)
 
 }
 
-int Game::GetSelectedCastleReserves()
-{
-    std::unordered_map<Hexagon*, int>& m= board->getCountry(board->getCurrentPlayerId())->getCastles();
-    int sum=0;
-    if (provinceSelector!=nullptr)
-    {
-        for (auto a : m)
-        {
-            if (provinceSelector->province(board)[0]==a.first)
-            {
-                sum=a.second;
-                break;
-            }
-        }
-    }
-    return sum;
-}
+// std::vector<std::pair<coord, coord>> evenD =
+// {
+//     { 0, -1}, // górny
+//     {-1, -1}, // lewy górny
+//     {-1,  0}, // lewy dolny
+//     { 0,  1}, // dolny
+//     { 1,  0}, // prawy dolny
+//     { 1, -1}  // prawy górny
+// };
+//
+// std::vector<std::pair<coord, coord>> oddD =
+// {
+//     { 0, -1}, // górny
+//     {-1,  0}, // lewy górny
+//     {-1,  1}, // lewy dolny
+//     { 0,  1}, // dolny
+//     { 1,  1}, // prawy dolny
+//     { 1,  0}  // prawy górny
+// };
 
-int Game::GetSelectedCastleIncome()
-{
-    int sum=0;
-    if (provinceSelector!=nullptr)
-    {
-        sum=provinceSelector->province(board)[0]->calculateProvinceIncome(board);
-    }
-    return sum;
-}
-
-void Game::RefreshSprites()
-{
-
-    float savedDispX = Renderer->displacementX;
-    float savedDispY = Renderer->displacementY;
-    float savedResize = Renderer->resizeMultiplier;
+// std::vector<glm::vec2> getCenters(float a,glm::vec2 start)
+// {
+//     return std::vector<glm::vec2>{
+//             {glm::vec2(a,0.0f)+start},
+//             {glm::vec2(0.25*a,0.433*a)+start},
+//             {glm::vec2(0.25*a,1.299*a)+start},
+//             {glm::vec2(a,1.732*a)+start},
+//             {glm::vec2(1.75 *a,1.299*a)+start},
+//             {glm::vec2(1.75 * a,0.433*a)+start},
+//         };
+// }
 
 
-    Renderer->displacementX = 0.0f;
-    Renderer->displacementY = 0.0f;
-    Renderer->resizeMultiplier = 1.0f;
-
-    Renderer->size = Renderer->getSize(board);
-
-    Renderer->hexData.clear();
-    Renderer->exclamationData.clear();
-    for (auto& r : Renderer->residentData) r.clear();
-
-    for (int i = 0; i < board->getWidth(); i++)
-    {
-        for (int j = 0; j < board->getHeight(); j++)
-        {
-            Hexagon *hex = board->getHexagon(j,i);
-            glm::vec2 hexSizeVec(Renderer->size, Renderer->size);
-            float smallSize = Renderer->size * 0.8;
-            glm::vec2 smallSizeVec(smallSize, smallSize);
-            glm::vec3 color = glm::vec3(1.0f,1.0f,1.0f);
-
-            if (hex->getOwnerId()!=0) {
-                color = Renderer->palette[hex->getOwnerId()%10];
-            }
-            if (auto it = std::ranges::find(Renderer->brightenedHexes,hex);it!=Renderer->brightenedHexes.end())
-            {
-                color -= glm::vec3(0.2,0.2,0.2);
-            }
-            glm::vec2 hexPos = Renderer->calculateHexPosition(hex->getX(), hex->getY(), Renderer->size) +(hexSizeVec * 0.5f);
-            if (!water(hex->getResident())) Renderer -> hexData.push_back({hexPos,color,0.0f,hexSizeVec});
-
-            Renderer -> residentData[(int)hex->getResident()].push_back({hexPos,glm::vec3(1.0f),0.0f,hexSizeVec});
-            if (castle(hex->getResident())) Renderer->exclamationData.push_back({hexPos,glm::vec3(1.0f),0.0f,hexSizeVec});
-            if (unmovedWarrior(hex->getResident())) Renderer->exclamationData.push_back({hexPos,glm::vec3(1.0f),0.0f,hexSizeVec});
-        }
-    }
-    RefreshOutline();
-    Renderer->displacementX = savedDispX;
-    Renderer->displacementY = savedDispY;
-    Renderer->resizeMultiplier = savedResize;
-
-    // Przywróć poprawny rozmiar dla reszty logiki gry
-    Renderer->size = Renderer->getSize(board);
-
-}
-
-std::vector<std::pair<coord, coord>> evenD =
-{
-    { 0, -1}, // górny
-    {-1, -1}, // lewy górny
-    {-1,  0}, // lewy dolny
-    { 0,  1}, // dolny
-    { 1,  0}, // prawy dolny
-    { 1, -1}  // prawy górny
-};
-
-std::vector<std::pair<coord, coord>> oddD =
-{
-    { 0, -1}, // górny
-    {-1,  0}, // lewy górny
-    {-1,  1}, // lewy dolny
-    { 0,  1}, // dolny
-    { 1,  1}, // prawy dolny
-    { 1,  0}  // prawy górny
-};
-
-std::vector<glm::vec2> getCenters(float a,glm::vec2 start)
-{
-    return std::vector<glm::vec2>{
-            {glm::vec2(a,0.0f)+start},
-            {glm::vec2(0.25*a,0.433*a)+start},
-            {glm::vec2(0.25*a,1.299*a)+start},
-            {glm::vec2(a,1.732*a)+start},
-            {glm::vec2(1.75 *a,1.299*a)+start},
-            {glm::vec2(1.75 * a,0.433*a)+start},
-        };
-}
-
-void Game::RefreshOutline()
-{
-
-    Renderer->borderData.clear();
-    if (provinceSelector!=nullptr)
-    {
-        float size = Renderer->size;
-        std::vector<Hexagon*> hexes = provinceSelector->province(board);
-        std::vector<float> rotations = {0.0f,120.0f,60.0f,0.0f,120.0f,60.0f};
-        for (auto& hex : hexes)
-        {
-            auto& directions = (hex->getX() % 2 == 0) ? evenD : oddD;
-            int i=0;
-            for (auto [dx, dy] : directions)
-            {
-                Hexagon* n = board->getHexagon(hex->getX() + dx, hex->getY() + dy);
-                if(n == nullptr || n->getOwnerId()!=board->getCurrentPlayerId())
-                {
-                    float width = size * 0.07;
-                    float a = size/2;
-                    std::vector<glm::vec2> centers = getCenters(a,Renderer->calculateHexPosition(hex->getX(),hex->getY(),size));
-                    glm::vec3 color = Renderer->palette[hex->getOwnerId()%10];
-                    color -= glm::vec3(0.25,0.25,0.25);
-                    Renderer->borderData.push_back({centers[i],color,rotations[i],glm::vec2(a,width)});
-                }
-                i++;
-            }
-        }
-    }
-
-}
 
 void Game::Render()
 {
-    Renderer -> DrawBoard(board, this->Width, this->Height,board->getCurrentPlayerId());
-    Text->RenderText("KROK: "+std::to_string(step),10,10,1.0f);
-    Text->RenderText("LICZBA BAKTERII: "+std::to_string(board->getBacterias().size()),10,40,1.0f);
-    if (board->getBacterias().empty())
-    {
-        Text->RenderText("KONIEC SYMULACJI",Width/2,10,1.0f);
-    }
-    RefreshSprites();
+
+    Renderer->DrawSprites(ssboGrid,board,"hexagon",1,ResourceManager::GetShader("hex"));
+    Renderer->DrawSprites(ssboBacteria,board,"bacteria",0,ResourceManager::GetShader("sprite"));
+    // Renderer -> DrawBoard(board, this->Width, this->Height,board->getCurrentPlayerId());
+    // Text->RenderText("KROK: "+std::to_string(step),10,10,1.0f);
+    // Text->RenderText("LICZBA BAKTERII: "+std::to_string(board->getBacterias().size()),10,40,1.0f);
+    // if (board->getBacterias().empty())
+    // {
+    //     Text->RenderText("KONIEC SYMULACJI",Width/2,10,1.0f);
+    // }
+    // RefreshSprites();
 }

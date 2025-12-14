@@ -1,19 +1,21 @@
-int LAYER_SIZE = 27;
+int GENOME_SIZE = 51;
 
 
 struct Bacteria {
     // Position on hex map
-    vec2 position;
+    ivec2 pos;
+    ivec2 target_pos;
 
 
-    vec4 network[LAYER_SIZE];
-    vec4 memory[2];
+    //vec4 network[GENOME_SIZE];
+    uint id;
+    //vec4 memory[2];
 
     // Less important parameters
-    uint lifespan;
-    uint energy;
-    uint remainingLife;
-    uint remainingEnergy;
+    uint life;
+    uint rem_life;
+    //uint reflex;
+    bool alive;
 
 };
 
@@ -27,6 +29,18 @@ layout(std430, binding=0) restrict buffer BacteriaBlock {
 // Grid but it has bacteria ID and other residents in negatives
 layout(std430, binding=1) restrict buffer GridBlock {
     int grid[];
+};
+
+// Need this to find which bacteria are not active
+// because counting and limits are really difficult on the gpu
+layout(std430, binding=2) restrict buffer FreeBlock {
+    uint freeId[];
+};
+
+layout(std430, binding=3) restrict buffer CounterBlock {
+    uint aliveCount;
+    uint stackTop;
+    uint padding[2];
 };
 
 // >0 - Bacteria

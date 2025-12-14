@@ -30,12 +30,14 @@ add_executable(life-sim
         game.cpp
         NeuralNetwork.c
         NeuralNetwork.h
-        Bacteria.cpp
         board.h
         board.cpp
+        gfx/object.hpp
+        gfx/program.hpp
+        gfx/rendertexture.hpp
+        BacteriaData.h
 
 )
 include_directories(life-sim PRIVATE include)
-set_property(TARGET life-sim PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 target_link_libraries(life-sim ${GLFW3_LIBRARY} OpenGL::GL freetype)
 

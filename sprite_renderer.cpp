@@ -10,103 +10,85 @@
 #include "glm/common.hpp"
 #include "glm/common.hpp"
 
+#include <algorithm>
 
 
-SpriteRenderer::SpriteRenderer(Shader &shader)
+
+SpriteRenderer::SpriteRenderer(Board *board)
 {
-    this->shader = shader;
-    this->initRenderData();
-    this->residentData.resize(20);
+    int bWidth = board->getWidth();
+    int bHeight = board->getHeight();
+    this->initRenderData(bWidth,bHeight);
+    width=board->getGame()->Width;
+    height=board->getGame()->Height;
+    size = getSize(board);
+    setActualDimensions(board);
 }
 
 SpriteRenderer::~SpriteRenderer()
 {
     glDeleteVertexArrays(1, &this->quadVAO);
+    glDeleteBuffers(1, &this->quadVBO);
 }
 
+void SpriteRenderer::setActualDimensions(Board *board)
+{
+    int maxX = 0; int minX = board->getWidth()-1;
+    int maxY = 0; int minY = board->getHeight()-1;
+    for (int i=0;i<board->getWidth()*board->getHeight();i++)
+    {
+        Hexagon *h = board->getHexagon(i);
+        if (!wall(h->getResident()))
+        {
+            if (h->getX()>maxX) maxX=h->getX();
+            if (h->getX()<minX) minX=h->getX();
+            if (h->getY()>maxY) maxY=h->getY();
+            if (h->getY()<minY) minY=h->getY();
+        }
+    }
+    actualMinX = minX;
+    actualMaxX = maxX;
+    actualMaxY = maxY;
+    actualMinY = minY;
+    actualBoardWidth=abs(maxX-minX);
+    actualBoardHeight=abs(maxY-minY);
+    //std::cout << actualBoardWidth << " " << actualBoardHeight << std::endl;
+}
 
-
-void SpriteRenderer::addToDisplacementX(int dx)
+void SpriteRenderer::addToDisplacementX(Board *board,int dx)
 {
     displacementX += dx;
+    glm::ivec2 pos1 = CheckWhichHexagon(width,0,size/2);
+    glm::ivec2 pos2 = CheckWhichHexagon(0,height,size/2);
+    // if (pos1.x<actualMinX) displacementX-=2*abs(dx);
+    // if (pos2.x>actualMaxX) displacementX+=2*abs(dx);
+
 }
-void SpriteRenderer::addToDisplacementY(int dy)
+void SpriteRenderer::addToDisplacementY(Board *board,int dy)
 {
     displacementY += dy;
+    glm::ivec2 pos1 = CheckWhichHexagon(width,0,size/2);
+    glm::ivec2 pos2 = CheckWhichHexagon(0,height,size/2);
+    // if (pos2.y<actualMinY) displacementY-=2*abs(dy);
+    // if (pos1.y>actualMaxY) displacementY+=2*abs(dy);
 }
+
 
 void SpriteRenderer::addToResizeMultiplier(double ds,Board *board,float width)
 {
     resizeMultiplier *= ds;
 }
 
-void SpriteRenderer::setBrightenedHexes(std::vector<Hexagon*> hexes)
-{
-    for (auto hex : hexes)
-    {
-        brightenedHexes.push_back(hex);
-    }
-}
 
-void SpriteRenderer::ClearBrightenedHexes()
-{
-    brightenedHexes.clear();
-}
-
-
-std::vector<int> rand_vect(std::vector<int> base_vector)
-{
-    std::vector<int> temp_vector;
-    int reps = base_vector.size();
-
-    for (int i = 0; i < reps; i++)
-    {
-        std::uniform_int_distribution<> dis(0, base_vector.size() - 1);
-        int random_number = dis(gen);
-
-        temp_vector.push_back(base_vector[random_number]);
-        base_vector.erase(base_vector.begin() + random_number);
-    }
-    return temp_vector;
-}
-
-void SpriteRenderer::InitPalette() {
-    std::vector<int> hexColors{
-        0xCC3333,
-        0x33CC33,
-        0x3333CC,
-        0xCCCC33,
-        0x33CCCC,
-        0xCC33CC,
-        0xCC6633,
-        0x99CC33,
-        0x3399CC,
-        0x9933CC
-    };
-    std::vector<int> shuffled = rand_vect(hexColors);
-    for (auto hex : shuffled)
-    {
-
-        double red, green, blue;
-        red = hex >> 16 ;
-
-        green = (hex & 0x00ff00) >> 8;
-
-        blue = (hex & 0x0000ff);
-        // std::cout << red << " " << green << " " << blue << std::endl;
-        palette.push_back(glm::vec3(red/255.0f,green/255.0f,blue/255.0f));
-    }
-}
-
-Point fromAxial(int q,int r)
+glm::ivec2 fromAxial(int q,int r)
 {
     int parity = q&1;
     int col = q;
     int row = r + (q - parity) / 2;
-    return Point(col, row);
+    return glm::ivec2(col, row);
 }
 
-Point SpriteRenderer::CheckWhichHexagon(int _x, int _y, float baseSize)
+glm::ivec2 SpriteRenderer::CheckWhichHexagon(int _x, int _y, float baseSize)
 {
 
     float worldX = _x - this->displacementX;
@@ -129,15 +111,17 @@ Point SpriteRenderer::CheckWhichHexagon(int _x, int _y, float baseSize)
     return fromAxial(q, r);
 }
 
-void SpriteRenderer::Zoom(float zoomFactor, float pivotX, float pivotY)
+
+void SpriteRenderer::Zoom(float zoomFactor, float pivotX, float pivotY,Board *board)
 {
     float oldZoom = resizeMultiplier;
     float newZoom = oldZoom * zoomFactor;
 
-    if (newZoom < 0.5f) newZoom = 0.5f;
-    // if (newZoom > 3.0f) newZoom = 3.0f;
+    if (newZoom < 0.3f) newZoom = 0.3f;
+    if (newZoom > std::max(actualBoardWidth,actualBoardHeight)/4) newZoom = std::max(actualBoardWidth,actualBoardHeight)/4;
 
     float scaleRatio = newZoom / oldZoom;
+
     displacementX = pivotX - (pivotX - displacementX) * scaleRatio;
     displacementY = pivotY - (pivotY - displacementY) * scaleRatio;
 
@@ -150,8 +134,8 @@ const float SQRT_3 = 1.7320508f;
 glm::vec2 SpriteRenderer::calculateHexPosition(int gridX, int gridY, float size)
 {
     float height = size * SQRT_3 / 2.0f;
-    float posX = gridX * size * 0.75f + displacementX / resizeMultiplier;
-    float posY = gridY * height + displacementY / resizeMultiplier;
+    float posX = gridX * size * 0.75f + displacementX;
+    float posY = gridY * height + displacementY;
     if (gridX % 2 != 0)
     {
         posY += height / 2.0f;
@@ -159,124 +143,90 @@ glm::vec2 SpriteRenderer::calculateHexPosition(int gridX, int gridY, float size)
     return glm::vec2(posX, posY);
 }
 
-glm::vec2 Jump(float size)
-{
-    float time = glfwGetTime();
-    float speed = 3.0f;
-    float pulse = (std::sin(time * speed) + 1.0f) / 2.0f * size / 5;
-    return glm::vec2(0.0f,pulse);
-}
-
-
-
 float SpriteRenderer::getSize(Board *board)
 {
-    float boardWidth = static_cast<float>(board->getWidth());
+    float boardWidth = static_cast<float>(std::max(actualBoardWidth,actualBoardHeight));
     float screenWidth = static_cast<float>(width) * resizeMultiplier;
     return (screenWidth / boardWidth) / 0.75f;
 }
 
-void SpriteRenderer::RenderBatch(const std::string &textureName, const std::vector<HexInstanceData> &data)
-{
-    if (data.empty()) return;
 
-    glBindBuffer(GL_ARRAY_BUFFER, this->instanceVBO);
-    glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(HexInstanceData), data.data(), GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+std::vector<std::pair<coord, coord>> evenD =
+{
+    { 0, -1}, // górny
+    {-1, -1}, // lewy górny
+    {-1,  0}, // lewy dolny
+    { 0,  1}, // dolny
+    { 1,  0}, // prawy dolny
+    { 1, -1}  // prawy górny
+};
+
+std::vector<std::pair<coord, coord>> oddD =
+{
+    { 0, -1}, // górny
+    {-1,  0}, // lewy górny
+    {-1,  1}, // lewy dolny
+    { 0,  1}, // dolny
+    { 1,  1}, // prawy dolny
+    { 1,  0}  // prawy górny
+};
+
+std::vector<glm::vec2> getCenters(float a,glm::vec2 start)
+{
+    return std::vector<glm::vec2>{
+                {glm::vec2(a,0.0f)+start},
+                {glm::vec2(0.25*a,0.433*a)+start},
+                {glm::vec2(0.25*a,1.299*a)+start},
+                {glm::vec2(a,1.732*a)+start},
+                {glm::vec2(1.75 *a,1.299*a)+start},
+                {glm::vec2(1.75 * a,0.433*a)+start},
+            };
+}
+
+
+void SpriteRenderer::DrawSprites(GLuint spriteSSBO,Board *board,std::string textureName,int index,Shader shader)
+{
+    shader.Use();
+    glm::mat4 projection = glm::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);
+    shader.SetMatrix4("projection", projection);
+    shader.SetVector2f("viewDisplacement",glm::vec2(displacementX,displacementY));
+    shader.SetFloat("hexSize",getSize(board));
+    shader.SetInteger("bWidth",board->getWidth());
+    shader.SetInteger("bHeight",board->getHeight());
+
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, index, spriteSSBO);
 
     glActiveTexture(GL_TEXTURE0);
     ResourceManager::GetTexture(textureName).Bind();
-
     glBindVertexArray(this->quadVAO);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, data.size());
+    glDrawArraysInstanced(GL_TRIANGLES,0,6,board->getHeight()*board->getWidth());
     glBindVertexArray(0);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
 
-void SpriteRenderer::DrawBoard(Board *board, int width, int height, int playerIndex)
+void SpriteRenderer::initRenderData(int bWidth,int bHeight)
 {
-
-    this->shader.Use();
-
-    glm::mat4 projection = glm::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);
-    this->shader.SetMatrix4("projection", projection);
-
-
-    this->shader.SetVector2f("viewOffset", glm::vec2(displacementX, displacementY));
-    this->shader.SetFloat("zoom", resizeMultiplier);
-
-
-    RenderBatch("hexagon", hexData);
-
-    for (auto& r : warriorToTexture)
-    {
-        RenderBatch(r.second,residentData[(int)r.first]);
-    }
-
-}
-
-
-
-
-
-void SpriteRenderer::initRenderData()
-{
-    // 1. Definicja geometrii pojedynczego quada (tak jak miałeś w oryginale)
     float vertices[] = {
         // pos      // tex
         0.0f, 1.0f, 0.0f, 1.0f,
         1.0f, 0.0f, 1.0f, 0.0f,
         0.0f, 0.0f, 0.0f, 0.0f,
-
         0.0f, 1.0f, 0.0f, 1.0f,
         1.0f, 1.0f, 1.0f, 1.0f,
         1.0f, 0.0f, 1.0f, 0.0f
     };
 
-    unsigned int VBO; // To VBO dla geometrii (lokalne, bo dane są statyczne)
-
     glGenVertexArrays(1, &this->quadVAO);
-    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &this->quadVBO);
 
-    // --- KONFIGURACJA 1: GEOMETRIA (Quad) ---
     glBindVertexArray(this->quadVAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, this->quadVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    // Atrybut 0: vertex (vec4: x,y,u,v) - czytany z VBO
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-    // Ważne: NIE ustawiamy tu Divisor, bo to są dane per-wierzchołek!
 
-
-    glGenBuffers(1, &this->instanceVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, this->instanceVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(HexInstanceData) * 70000, nullptr, GL_DYNAMIC_DRAW);
-
-    // Atrybut 1: Position (vec2) - czytany z instanceVBO
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(HexInstanceData), (void*)offsetof(HexInstanceData, position));
-    glVertexAttribDivisor(1, 1); // Dane zmieniają się co 1 instancję
-
-    // Atrybut 2: Color (vec3)
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(HexInstanceData), (void*)offsetof(HexInstanceData, color));
-    glVertexAttribDivisor(2, 1);
-
-    // Atrybut 3: Rotation (float)
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(HexInstanceData), (void*)offsetof(HexInstanceData, rotation));
-    glVertexAttribDivisor(3, 1);
-
-    // Atrybut 4: Size (vec2)
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(HexInstanceData), (void*)offsetof(HexInstanceData, size));
-    glVertexAttribDivisor(4, 1);
-
-    // Sprzątanie
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-
-    this->InitPalette();
 }
