@@ -13,8 +13,8 @@ SpriteRenderer* Renderer;
 
 
 
-Game::Game(unsigned int width, unsigned int height)
-    : State(GameState::GAME_ACTIVE), Width(width), Height(height), board() {
+Game::Game(unsigned int width, unsigned int height) : State(GameState::GAME_ACTIVE), Width(width), Height(height), board()
+{
 }
 
 Game::~Game()
@@ -60,8 +60,6 @@ void Game::Init()
 
 void Game::Update(float dt)
 {
-    // getPlayer odejmuje od podanego indeksu 1 co jest kluczowe (id graczy numerowane są od 1), analogiczna do getCountry()
-    // getPlayer(board->getCurrentPlayerId())->act();
 }
 
 void Game::Resize(int width, int height)
@@ -79,9 +77,10 @@ void Game::Resize(int width, int height)
 
 void Game::Tick()
 {
-    board->moveBacteriasRandomly();
-    board->passTime();
-    step+=1;
+    //board->moveBacteriasRandomly();
+    //board->passTime();
+    board->tick();
+    //step+=1;
 }
 
 
@@ -126,7 +125,6 @@ void Game::ProcessInput(float dt)
     {
         enterPressed = false;
         this->Tick();
-
     }
 
 }

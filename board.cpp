@@ -275,6 +275,15 @@ void Board::spawnFood(double foodRatio)
     }
 }
 
+void Board::tick()
+{
+    for(Bacteria& b : bacterias)
+    {
+        if(step % b.reflex == 0) b.act();
+    }
+    std::cout << "Tick task ended!\n";
+}
+
 void Board::moveBacteriasRandomly()
 {
     std::uniform_int_distribution<int> randOrigin(0, 5);

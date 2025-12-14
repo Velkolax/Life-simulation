@@ -26,12 +26,10 @@ bool fPressed = false;
 
 
 
-Game *Anti = new Game(SCREEN_WIDTH, SCREEN_HEIGHT);
+Game* sim = new Game(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 int main(int argc, char *argv[])
 {
-
-
     // OPENGL
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -42,7 +40,7 @@ int main(int argc, char *argv[])
 #endif
     glfwWindowHint(GLFW_RESIZABLE, false);
 
-    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Anti", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Simulation", nullptr, nullptr);
     glfwMakeContextCurrent(window);
 
     glfwSwapInterval(1); // FPS zsynchronizowany z odświeżaniem monitora (zazwyczaj 60 FPS)
@@ -69,7 +67,7 @@ int main(int argc, char *argv[])
 
     // initialize game
     // ---------------
-    Anti->Init();
+    sim->Init();
     // deltaTime variables
     // -------------------
     float deltaTime = 0.0f;
@@ -86,17 +84,17 @@ int main(int argc, char *argv[])
 
         // manage user input
         // -----------------
-        Anti->ProcessInput(deltaTime);
+        sim->ProcessInput(deltaTime);
 
         // update game state
         // -----------------
-        Anti->Update(deltaTime);
+        sim->Update(deltaTime);
 
         // render
         // ------
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        Anti->Render();
+        sim->Render();
 
         glfwSwapBuffers(window);
     }
@@ -104,7 +102,7 @@ int main(int argc, char *argv[])
     // delete all resources as loaded using the resource manager
     // ---------------------------------------------------------
     ResourceManager::Clear();
-    delete Anti;
+    delete sim;
     glfwTerminate();
     return 0;
 }

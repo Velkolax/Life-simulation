@@ -32,7 +32,6 @@ public:
     float                   cursorPosX;
     float                   cursorPosY;
     int                     scroll = 0;
-    int                     step=0;
     unsigned int            Width, Height;
     bool                    enterPressed = false;
     bool                    isHexSelected = false;

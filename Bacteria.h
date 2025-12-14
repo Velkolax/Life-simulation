@@ -46,6 +46,8 @@ public:
     bool CheckIfDead();
     void Print();
 
+    void act();
+
     void defaultInitialization(Hexagon *hex,Board *board);
     void kill();
 
@@ -66,5 +68,5 @@ private:
     property maxProtein;
     property maxEnergy;
     property maxAcid;
-    property reflex; // zwiększa częstotliwość ruchów ale spowalnia poruszanie
+    property speed; // przyspiesza poruszanie ale zmniejsza częstotliwość ruchów
 };

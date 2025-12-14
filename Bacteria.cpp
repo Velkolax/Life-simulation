@@ -145,6 +145,11 @@ void Bacteria::Print()
     std::cout << "--------------------------------------------" << std::endl;
 }
 
+void Bacteria::act()
+{
+    
+}
+
 void Bacteria::defaultInitialization(Hexagon *hex,Board *board)
 {
     this->board = board;
