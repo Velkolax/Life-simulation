@@ -38,9 +38,9 @@ void Game::Init()
 
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load(24);
-    int bacteriaCount = 1000;
-    int x = 100;
-    int y = 100;
+    int bacteriaCount = 10000;
+    int x = 200;
+    int y = 200;
     board = new Board(x, y, this);
     int total = x*y;
     board->InitializeRandom(total * 0.5, total * 0.9);
@@ -134,7 +134,10 @@ void Game::Render()
 
     Renderer->DrawSprites(Engine->GetGridSSBO(),board,"hexagon",1,ResourceManager::GetShader("hex"));
     Renderer->DrawSprites(Engine->GetBacteriaSSBO(),board,"bacteria",0,ResourceManager::GetShader("sprite"));
-
+    if (ResourceManager::Shaders.find("movement") == ResourceManager::Shaders.end()) {
+        std::cout << "CRASH: Shader nie istnieje!" << std::endl;
+    }
+    Engine->Tick();
     // Renderer -> DrawBoard(board, this->Width, this->Height,board->getCurrentPlayerId());
     // Text->RenderText("KROK: "+std::to_string(step),10,10,1.0f);
     // Text->RenderText("LICZBA BAKTERII: "+std::to_string(board->getBacterias().size()),10,40,1.0f);

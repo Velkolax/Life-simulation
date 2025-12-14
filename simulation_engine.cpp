@@ -5,6 +5,7 @@
 #include "simulation_engine.h"
 
 #include "BacteriaData.h"
+#include "GLFW/glfw3.h"
 
 SimulationEngine::SimulationEngine(Board* board)
 {
@@ -55,7 +56,6 @@ void SimulationEngine::InitSsbos(Board *board)
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     };
 
-    for (int i=0;i<boardData.size();i++) std::cout << boardData[i] << std::endl;
     createSSBO(ssboGrid,      1, boardData.data(), boardData.size() * sizeof(int32_t));
     createSSBO(ssboBacteria,    0, b.data(),    b.size() * sizeof(BacteriaData));
 
@@ -68,4 +68,28 @@ void SimulationEngine::InitSsbos(Board *board)
 void SimulationEngine::ssbo_barrier()
 {
     glMemoryBarrier(GL_ALL_BARRIER_BITS);
+}
+
+void SimulationEngine::MoveBacteria(Shader &shader)
+{
+
+    shader.Use();
+    shader.SetInteger("bWidth",bWidth);
+    shader.SetInteger("bHeight",bHeight);
+    shader.SetFloat("time",(float)glfwGetTime());
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssboBacteria);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssboGrid);
+    if (glDispatchCompute == NULL) {
+        std::cout << "CRITICAL ERROR: glDispatchCompute is NULL! OpenGL functions not loaded correctly." << std::endl;
+        exit(-1);
+    }
+    glDispatchCompute(bWidth*bHeight,1,1);
+    ssbo_barrier();
+}
+
+void SimulationEngine::Tick()
+{
+
+    MoveBacteria(ResourceManager::GetShader("movement"));
+
 }

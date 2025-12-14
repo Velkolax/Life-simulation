@@ -20,8 +20,9 @@ public:
     GLuint GetBacteriaSSBO() const { return ssboBacteria; }
     GLuint GetGridSSBO() const { return ssboGrid; }
     void ssbo_barrier();
+    void Tick();
+    void MoveBacteria(Shader& shader);
 private:
-    Shader computeShaderMovement;
 
 
     GLuint ssboBacteria;
