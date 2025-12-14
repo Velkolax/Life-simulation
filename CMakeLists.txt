@@ -32,10 +32,9 @@ add_executable(life-sim
         NeuralNetwork.h
         board.h
         board.cpp
-        gfx/object.hpp
-        gfx/program.hpp
-        gfx/rendertexture.hpp
         BacteriaData.h
+        simulation_engine.cpp
+        simulation_engine.h
 
 )
 include_directories(life-sim PRIVATE include)

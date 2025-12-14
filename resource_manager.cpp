@@ -19,6 +19,11 @@ Shader& ResourceManager::LoadShader(const char *vShaderFile, const char *fShader
     Shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile);
     return Shaders[name];
 }
+Shader& ResourceManager::LoadComputeShader(const char *cShaderFile,std::string name)
+{
+    Shaders[name] = loadComputeShaderFromFile(cShaderFile);
+    return Shaders[name];
+}
 
 Shader& ResourceManager::LoadShader(std::string name)
 {
@@ -99,6 +104,33 @@ Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *
     // 2. now create shader object from source code
     Shader shader;
     shader.Compile(vShaderCode, fShaderCode, gShaderFile != nullptr ? gShaderCode : nullptr);
+    return shader;
+}
+
+Shader ResourceManager::loadComputeShaderFromFile(const char* cShaderFile)
+{
+
+    // 1. retrieve the vertex/fragment source code from filePath
+    std::string computeCode;
+    try
+    {
+        // open files
+        std::ifstream computeShaderFile(cShaderFile);
+        std::stringstream cShaderStream;
+        // read file's buffer contents into streams
+        cShaderStream << computeShaderFile.rdbuf();
+        // close file handlers
+        computeShaderFile.close();
+        // convert stream into string
+        computeCode = cShaderStream.str();
+    }
+    catch (std::exception e)
+    {
+        std::cout << "ERROR::SHADER: Failed to read compute shader files" << std::endl;
+    }
+    const char *cShaderCode = computeCode.c_str();
+    Shader shader;
+    shader.CompileCompute(cShaderCode);
     return shader;
 }
 

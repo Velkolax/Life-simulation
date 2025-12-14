@@ -44,6 +44,22 @@ void Shader::Compile(const char* vertexSource, const char* fragmentSource, const
         glDeleteShader(gShader);
 }
 
+void Shader::CompileCompute(const char* computeSource)
+{
+    unsigned int cShader;
+    cShader = glCreateShader(GL_COMPUTE_SHADER);
+    glShaderSource(cShader,1,&computeSource,NULL);
+    glCompileShader(cShader);
+    checkCompileErrors(cShader,"COMPUTE");
+
+    this->ID = glCreateProgram();
+    glAttachShader(this->ID, cShader);
+    glLinkProgram(this->ID);
+    checkCompileErrors(this->ID, "PROGRAM");
+
+    glDeleteShader(cShader);
+}
+
 void Shader::SetFloat(const char *name, float value, bool useShader)
 {
     if (useShader)

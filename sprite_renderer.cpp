@@ -143,6 +143,8 @@ glm::vec2 SpriteRenderer::calculateHexPosition(int gridX, int gridY, float size)
     return glm::vec2(posX, posY);
 }
 
+
+
 float SpriteRenderer::getSize(Board *board)
 {
     float boardWidth = static_cast<float>(std::max(actualBoardWidth,actualBoardHeight));

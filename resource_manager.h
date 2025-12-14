@@ -22,6 +22,7 @@ public:
     static std::map<std::string, Texture2D> Textures;
     // loads (and generates) a shader program from file loading vertex, fragment (and geometry) shader's source code. If gShaderFile is not nullptr, it also loads a geometry shader
     static Shader&    LoadShader(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile, std::string name);
+    static Shader& LoadComputeShader(const char* cShaderFile, std::string name);
     static Shader& LoadShader(std::string name);
     static Shader& LoadShaderText(std::string name);
     // retrieves a stored sader
@@ -37,6 +38,7 @@ private:
     ResourceManager() { }
     // loads and generates a shader from file
     static Shader    loadShaderFromFile(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile = nullptr);
+    static Shader    loadComputeShaderFromFile(const char *cShaderFile);
     static Shader loadDefaultShader();
     static Shader loadTextShader();
     // loads a single texture from file

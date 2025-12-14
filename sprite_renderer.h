@@ -14,13 +14,6 @@
 #include <cstdlib>
 
 
-struct HexInstanceData {
-    glm::vec2 position;
-    glm::vec3 color;
-    float rotation;
-    glm::vec2 size;
-};
-
 inline std::string textures[] = {
     "nic",
     "nic",
@@ -38,12 +31,11 @@ public:
 
     std::vector<int> getAllIndicesOnAScreen(Board* board);
     void generateSprites(Board* board);
-    void DrawBoard(Board* board, int width, int height);
+    void DrawBoard(Board* board);
 
 
     bool isHexOnScreen(glm::vec2 hexPos);
     float getSize(Board* board);
-    void RenderBatch(const std::string& textureName, const std::vector<HexInstanceData>& data);
     glm::ivec2 CheckWhichHexagon(int x, int y, float size);
     void Zoom(float zoomFactor, float pivotX, float pivotY, Board* board);
     glm::vec2 calculateHexPosition(int gridX, int gridY, float size);
@@ -54,8 +46,6 @@ public:
     void DrawSprites(GLuint bacteriaSSBO,Board *board,std::string textureName,int index,Shader shader);
 
     float size;
-    std::vector<HexInstanceData> hexData;
-    std::vector<std::vector<HexInstanceData>> residentData;
     int   displacementX = 0;
     int   displacementY = 0;
     int   actualBoardWidth=0;
@@ -68,7 +58,6 @@ public:
     int width;
     int height;
 private:
-    Shader       shader; 
     unsigned int quadVAO;
     unsigned int quadVBO;
 

@@ -21,12 +21,6 @@ enum class GameState
     GAME_WIN
 };
 
-struct Counters
-{
-    uint32_t aliveCount;
-    uint32_t stackTop;
-    uint32_t padding[2];
-};
 
 // Game holds all game-related state and functionality.
 // Combines all game-related data into a single class for
@@ -44,8 +38,6 @@ public:
     unsigned int            Width, Height;
     bool                    enterPressed = false;
 
-    GLuint ssboBacteria,ssboGrid,ssboFreeList,ssboCounters;
-
     Board *board;
     TextRenderer  *Text;
     // constructor/destructor
@@ -53,8 +45,7 @@ public:
     ~Game();
     // initialize game state (load all shaders/textures/levels)
     void Init();
-    void ssbo_barrier();
-    void InitSsbos();
+
     // game loop
     void ProcessInput(float dt);
     int GetSelectedCastleReserves();
