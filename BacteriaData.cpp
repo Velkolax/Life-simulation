@@ -1,6 +1,6 @@
 #include "BacteriaData.h"
 #include <iostream>
-
+#include "board.h"
 
 BacteriaData::BacteriaData(glm::ivec2 pos,uint32_t id,uint32_t alive,int32_t lifespan):
         pos(pos),
@@ -15,7 +15,7 @@ BacteriaData::BacteriaData(glm::ivec2 pos,uint32_t id,uint32_t alive,int32_t lif
 
 void BacteriaData::fillNetworkWithRandom()
 {
-        thread_local std::mt19937 gen(std::random_device{}());
+
         std::normal_distribution<float> distribution_W1(0.0f, std::sqrt(2.0f / INPUT_SIZE));
         std::normal_distribution<float> distribution_W2(0.0f, std::sqrt(2.0f / HIDDEN_SIZE));
         float* w1_start = (float*)&network[W1_OFFSET_VEC4];

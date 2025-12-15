@@ -17,16 +17,8 @@ int randomInt(uint seed, int maxVal){
 }
 
 
-const ivec2 evenD[6] = ivec2[](
-        ivec2(0,-1), ivec2(-1,-1), ivec2(-1,0),
-        ivec2(0,1), ivec2(1,0), ivec2(1,-1)
-);
 
 
-const ivec2 oddD[6] = ivec2[](
-        ivec2(0,-1), ivec2(-1,0), ivec2(-1,1),
-        ivec2(0,1), ivec2(1,1), ivec2(1,0)
-);
 
 void main(){
     uint index = gl_GlobalInvocationID.x;
@@ -34,7 +26,9 @@ void main(){
     if(bacteria[index].alive==0) return;
 
     ivec2 currentPos = bacteria[index].pos;
-    int dir = randomInt(index,5);
+
+
+    int dir = computeNetwork(index,currentPos,bWidth,bHeight);
     ivec2 offset;
 
     if((currentPos.x & 1) == 0) offset = evenD[dir];

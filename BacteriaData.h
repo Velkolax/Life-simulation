@@ -2,7 +2,7 @@
 #include <random>
 #include <glm/glm.hpp>
 
-constexpr int INPUT_SIZE = 19;
+constexpr int INPUT_SIZE = 6;
 constexpr int HIDDEN_SIZE = 16;
 constexpr int OUTPUT_SIZE = 7;
 
@@ -33,7 +33,6 @@ constexpr int B2_OFFSET_VEC4 = W2_OFFSET_VEC4 + W2_SIZE_VEC4;
 constexpr int B2_SIZE_VEC4 = (B2_SIZE_F + 3) / 4;
 // Just a small data class for transport purposes
 // Now only implementing basic stuff
-
 struct alignas(16) BacteriaData
 {
 

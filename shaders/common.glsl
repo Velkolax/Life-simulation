@@ -4,7 +4,7 @@
 // SHADER FOR STORING STRUCTURES, GLOBAL ARRAYS AND GLOBAL FUNCTIONS
 const float SQRT_3 = 1.7320508f;
 
-const int INPUT_SIZE = 19;
+const int INPUT_SIZE = 6;
 const int HIDDEN_SIZE = 16;
 const int OUTPUT_SIZE = 7;
 
@@ -54,9 +54,74 @@ layout(std430, binding=0) restrict buffer BacteriaBlock {
 layout(std430, binding = 1) restrict buffer GridBuffer {
     int grid[];
 };
+const ivec2 evenD[6] = ivec2[](
+ivec2(0,-1), ivec2(-1,-1), ivec2(-1,0),
+ivec2(0,1), ivec2(1,0), ivec2(1,-1)
+);
+
+
+const ivec2 oddD[6] = ivec2[](
+ivec2(0,-1), ivec2(-1,0), ivec2(-1,1),
+ivec2(0,1), ivec2(1,1), ivec2(1,0)
+);
 
 float ReLU(float x) {
     return max(0.0,x);
+}
+
+float getWeight(uint b_id, int offset_vec4, int linear_idx) {
+    int vec_idx = offset_vec4 + (linear_idx >> 2);
+    int comp_idx = linear_idx & 3;
+    vec4 v = bacteria[b_id].network[vec_idx];
+    return v[comp_idx];
+}
+
+int computeNetwork(uint b_id,ivec2 currentPos,int bWidth,int bHeight) {
+    float inputs[INPUT_SIZE];
+
+    for (int i = 0; i < INPUT_SIZE; ++i) {
+        ivec2 offset;
+        if ((currentPos.x & 1) == 0) offset = evenD[i];
+        else offset = oddD[i];
+        ivec2 targetPos = currentPos + offset;
+        int targetGridIdx = targetPos.y * bWidth + targetPos.x;
+        if (targetPos.x < 0 || targetPos.x >= bWidth || targetPos.y < 0 || targetPos.y >= bHeight) inputs[i] = -1;
+        else inputs[i] = grid[targetGridIdx];
+    }
+
+    float hidden[HIDDEN_SIZE];
+
+    for (int h = 0; h < HIDDEN_SIZE; ++h) {
+        float sum = 0.0;
+        sum += getWeight(b_id, B1_OFFSET_VEC4, h);
+        for (int in_idx = 0; in_idx < INPUT_SIZE; ++in_idx) {
+            int weight_idx = in_idx * HIDDEN_SIZE + h;
+            float weight = getWeight(b_id, W1_OFFSET_VEC4, weight_idx);
+            sum += inputs[in_idx] * weight;
+        }
+        hidden[h] = ReLU(sum);
+    }
+    float outputs[OUTPUT_SIZE];
+
+    for (int o = 0; o < OUTPUT_SIZE; ++o) {
+        float sum = 0.0;
+        sum += getWeight(b_id, B2_OFFSET_VEC4, o);
+        for (int h = 0; h < HIDDEN_SIZE; ++h) {
+            int weight_idx = h * OUTPUT_SIZE + o;
+            float weight = getWeight(b_id, W2_OFFSET_VEC4, weight_idx);
+            sum += hidden[h] * weight;
+        }
+        outputs[o] = ReLU(sum);
+    }
+    float maks = -100;
+    int argmax;
+    for(int i=0;i<OUTPUT_SIZE;i++){
+        if(outputs[i]>maks){
+            maks = outputs[i];
+            argmax = i;
+        }
+    }
+    return argmax;
 }
 
 vec2 calculateHexPosition(int gridX, int gridY, float size, float dispX, float dispY)
