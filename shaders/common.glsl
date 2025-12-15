@@ -1,5 +1,6 @@
-int GENOME_SIZE = 51;
+#version 430 core
 
+const float SQRT_3 = 1.7320508f;
 
 struct Bacteria {
     // Position on hex map
@@ -12,40 +13,29 @@ struct Bacteria {
     //vec4 memory[2];
 
     // Less important parameters
-    uint life;
-    uint rem_life;
+    int life;
+    int rem_life;
     //uint reflex;
-    bool alive;
+    uint alive;
 
 };
 
-
-//  ---  Bacterias ---
 layout(std430, binding=0) restrict buffer BacteriaBlock {
     Bacteria bacteria[];
 };
 
-
-// Grid but it has bacteria ID and other residents in negatives
-layout(std430, binding=1) restrict buffer GridBlock {
+layout(std430, binding = 1) restrict buffer GridBuffer {
     int grid[];
 };
 
-// Need this to find which bacteria are not active
-// because counting and limits are really difficult on the gpu
-layout(std430, binding=2) restrict buffer FreeBlock {
-    uint freeId[];
-};
-
-layout(std430, binding=3) restrict buffer CounterBlock {
-    uint aliveCount;
-    uint stackTop;
-    uint padding[2];
-};
-
-// >0 - Bacteria
-// 0 - Empty
-// -1 - water
-// -2 - energy
-// -3 - protein
-// -4 - acid
+vec2 calculateHexPosition(int gridX, int gridY, float size, float dispX, float dispY)
+{
+    float height = size * SQRT_3 / 2.0f;
+    float posX = gridX * size * 0.75f + dispX;
+    float posY = gridY * height + dispY;
+    if (gridX % 2 != 0)
+    {
+        posY += height / 2.0f;
+    }
+    return vec2(posX, posY);
+}

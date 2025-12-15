@@ -28,19 +28,20 @@ Game::~Game()
 
 void Game::Init()
 {
-    ResourceManager::LoadShader("shaders/render_resident.vs.glsl","shaders/render_resident.fs.glsl",nullptr,"sprite");
-    ResourceManager::LoadShader("shaders/render_hex.vs.glsl","shaders/render_resident.fs.glsl",nullptr,"hex");
-    ResourceManager::LoadComputeShader("shaders/movement.cs.glsl","movement");
+    ResourceManager::LoadShader({"shaders/common.glsl","shaders/render_resident.vs.glsl"},{"shaders/render_resident.fs.glsl"},"sprite");
+    ResourceManager::LoadShader({"shaders/common.glsl","shaders/render_hex.vs.glsl"},{"shaders/render_resident.fs.glsl"},"hex");
+    ResourceManager::LoadComputeShader({"shaders/common.glsl","shaders/movement.cs.glsl"},"movement");
+    ResourceManager::LoadComputeShader({"shaders/common.glsl","shaders/pass_time.cs.glsl"},"passTime");
     ResourceManager::LoadTexture("textures/square-16.png", true, "hexagon");
     ResourceManager::LoadTexture("textures/bacteria.png",true,"bacteria");
     ResourceManager::LoadTexture("textures/apple.png",true,"apple");
     ResourceManager::LoadTexture("textures/explosion.png",true,"explosion");
 
-    Text = new TextRenderer(this->Width, this->Height);
-    Text->Load(24);
-    int bacteriaCount = 10000;
-    int x = 200;
-    int y = 200;
+    // Text = new TextRenderer(this->Width, this->Height);
+    // Text->Load(24);
+    int bacteriaCount = 5000;
+    int x = 500;
+    int y = 500;
     board = new Board(x, y, this);
     int total = x*y;
     board->InitializeRandom(total * 0.5, total * 0.9);
@@ -132,12 +133,16 @@ void Game::ProcessInput(float dt)
 void Game::Render()
 {
 
+    //double t1 = glfwGetTime();
     Renderer->DrawSprites(Engine->GetGridSSBO(),board,"hexagon",1,ResourceManager::GetShader("hex"));
+    //double t2 = glfwGetTime();
     Renderer->DrawSprites(Engine->GetBacteriaSSBO(),board,"bacteria",0,ResourceManager::GetShader("sprite"));
-    if (ResourceManager::Shaders.find("movement") == ResourceManager::Shaders.end()) {
-        std::cout << "CRASH: Shader nie istnieje!" << std::endl;
-    }
+    //double t3 = glfwGetTime();
     Engine->Tick();
+    //double t4 = glfwGetTime();
+    // std::cout << "CZAS RENDEROWANIA HEXÓW: " << t2-t1 << std::endl;
+    // std::cout << "CZAS RENDEROWANIA BAKTERII: " << t3-t2 << std::endl;
+    // std::cout << "CZAS OBLICZANIA: " << t4-t3 << std::endl;
     // Renderer -> DrawBoard(board, this->Width, this->Height,board->getCurrentPlayerId());
     // Text->RenderText("KROK: "+std::to_string(step),10,10,1.0f);
     // Text->RenderText("LICZBA BAKTERII: "+std::to_string(board->getBacterias().size()),10,40,1.0f);

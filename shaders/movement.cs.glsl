@@ -1,32 +1,7 @@
-#version 430 core
 
-layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+// SHADER THAT HANDLES MOVEMENT OF BACTERIA
 
-struct Bacteria {
-    // Position on hex map
-    ivec2 pos;
-    ivec2 target_pos;
-
-
-    //vec4 network[GENOME_SIZE];
-    uint id;
-    //vec4 memory[2];
-
-    // Less important parameters
-    uint life;
-    uint rem_life;
-    //uint reflex;
-    uint alive;
-
-};
-
-layout(std430, binding=0) restrict buffer BacteriaBlock {
-    Bacteria bacteria[];
-};
-
-layout(std430, binding = 1) restrict buffer GridBuffer {
-    int grid[];
-};
+layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
 
 uniform int bWidth;
 uniform int bHeight;

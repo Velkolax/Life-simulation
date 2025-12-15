@@ -21,7 +21,8 @@ public:
     GLuint GetGridSSBO() const { return ssboGrid; }
     void ssbo_barrier();
     void Tick();
-    void MoveBacteria(Shader& shader);
+    void MoveBacteria();
+    void PassTime();
 private:
 
 
