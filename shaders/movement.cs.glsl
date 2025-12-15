@@ -27,12 +27,15 @@ void main(){
 
     ivec2 currentPos = bacteria[index].pos;
 
-
     int dir = computeNetwork(index,currentPos,bWidth,bHeight);
     ivec2 offset;
+    if(dir==0) offset = ivec2(0,0);
+    else{
+        if((currentPos.x & 1) == 0) offset = evenD[dir-1];
+        else offset = oddD[dir-1];
+    }
 
-    if((currentPos.x & 1) == 0) offset = evenD[dir];
-    else offset = oddD[dir];
+
     if(currentPos.x<0 || currentPos.x>=bWidth || currentPos.y<0 || currentPos.y>=bHeight) {
         bacteria[index].alive = 0;
         return;

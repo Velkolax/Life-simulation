@@ -25,7 +25,7 @@ void BacteriaData::fillNetworkWithRandom()
         }
         float* b1_start = (float*)&network[B1_OFFSET_VEC4];
         for (int i = 0; i < B1_SIZE_F; ++i) {
-                b1_start[i] = 0.0f;
+                b1_start[i] = 0.1f;
         }
 
         float* w2_start = (float*)&network[W2_OFFSET_VEC4];
@@ -36,7 +36,7 @@ void BacteriaData::fillNetworkWithRandom()
 
         float* b2_start = (float*)&network[B2_OFFSET_VEC4];
         for (int i = 0; i < B2_SIZE_F; ++i) {
-                b2_start[i] = 0.0f;
+                b2_start[i] = 0.1f;
         }
 
 }

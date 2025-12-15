@@ -50,6 +50,18 @@ void SimulationEngine::InitSsbos(Board *board)
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, id);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     };
+    // for (auto &bac : b)
+    // {
+    //     if (bac.alive==1)
+    //     {
+    //         std::cout << "------------------- NETWORK ------------------" << std::endl;
+    //         for (int i=0;i<NETWORK_SIZE_VEC4;i++)
+    //         {
+    //             std::cout << bac.network[i].x << " " << bac.network[i].y << " " << bac.network[i].z << " " << bac.network[i].w << std::endl;
+    //         }
+    //     }
+    //
+    // }
 
     createSSBO(ssboGrid,      1, boardData.data(), boardData.size() * sizeof(int32_t));
     createSSBO(ssboBacteria,    0, b.data(),    b.size() * sizeof(BacteriaData));

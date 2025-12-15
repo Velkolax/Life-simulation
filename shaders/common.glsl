@@ -86,7 +86,10 @@ int computeNetwork(uint b_id,ivec2 currentPos,int bWidth,int bHeight) {
         ivec2 targetPos = currentPos + offset;
         int targetGridIdx = targetPos.y * bWidth + targetPos.x;
         if (targetPos.x < 0 || targetPos.x >= bWidth || targetPos.y < 0 || targetPos.y >= bHeight) inputs[i] = -1;
-        else inputs[i] = grid[targetGridIdx];
+        else{
+            int val = grid[targetGridIdx];
+            inputs[i] = (val != 0) ? 1.0 : 0.0;
+        }
     }
 
     float hidden[HIDDEN_SIZE];
@@ -111,10 +114,10 @@ int computeNetwork(uint b_id,ivec2 currentPos,int bWidth,int bHeight) {
             float weight = getWeight(b_id, W2_OFFSET_VEC4, weight_idx);
             sum += hidden[h] * weight;
         }
-        outputs[o] = ReLU(sum);
+        outputs[o] = sum;
     }
-    float maks = -100;
-    int argmax;
+    float maks = -10000;
+    int argmax = 2;
     for(int i=0;i<OUTPUT_SIZE;i++){
         if(outputs[i]>maks){
             maks = outputs[i];
