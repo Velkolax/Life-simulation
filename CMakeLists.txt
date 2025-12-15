@@ -35,6 +35,7 @@ add_executable(life-sim
         BacteriaData.h
         simulation_engine.cpp
         simulation_engine.h
+        BacteriaData.cpp
 
 )
 include_directories(life-sim PRIVATE include)

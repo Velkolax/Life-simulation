@@ -39,7 +39,7 @@ void Game::Init()
 
     // Text = new TextRenderer(this->Width, this->Height);
     // Text->Load(24);
-    int bacteriaCount = 5000;
+    int bacteriaCount = 1000;
     int x = 500;
     int y = 500;
     board = new Board(x, y, this);
