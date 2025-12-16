@@ -22,8 +22,8 @@ constexpr size_t SIZE = INPUT * HIDDEN1 + HIDDEN1 + HIDDEN1 * HIDDEN2 + HIDDEN2 
 constexpr size_t NUMBER_OF_BACTERIA = 100000; //temp
 
 struct alignas(16) DataInOut {
-    float input[84];
-    float output[8];
+    float input[INPUT];
+    float output[OUTPUT];
 };
 
 constexpr size_t INOUT_SIZE = sizeof(DataInOut);
@@ -48,6 +48,7 @@ private:
     GLuint ssboInOuts[2];
     float* networksPtr = nullptr;
     float* stagingPtr = nullptr;
+    uint64_t tickCounter = 0;
     const size_t BATCH_SIZE = 1000;
     DataInOut* InOutsPtr[2] = {nullptr,nullptr};
     int bWidth,bHeight;
