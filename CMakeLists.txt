@@ -39,5 +39,6 @@ add_executable(life-sim
 
 )
 include_directories(life-sim PRIVATE include)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64")
 target_link_libraries(life-sim ${GLFW3_LIBRARY} OpenGL::GL freetype)
 
