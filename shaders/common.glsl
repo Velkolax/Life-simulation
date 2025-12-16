@@ -1,5 +1,5 @@
-#version 430 core
-
+#version 450 core
+#extension GL_NV_gpu_shader5 : require
 
 // SHADER FOR STORING STRUCTURES, GLOBAL ARRAYS AND GLOBAL FUNCTIONS
 const float SQRT_3 = 1.7320508f;

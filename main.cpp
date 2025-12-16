@@ -1,3 +1,4 @@
+#include <charconv>
 #include <iostream>
 
 #include "NeuralNetwork.h"
@@ -5,7 +6,7 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
-
+#include <stdfloat>
 #include "game.h"
 #include "resource_manager.h"
 #include "glad/glad.h"
@@ -29,10 +30,18 @@ Game* sim = new Game(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 int main(int argc, char *argv[])
 {
+    float a = 0.5;
+    float b = 0.6;
+    uint f = glm::packHalf2x16(glm::vec2(a,b));
+    glm::uvec4 g = glm::uvec4(f,f,f,f);
+    glm::vec2 e = glm::unpackHalf2x16(g.x);
+    std::cout << e.x << " " << e.y << std::endl;
+
+
     // OPENGL
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);

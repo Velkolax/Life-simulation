@@ -39,9 +39,9 @@ void Game::Init()
 
     // Text = new TextRenderer(this->Width, this->Height);
     // Text->Load(24);
-    int bacteriaCount = 100000;
-    int x = 500;
-    int y = 500;
+    int bacteriaCount = 1000;
+    int x = 100;
+    int y = 100;
     board = new Board(x, y, this);
     int total = x*y;
     board->InitializeNeighbour(249, true);
