@@ -3,117 +3,79 @@
 //
 
 #include "simulation_engine.h"
-
+#include <glm/gtc/type_precision.hpp>
 #include "BacteriaData.h"
 #include "GLFW/glfw3.h"
 
 SimulationEngine::SimulationEngine(Board* board)
 {
     InitSsbos(board);
+    InitNetworkData();
     bWidth = board->getWidth();
     bHeight = board->getHeight();
 }
 
+
+
 void SimulationEngine::InitSsbos(Board *board)
 {
-    int boardSize = board->getHeight()*board->getWidth();
-    std::vector<BacteriaData> b; b.reserve(boardSize);
-    std::vector<uint32_t> freePlaces(boardSize,0);
-    std::vector<int32_t> boardData(boardSize, 0);
 
+    /* CREATING NETWORK BUFFER */
 
-    int id = 0;
-    for (int i=0;i<boardSize;i++)
+    size_t ssboNetworksSize = sizeof(float) * SIZE * NUMBER_OF_BACTERIA;
+    if (ssboNetworksSize > 4000000000) std::cout << "UPEWNIJ SIĘ ŻE TWÓJ VRAM JEST WIĘKSZY NIŻ 4GB" << std::endl;
+    std::cout << ssboNetworksSize << std::endl;
+    glCreateBuffers(1,&ssboNetworks);
+    glNamedBufferStorage(ssboNetworks,ssboNetworksSize,nullptr,GL_DYNAMIC_STORAGE_BIT);
+
+    GLbitfield stagingFlags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+    size_t stagingSize = sizeof(float) * BATCH_SIZE * SIZE;
+    glCreateBuffers(1,&ssboStaging);
+    glNamedBufferStorage(ssboStaging,stagingSize,nullptr,stagingFlags);
+    stagingPtr = (float*)glMapNamedBufferRange(ssboStaging,0,stagingSize,stagingFlags);
+
+    /* CREATING INOUT BUFFERS */
+
+    GLbitfield InOutFlags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+    GLsizeiptr ssboInOutsSize = (GLsizeiptr)(NUMBER_OF_BACTERIA * INOUT_SIZE);
+    glCreateBuffers(2,ssboInOuts);
+    for (int i=0;i<2;i++)
     {
-        Hexagon *h = board->getHexagon(i);
-        if (bacteria(h->getResident()))
+        glNamedBufferStorage(ssboInOuts[i],ssboInOutsSize,nullptr,InOutFlags);
+        InOutsPtr[i] = (DataInOut*)glMapNamedBufferRange(ssboInOuts[i],0,ssboInOutsSize,InOutFlags);
+        memset(InOutsPtr[i],0,ssboInOutsSize);
+    }
+}
+
+void SimulationEngine::InitNetworkData()
+{
+    /* COPYING DATA TO VRAM WITH BATCHES */
+
+    for (size_t offset = 0;offset < NUMBER_OF_BACTERIA;offset+=BATCH_SIZE)
+    {
+        size_t localBacteriaCount = std::min(BATCH_SIZE,NUMBER_OF_BACTERIA-offset);
+        #pragma omp parallel for
+        for (int i=0;i<localBacteriaCount;i++)
         {
-            b.emplace_back(h->getPos(),id,1,1000);
-            boardData[i]=id+1;
-            id++;
+            float* netDest = stagingPtr + (i * SIZE);
+            int layers[] = {INPUT,HIDDEN1,HIDDEN2,HIDDEN3,OUTPUT};
+            NeuralNetwork nn = buildNetwork(5,layers);
+            memcpy(netDest,nn.neurons,(nn.neuronCount+nn.connectionCount)*sizeof(float));
+            freeNetwork(&nn);
         }
-        if (wall(h->getResident())) boardData[i]=-1;
+
+        glCopyNamedBufferSubData(ssboStaging,ssboNetworks,0,offset*SIZE*sizeof(float),localBacteriaCount*SIZE*sizeof(float));
+        GLsync fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE,0);
+        GLenum result = glClientWaitSync(fence,GL_SYNC_FLUSH_COMMANDS_BIT,10000000000);
+        glDeleteSync(fence);
     }
-    for (int i=id;i<boardSize;i++)
-    {
-        b.emplace_back(glm::ivec2(-2137,-2137),id,0,0);
-        freePlaces.push_back(i);
-    }
-    Counters counters;
-    counters.aliveCount = id;
-    counters.stackTop = boardSize-id;
-
-    auto createSSBO = [](GLuint& id, int binding, const void* data, size_t size)
-    {
-        glGenBuffers(1, &id);
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
-        glBufferData(GL_SHADER_STORAGE_BUFFER, size, data, GL_DYNAMIC_DRAW);
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, id);
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-    };
-    // for (auto &bac : b)
-    // {
-    //     if (bac.alive==1)
-    //     {
-    //         std::cout << "------------------- NETWORK ------------------" << std::endl;
-    //         for (int i=0;i<NETWORK_SIZE_VEC4;i++)
-    //         {
-    //             std::cout << bac.network[i].x << " " << bac.network[i].y << " " << bac.network[i].z << " " << bac.network[i].w << std::endl;
-    //         }
-    //     }
-    //
-    // }
-
-    createSSBO(ssboGrid,      1, boardData.data(), boardData.size() * sizeof(int32_t));
-    createSSBO(ssboBacteria,    0, b.data(),    b.size() * sizeof(BacteriaData));
-
-    createSSBO(ssboFreeList,  2, freePlaces.data(),  freePlaces.size() * sizeof(uint32_t));
-    createSSBO(ssboCounters,  3, &counters,        sizeof(Counters));
-
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    glUnmapNamedBuffer(ssboStaging);
+    glDeleteBuffers(1,&ssboStaging);
+    stagingPtr = nullptr;
 }
 
-void SimulationEngine::ssbo_barrier()
-{
-    glMemoryBarrier(GL_ALL_BARRIER_BITS);
-}
-
-void SimulationEngine::MoveBacteria()
-{
-
-    Shader &shader = ResourceManager::GetShader("movement");
-    shader.Use();
-    shader.SetInteger("bWidth",bWidth);
-    shader.SetInteger("bHeight",bHeight);
-    shader.SetFloat("time",(float)glfwGetTime());
-    // glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssboBacteria);
-    // glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssboGrid);
-    if (glDispatchCompute == NULL) {
-        std::cout << "CRITICAL ERROR: glDispatchCompute is NULL! OpenGL functions not loaded correctly." << std::endl;
-        exit(-1);
-    }
-    int bCount = bWidth*bHeight;
-    int groupSize = 256;
-
-    glDispatchCompute((bCount+groupSize-1)/groupSize,1,1);
-    ssbo_barrier();
-}
-
-
-void SimulationEngine::PassTime()
-{
-    Shader &shader = ResourceManager::GetShader("passTime");
-    shader.Use();
-    shader.SetInteger("dt",1);
-    int bCount = bWidth*bHeight;
-    int groupSize = 256;
-
-    glDispatchCompute((bCount+groupSize-1)/groupSize,1,1);
-    ssbo_barrier();
-}
 
 void SimulationEngine::Tick()
 {
-    MoveBacteria();
-    PassTime();
+
 }

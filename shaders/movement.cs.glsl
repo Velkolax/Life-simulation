@@ -27,6 +27,7 @@ void main(){
 
     ivec2 currentPos = bacteria[index].pos;
 
+
     int dir = computeNetwork(index,currentPos,bWidth,bHeight);
     ivec2 offset;
     if(dir==0) offset = ivec2(0,0);
