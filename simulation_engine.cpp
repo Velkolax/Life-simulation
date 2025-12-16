@@ -48,7 +48,8 @@ void SimulationEngine::InitSsbos(Board *board)
         if (wall(h->getResident())) boardData[i]=-1;
     }
 
-    auto createSSBO = [](GLuint& id, int binding, const void* data, size_t size) {
+    auto createSSBO = [](GLuint& id, int binding, const void* data, size_t size)
+    {
         glGenBuffers(1, &id);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
         glBufferData(GL_SHADER_STORAGE_BUFFER, size, data, GL_DYNAMIC_DRAW);
@@ -79,7 +80,8 @@ void SimulationEngine::MoveBacteria(Shader &shader)
     shader.SetFloat("time",(float)glfwGetTime());
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssboBacteria);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssboGrid);
-    if (glDispatchCompute == NULL) {
+    if (glDispatchCompute == NULL)
+    {
         std::cout << "CRITICAL ERROR: glDispatchCompute is NULL! OpenGL functions not loaded correctly." << std::endl;
         exit(-1);
     }

@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include "NeuralNetwork.h"
 #include "glm/vec2.hpp"
+#include "BacteriaData.h"
 
 
 #define BIG_NUMBER 10000000
@@ -17,7 +18,6 @@ typedef int16_t coord;
 typedef uint16_t ucoord;
 typedef unsigned char uint8;
 
-// NIE ZMIENIAĆ KOLEJNOŚCI WARTOŚCI ANI NIE DODAWAĆ NOWYCH BEZ ZGODY
 enum class Resident : uint8
 {
     Wall,
@@ -43,20 +43,24 @@ class Sight;
 
 class Game; // kosmita 👽👽👽
 
-void markAll(std::vector<Hexagon*> hexagons);
-void unmarkAll(std::vector<Hexagon*> hexagons);
 
-int calculateIncome(std::vector<Hexagon*> hexagons);
+union ResidentData
+{
+    BacteriaData bacteria;
+    EnergyData energy;
+    ProteinData protein;
+    AcidData acid;
+};
+
+
 
 class Hexagon
 {
 private:
     const coord x;
     const coord y;
-    uint8 ownerId; // zakładamy że nie będzie więcej niż 255 graczy
     Resident resident; // enum o wymuszonym rozmiarze bajta
-
-    bool isMarked = false; // do renderowania, oznacza czy heks ma być zaznaczony czy nie
+    ResidentData data;
 public:
     Hexagon();
     Hexagon(coord x, coord y);
@@ -64,24 +68,16 @@ public:
 
     inline coord getX() const noexcept { return x; }
     inline coord getY() const noexcept { return y; }
-    inline glm::ivec2 getPos() const noexcept {return glm::ivec2(x,y);}
+    inline glm::ivec2 getPos() const noexcept { return glm::ivec2(x, y); }
     inline uint8 getOwnerId() const noexcept { return ownerId; }
     inline void setOwnerId(uint8 ownerId) noexcept { this->ownerId = ownerId; }
     inline Resident getResident() const noexcept { return resident; }
     inline void setResident(Resident resident) noexcept { this->resident = resident; }
 
-    int price(Board* board, Resident resident);
     bool isNearWater(Board* board);
-    bool bordersPineAndOtherTree(Board* board);
 
     std::vector<Hexagon*> neighbours(Board* board, int recursion = 0, bool includeSelf = false, std::function<bool(Hexagon*)> filter = nullptr);
     std::vector<Hexagon*> doubleFilterNeighbours(Board* board, int recursion, bool includeSelf, std::function<bool(Hexagon*)> expansionFilter, std::function<bool(Hexagon*)> resultFilter);
-    bool isNextToTowerOrCastle(Board* board, uint8 id);
-    std::unordered_set<Hexagon*> getAllProtectedAreas(Board* board);
-
-    inline void mark() noexcept { isMarked = true; }
-    inline void unmark() noexcept { isMarked = false; }
-    inline bool marked() const noexcept { return isMarked; }
 };
 
 class Board
@@ -100,9 +96,7 @@ public:
     Board(coord width, coord height, Game* game);
     void InitializeRandom(int min, int max);
     void InitializeNeighbour(int recursion, bool includeMiddle);
-    void spawnTrees(double treeRatio);
     void spawnFood(double foodRatio);
-
 
     void spawnBacteria(int bacteriaCount);
     int getBacteriasNumber();
@@ -111,10 +105,7 @@ public:
     inline coord getHeight() const noexcept { return height; }
     inline Hexagon* getHexagon(coord x, coord y) { return (x < 0 || y < 0 || x >= width || y >= height) ? nullptr : &(board[y * width + x]); }
     inline Hexagon* getHexagon(int i) { return (i < 0 || i >= width * height) ? nullptr : &(board[i]); }
-
-
     inline const Game* getGame() const noexcept { return game; }
 
-    void propagateTrees();
 };
 

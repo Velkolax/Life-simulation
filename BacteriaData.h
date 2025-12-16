@@ -16,19 +16,9 @@ struct alignas(16) BacteriaData
 
     //alignas(16) glm::vec4 network[NETWORK_SIZE_VEC4];
 
-    BacteriaData(
-        glm::ivec2 pos,
-        uint32_t id,
-        uint32_t alive,
-        uint32_t lifespan)
-        :
-        pos(pos),
-        target_pos(pos),
-        id(id),
-        lifespan(lifespan),
-        remaining_lifespan(lifespan),
-        alive(alive)
-        {}
+    BacteriaData(glm::ivec2 pos, uint32_t id, uint32_t alive, uint32_t lifespan)
+    : pos(pos), target_pos(pos), id(id), lifespan(lifespan), remaining_lifespan(lifespan), alive(alive)
+    {}
 };
 
 

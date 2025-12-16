@@ -15,11 +15,11 @@ void unmarkAll(std::vector<Hexagon*> hexagons)
 }
 
 
-Hexagon::Hexagon() : x(0), y(0), ownerId(0), resident(Resident::Wall){}
+Hexagon::Hexagon() : x(0), y(0), resident(Resident::Wall){}
 
-Hexagon::Hexagon(coord x, coord y) : x(x), y(y), ownerId(0), resident(Resident::Wall){}
+Hexagon::Hexagon(coord x, coord y) : x(x), y(y), resident(Resident::Wall){}
 
-Hexagon::Hexagon(coord x, coord y, uint8 ownerId, Resident resident) : x(x), y(y), ownerId(ownerId), resident(resident)
+Hexagon::Hexagon(coord x, coord y, Resident resident) : x(x), y(y), resident(resident)
 {
 
 }
@@ -113,9 +113,9 @@ void Board::spawnBacteria(int bacteriaCount)
     std::erase_if(range,[this](int i){return this->board[i].getResident()!=Resident::Empty;});
 
     std::shuffle(range.begin(),range.end(),gen);
-    for (int i=0;i<range.size();i++)
+    for (int i = 0; i < range.size(); i++)
     {
-        if (i<bacteriaCount)
+        if (i < bacteriaCount)
         {
             int x = board[range[i]].getX();
             int y = board[range[i]].getY();
@@ -127,7 +127,7 @@ void Board::spawnBacteria(int bacteriaCount)
 int Board::getBacteriasNumber()
 {
     int bCount = 0;
-    for (int i=0;i<getHeight()*getWidth();i++)
+    for (int i = 0; i < getHeight() * getWidth(); i++)
     {
         if (bacteria(getHexagon(i)->getResident())) bCount++;
     }
