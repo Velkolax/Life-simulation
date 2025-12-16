@@ -8,47 +8,36 @@ Shader &Shader::Use()
     return *this;
 }
 
-void Shader::Compile(const char* vertexSource, const char* fragmentSource, const char* geometrySource)
+void Shader::Compile(const char* vertexSources[], const char* fragmentSources[], GLint vLengths[], GLint fLengths[], GLuint vlen, GLuint flen)
 {
     unsigned int sVertex, sFragment, gShader;
     // vertex Shader
     sVertex = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(sVertex, 1, &vertexSource, NULL);
+    glShaderSource(sVertex, vlen, vertexSources, vLengths);
     glCompileShader(sVertex);
     checkCompileErrors(sVertex, "VERTEX");
     // fragment Shader
     sFragment = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(sFragment, 1, &fragmentSource, NULL);
+    glShaderSource(sFragment, flen, fragmentSources, fLengths);
     glCompileShader(sFragment);
     checkCompileErrors(sFragment, "FRAGMENT");
     // if geometry shader source code is given, also compile geometry shader
-    if (geometrySource != nullptr)
-    {
-        gShader = glCreateShader(GL_GEOMETRY_SHADER);
-        glShaderSource(gShader, 1, &geometrySource, NULL);
-        glCompileShader(gShader);
-        checkCompileErrors(gShader, "GEOMETRY");
-    }
     // shader program
     this->ID = glCreateProgram();
     glAttachShader(this->ID, sVertex);
     glAttachShader(this->ID, sFragment);
-    if (geometrySource != nullptr)
-        glAttachShader(this->ID, gShader);
     glLinkProgram(this->ID);
     checkCompileErrors(this->ID, "PROGRAM");
     // delete the shaders as they're linked into our program now and no longer necessary
     glDeleteShader(sVertex);
     glDeleteShader(sFragment);
-    if (geometrySource != nullptr)
-        glDeleteShader(gShader);
 }
 
-void Shader::CompileCompute(const char* computeSource)
+void Shader::CompileCompute(const char* computeSources[], GLint lengths[],int len)
 {
     unsigned int cShader;
     cShader = glCreateShader(GL_COMPUTE_SHADER);
-    glShaderSource(cShader,1,&computeSource,NULL);
+    glShaderSource(cShader,len,computeSources,lengths);
     glCompileShader(cShader);
     checkCompileErrors(cShader,"COMPUTE");
 

@@ -21,8 +21,8 @@ public:
     static std::map<std::string, Shader>    Shaders;
     static std::map<std::string, Texture2D> Textures;
     // loads (and generates) a shader program from file loading vertex, fragment (and geometry) shader's source code. If gShaderFile is not nullptr, it also loads a geometry shader
-    static Shader&    LoadShader(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile, std::string name);
-    static Shader& LoadComputeShader(const char* cShaderFile, std::string name);
+    static Shader&    LoadShader(std::vector<const char*> vShaderFiles,std::vector<const char*> fShaderFiles, std::string name);
+    static Shader& LoadComputeShader(std::vector<const char*> cShaderFiles, std::string name);
     static Shader& LoadShader(std::string name);
     static Shader& LoadShaderText(std::string name);
     // retrieves a stored sader
@@ -37,8 +37,8 @@ private:
     // private constructor, that is we do not want any actual resource manager objects. Its members and functions should be publicly available (static).
     ResourceManager() { }
     // loads and generates a shader from file
-    static Shader    loadShaderFromFile(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile = nullptr);
-    static Shader    loadComputeShaderFromFile(const char *cShaderFile);
+    static Shader    loadShaderFromFile(std::vector<const char*> vShaderFiles, std::vector<const char*> fShaderFiles);
+    static Shader    loadComputeShaderFromFile(std::vector<const char*> cShaderFiles);
     static Shader loadDefaultShader();
     static Shader loadTextShader();
     // loads a single texture from file

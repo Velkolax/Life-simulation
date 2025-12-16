@@ -17,7 +17,7 @@ SimulationEngine::SimulationEngine(Board* board)
 void SimulationEngine::InitSsbos(Board *board)
 {
     int boardSize = board->getHeight()*board->getWidth();
-    std::vector<BacteriaData> b;
+    std::vector<BacteriaData> b; b.reserve(boardSize);
     std::vector<uint32_t> freePlaces(boardSize,0);
     std::vector<int32_t> boardData(boardSize, 0);
 
@@ -28,10 +28,11 @@ void SimulationEngine::InitSsbos(Board *board)
         Hexagon *h = board->getHexagon(i);
         if (bacteria(h->getResident()))
         {
-            b.emplace_back(h->getPos(),id,1,100);
+            b.emplace_back(h->getPos(),id,1,1000);
             boardData[i]=id+1;
             id++;
         }
+        if (wall(h->getResident())) boardData[i]=-1;
     }
     for (int i=id;i<boardSize;i++)
     {
@@ -42,12 +43,6 @@ void SimulationEngine::InitSsbos(Board *board)
     counters.aliveCount = id;
     counters.stackTop = boardSize-id;
 
-    for (int i=0;i<boardSize;i++)
-    {
-        Hexagon *h = board->getHexagon(i);
-        if (wall(h->getResident())) boardData[i]=-1;
-    }
-
     auto createSSBO = [](GLuint& id, int binding, const void* data, size_t size)
     {
         glGenBuffers(1, &id);
@@ -56,6 +51,18 @@ void SimulationEngine::InitSsbos(Board *board)
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, id);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     };
+    // for (auto &bac : b)
+    // {
+    //     if (bac.alive==1)
+    //     {
+    //         std::cout << "------------------- NETWORK ------------------" << std::endl;
+    //         for (int i=0;i<NETWORK_SIZE_VEC4;i++)
+    //         {
+    //             std::cout << bac.network[i].x << " " << bac.network[i].y << " " << bac.network[i].z << " " << bac.network[i].w << std::endl;
+    //         }
+    //     }
+    //
+    // }
 
     createSSBO(ssboGrid,      1, boardData.data(), boardData.size() * sizeof(int32_t));
     createSSBO(ssboBacteria,    0, b.data(),    b.size() * sizeof(BacteriaData));
@@ -71,27 +78,42 @@ void SimulationEngine::ssbo_barrier()
     glMemoryBarrier(GL_ALL_BARRIER_BITS);
 }
 
-void SimulationEngine::MoveBacteria(Shader &shader)
+void SimulationEngine::MoveBacteria()
 {
 
+    Shader &shader = ResourceManager::GetShader("movement");
     shader.Use();
     shader.SetInteger("bWidth",bWidth);
     shader.SetInteger("bHeight",bHeight);
     shader.SetFloat("time",(float)glfwGetTime());
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssboBacteria);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssboGrid);
-    if (glDispatchCompute == NULL)
-    {
+    // glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssboBacteria);
+    // glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssboGrid);
+    if (glDispatchCompute == NULL) {
         std::cout << "CRITICAL ERROR: glDispatchCompute is NULL! OpenGL functions not loaded correctly." << std::endl;
         exit(-1);
     }
-    glDispatchCompute(bWidth*bHeight,1,1);
+    int bCount = bWidth*bHeight;
+    int groupSize = 256;
+
+    glDispatchCompute((bCount+groupSize-1)/groupSize,1,1);
+    ssbo_barrier();
+}
+
+
+void SimulationEngine::PassTime()
+{
+    Shader &shader = ResourceManager::GetShader("passTime");
+    shader.Use();
+    shader.SetInteger("dt",1);
+    int bCount = bWidth*bHeight;
+    int groupSize = 256;
+
+    glDispatchCompute((bCount+groupSize-1)/groupSize,1,1);
     ssbo_barrier();
 }
 
 void SimulationEngine::Tick()
 {
-
-    MoveBacteria(ResourceManager::GetShader("movement"));
-
+    MoveBacteria();
+    PassTime();
 }

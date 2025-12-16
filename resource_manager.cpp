@@ -14,28 +14,28 @@ std::map<std::string, Texture2D>    ResourceManager::Textures;
 std::map<std::string, Shader>       ResourceManager::Shaders;
 
 
-Shader& ResourceManager::LoadShader(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile, std::string name)
+Shader& ResourceManager::LoadShader(std::vector<const char*> vShaderFiles,std::vector<const char*> fShaderFiles, std::string name)
 {
-    Shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile);
+    Shaders[name] = loadShaderFromFile(vShaderFiles, fShaderFiles);
     return Shaders[name];
 }
-Shader& ResourceManager::LoadComputeShader(const char *cShaderFile,std::string name)
+Shader& ResourceManager::LoadComputeShader(std::vector<const char*> cShaderFiles,std::string name)
 {
-    Shaders[name] = loadComputeShaderFromFile(cShaderFile);
-    return Shaders[name];
-}
-
-Shader& ResourceManager::LoadShader(std::string name)
-{
-    Shaders[name] = loadDefaultShader();
+    Shaders[name] = loadComputeShaderFromFile(cShaderFiles);
     return Shaders[name];
 }
 
-Shader& ResourceManager::LoadShaderText(std::string name)
-{
-    Shaders[name] = loadTextShader();
-    return Shaders[name];
-}
+// Shader& ResourceManager::LoadShader(std::string name)
+// {
+//     Shaders[name] = loadDefaultShader();
+//     return Shaders[name];
+// }
+
+// Shader& ResourceManager::LoadShaderText(std::string name)
+// {
+//     Shaders[name] = loadTextShader();
+//     return Shaders[name];
+// }
 
 Shader& ResourceManager::GetShader(std::string name)
 {
@@ -63,90 +63,132 @@ void ResourceManager::Clear()
         glDeleteTextures(1, &iter.second.ID);
 }
 
-Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile)
+Shader ResourceManager::loadShaderFromFile(std::vector<const char*> vShaderFiles, std::vector<const char*> fShaderFiles)
 {
+    std::vector<std::string> vShaderContents;
+    std::vector<const char*> vShaderCodes;
+    std::vector<GLint> vlengths;
     // 1. retrieve the vertex/fragment source code from filePath
-    std::string vertexCode;
-    std::string fragmentCode;
-    std::string geometryCode;
-    try
+    for (auto vShaderFile : vShaderFiles)
     {
-        // open files
-        std::ifstream vertexShaderFile(vShaderFile);
-        std::ifstream fragmentShaderFile(fShaderFile);
-        std::stringstream vShaderStream, fShaderStream;
-        // read file's buffer contents into streams
-        vShaderStream << vertexShaderFile.rdbuf();
-        fShaderStream << fragmentShaderFile.rdbuf();
-        // close file handlers
-        vertexShaderFile.close();
-        fragmentShaderFile.close();
-        // convert stream into string
-        vertexCode = vShaderStream.str();
-        fragmentCode = fShaderStream.str();
-        // if geometry shader path is present, also load a geometry shader
-        if (gShaderFile != nullptr)
+        std::string computeCode;
+        try
         {
-            std::ifstream geometryShaderFile(gShaderFile);
-            std::stringstream gShaderStream;
-            gShaderStream << geometryShaderFile.rdbuf();
-            geometryShaderFile.close();
-            geometryCode = gShaderStream.str();
+            // open files
+            std::ifstream computeShaderFile(vShaderFile);
+            std::stringstream cShaderStream;
+            // read file's buffer contents into streams
+            cShaderStream << computeShaderFile.rdbuf();
+            // close file handlers
+            computeShaderFile.close();
+            // convert stream into string
+            computeCode = cShaderStream.str();
         }
+        catch (std::exception e)
+        {
+            std::cout << "ERROR::SHADER: Failed to read compute shader files" << std::endl;
+        }
+        vShaderContents.push_back(computeCode);
+
     }
-    catch (std::exception e)
+
+    for (const auto& content : vShaderContents)
     {
-        std::cout << "ERROR::SHADER: Failed to read shader files" << std::endl;
+        vShaderCodes.push_back(content.c_str());
+        vlengths.push_back((GLint)content.length());
     }
-    const char *vShaderCode = vertexCode.c_str();
-    const char *fShaderCode = fragmentCode.c_str();
-    const char *gShaderCode = geometryCode.c_str();
-    // 2. now create shader object from source code
-    Shader shader;
-    shader.Compile(vShaderCode, fShaderCode, gShaderFile != nullptr ? gShaderCode : nullptr);
-    return shader;
-}
-
-Shader ResourceManager::loadComputeShaderFromFile(const char* cShaderFile)
-{
-
+    std::vector<std::string> fShaderContents;
+    std::vector<const char*> fShaderCodes;
+    std::vector<GLint> flengths;
     // 1. retrieve the vertex/fragment source code from filePath
-    std::string computeCode;
-    try
+    for (auto fShaderFile : fShaderFiles)
     {
-        // open files
-        std::ifstream computeShaderFile(cShaderFile);
-        std::stringstream cShaderStream;
-        // read file's buffer contents into streams
-        cShaderStream << computeShaderFile.rdbuf();
-        // close file handlers
-        computeShaderFile.close();
-        // convert stream into string
-        computeCode = cShaderStream.str();
+        std::string computeCode;
+        try
+        {
+            // open files
+            std::ifstream computeShaderFile(fShaderFile);
+            std::stringstream cShaderStream;
+            // read file's buffer contents into streams
+            cShaderStream << computeShaderFile.rdbuf();
+            // close file handlers
+            computeShaderFile.close();
+            // convert stream into string
+            computeCode = cShaderStream.str();
+        }
+        catch (std::exception e)
+        {
+            std::cout << "ERROR::SHADER: Failed to read compute shader files" << std::endl;
+        }
+        fShaderContents.push_back(computeCode);
+
     }
-    catch (std::exception e)
+
+    for (const auto& content : fShaderContents)
     {
-        std::cout << "ERROR::SHADER: Failed to read compute shader files" << std::endl;
+        fShaderCodes.push_back(content.c_str());
+        flengths.push_back((GLint)content.length());
     }
-    const char *cShaderCode = computeCode.c_str();
+    GLint vs = vShaderCodes.size();
+    GLint fs = fShaderCodes.size();
     Shader shader;
-    shader.CompileCompute(cShaderCode);
+    shader.Compile(vShaderCodes.data(),fShaderCodes.data(),vlengths.data(),flengths.data(),vs,fs);
     return shader;
 }
 
-Shader ResourceManager::loadDefaultShader()
+Shader ResourceManager::loadComputeShaderFromFile(std::vector<const char*> cShaderFiles)
 {
+    std::vector<std::string> cShaderContents;
+    std::vector<const char*> cShaderCodes;
+    std::vector<GLint> lengths;
+    // 1. retrieve the vertex/fragment source code from filePath
+    for (auto cShaderFile : cShaderFiles)
+    {
+        std::string computeCode;
+        try
+        {
+            // open files
+            std::ifstream computeShaderFile(cShaderFile);
+            std::stringstream cShaderStream;
+            // read file's buffer contents into streams
+            cShaderStream << computeShaderFile.rdbuf();
+            // close file handlers
+            computeShaderFile.close();
+            // convert stream into string
+            computeCode = cShaderStream.str();
+        }
+        catch (std::exception e)
+        {
+            std::cout << "ERROR::SHADER: Failed to read compute shader files" << std::endl;
+        }
+        cShaderContents.push_back(computeCode);
+
+    }
+
+    for (const auto& content : cShaderContents)
+    {
+        cShaderCodes.push_back(content.c_str());
+        lengths.push_back((GLint)content.length());
+    }
+    GLint s = cShaderCodes.size();
     Shader shader;
-    shader.Compile(shaders_sprite_vs,shaders_sprite_fs,nullptr);
+    shader.CompileCompute(cShaderCodes.data(),lengths.data(),s);
     return shader;
 }
 
-Shader ResourceManager::loadTextShader()
-{
-    Shader shader;
-    shader.Compile(shaders_text_vs,shaders_text_fs,nullptr);
-    return shader;
-}
+// Shader ResourceManager::loadDefaultShader()
+// {
+//     Shader shader;
+//     shader.Compile(shaders_sprite_vs,shaders_sprite_fs,nullptr);
+//     return shader;
+// }
+
+// Shader ResourceManager::loadTextShader()
+// {
+//     Shader shader;
+//     shader.Compile(shaders_text_vs,shaders_text_fs);
+//     return shader;
+// }
 
 
 Texture2D ResourceManager::loadTextureFromFile(const char *file, bool alpha)

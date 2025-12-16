@@ -1,32 +1,7 @@
-#version 430 core
 
-layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+// SHADER THAT HANDLES MOVEMENT OF BACTERIA
 
-struct Bacteria {
-    // Position on hex map
-    ivec2 pos;
-    ivec2 target_pos;
-
-
-    //vec4 network[GENOME_SIZE];
-    uint id;
-    //vec4 memory[2];
-
-    // Less important parameters
-    uint life;
-    uint rem_life;
-    //uint reflex;
-    uint alive;
-
-};
-
-layout(std430, binding=0) restrict buffer BacteriaBlock {
-    Bacteria bacteria[];
-};
-
-layout(std430, binding = 1) restrict buffer GridBuffer {
-    int grid[];
-};
+layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
 
 uniform int bWidth;
 uniform int bHeight;
@@ -42,16 +17,8 @@ int randomInt(uint seed, int maxVal){
 }
 
 
-const ivec2 evenD[6] = ivec2[](
-        ivec2(0,-1), ivec2(-1,-1), ivec2(-1,0),
-        ivec2(0,1), ivec2(1,0), ivec2(1,-1)
-);
 
 
-const ivec2 oddD[6] = ivec2[](
-        ivec2(0,-1), ivec2(-1,0), ivec2(-1,1),
-        ivec2(0,1), ivec2(1,1), ivec2(1,0)
-);
 
 void main(){
     uint index = gl_GlobalInvocationID.x;
@@ -59,11 +26,16 @@ void main(){
     if(bacteria[index].alive==0) return;
 
     ivec2 currentPos = bacteria[index].pos;
-    int dir = randomInt(index,5);
-    ivec2 offset;
 
-    if((currentPos.x & 1) == 0) offset = evenD[dir];
-    else offset = oddD[dir];
+    int dir = computeNetwork(index,currentPos,bWidth,bHeight);
+    ivec2 offset;
+    if(dir==0) offset = ivec2(0,0);
+    else{
+        if((currentPos.x & 1) == 0) offset = evenD[dir-1];
+        else offset = oddD[dir-1];
+    }
+
+
     if(currentPos.x<0 || currentPos.x>=bWidth || currentPos.y<0 || currentPos.y>=bHeight) {
         bacteria[index].alive = 0;
         return;
