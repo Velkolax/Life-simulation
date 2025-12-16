@@ -3,7 +3,7 @@
 //
 
 #include "simulation_engine.h"
-
+#include <glm/gtc/type_precision.hpp>
 #include "BacteriaData.h"
 #include "GLFW/glfw3.h"
 
@@ -20,7 +20,6 @@ void SimulationEngine::InitSsbos(Board *board)
     std::vector<BacteriaData> b; b.reserve(boardSize);
     std::vector<uint32_t> freePlaces(boardSize,0);
     std::vector<int32_t> boardData(boardSize, 0);
-
 
     int id = 0;
     for (int i=0;i<boardSize;i++)
@@ -39,6 +38,7 @@ void SimulationEngine::InitSsbos(Board *board)
         b.emplace_back(glm::ivec2(-2137,-2137),id,0,0);
         freePlaces.push_back(i);
     }
+
     Counters counters;
     counters.aliveCount = id;
     counters.stackTop = boardSize-id;

@@ -139,6 +139,7 @@ void Game::Render()
     Renderer->DrawSprites(Engine->GetGridSSBO(),board,"hexagon",1,ResourceManager::GetShader("hex"));
     //double t2 = glfwGetTime();
     Renderer->DrawSprites(Engine->GetBacteriaSSBO(),board,"bacteria",0,ResourceManager::GetShader("sprite"));
+
     //double t3 = glfwGetTime();
     //double t4 = glfwGetTime();
     // std::cout << "CZAS RENDEROWANIA HEXÓW: " << t2-t1 << std::endl;
