@@ -70,6 +70,58 @@ void Board::InitializeRandom(int min, int max)
     }
 }
 
+void Hexagon::placeWall()
+{
+    resident = Resident::Wall;
+}
+
+void Hexagon::placeEmpty()
+{
+    resident = Resident::Empty;
+}
+
+void Hexagon::placeAcid()
+{
+    resident = Resident::Acid;
+    data.acid.amount = std::uniform_int_distribution<uint8_t>(1, MAX_STORED_VALUE)(gen);
+}
+
+void Hexagon::placeAcid(uint8_t amount)
+{
+    resident = Resident::Acid;
+    data.acid.amount = amount;
+}
+
+void Hexagon::placeEnergy()
+{
+    resident = Resident::Energy;
+    data.energy.amount = std::uniform_int_distribution<uint8_t>(1, MAX_STORED_VALUE)(gen);
+}
+
+void Hexagon::placeEnergy(uint8_t amount)
+{
+    resident = Resident::Energy;
+    data.energy.amount = amount;
+}
+
+void Hexagon::placeProtein()
+{
+    resident = Resident::Protein;
+    data.protein.amount = std::uniform_int_distribution<uint8_t>(1, MAX_STORED_VALUE)(gen);
+}
+
+void Hexagon::placeProtein(uint8_t amount)
+{
+    resident = Resident::Protein;
+    data.protein.amount = amount;
+}
+
+void Hexagon::placeBacteria()
+{
+    resident = Resident::Bacteria;
+    data.bacteria.randomize();
+}
+
 bool Hexagon::isNearWater(Board *board)
 {
     return (neighbours(board, 0, false, [](Hexagon* h) { return wall(h->resident); })).size() > 0;

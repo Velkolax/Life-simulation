@@ -2,17 +2,34 @@
 #include <iostream>
 #include "board.h"
 
-BacteriaData::BacteriaData(glm::ivec2 pos,uint32_t id,uint32_t alive,int32_t lifespan):
-        pos(pos),
-        target_pos(pos),
-        id(id),
-        lifespan(lifespan),
-        remaining_lifespan(lifespan),
-        alive(alive)
+/*BacteriaData::BacteriaData(glm::ivec2 pos,uint32_t id,uint32_t alive,int32_t lifespan):
+    pos(pos),
+    target_pos(pos),
+    lifespan(lifespan),
+    remaining_lifespan(lifespan),
+    alive(alive)
 {
-        if (alive==1) fillNetworkWithRandom();
+    if (alive==1) fillNetworkWithRandom();
+}*/
+
+void BacteriaData::randomize()
+{
+    std::uniform_real_distribution<float> memoryDist(0., 100.);
+    for(int i = 0; i < MEMORY_SIZE; i++) memory[i] = memoryDist(gen);
+
+    std::uniform_int_distribution<uint8_t> accustomableDist(1, MAX_ACCUSTOMABLE_VALUE);
+    lifespan = accustomableDist(gen);
+    speed = accustomableDist(gen);
+
+    std::uniform_int_distribution<uint8_t> storedDist(1, MAX_STORED_VALUE);
+    acid = storedDist(gen);
+    energy = storedDist(gen);
+    protein = storedDist(gen);
+
+    age = 0;
 }
 
+/*
 void BacteriaData::fillNetworkWithRandom()
 {
 
@@ -40,4 +57,19 @@ void BacteriaData::fillNetworkWithRandom()
         }
 
 }
+*/
 
+/*AcidData::AcidData(uint8_t amount)
+{
+    this->amount = amount;
+}
+
+EnergyData::EnergyData(uint8_t amount)
+{
+    this->amount = amount;
+}
+
+ProteinData::ProteinData(uint8_t amount)
+{
+    this->amount = amount;
+}*/

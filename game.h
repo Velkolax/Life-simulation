@@ -54,7 +54,7 @@ public:
     void RefreshOutline();
     void Update(float dt);
     void Resize(int width, int height);
-    void Tick();
+    //void Tick();
     void Render();
     std::map<int,bool> clickedMovingKeys{
         {GLFW_KEY_W,false},

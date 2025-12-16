@@ -16,13 +16,13 @@
 
 typedef int16_t coord;
 typedef uint16_t ucoord;
-typedef unsigned char uint8;
 
-enum class Resident : uint8
+enum class Resident : uint8_t
 {
     Wall,
     Empty,
     Bacteria,
+    Acid,
     Energy,
     Protein
 };
@@ -47,9 +47,9 @@ class Game; // kosmita 👽👽👽
 union ResidentData
 {
     BacteriaData bacteria;
-    //EnergyData energy;
-    //ProteinData protein;
-    //AcidData acid;
+    EnergyData energy;
+    ProteinData protein;
+    AcidData acid;
 };
 
 
@@ -70,7 +70,16 @@ public:
     inline coord getY() const noexcept { return y; }
     inline glm::ivec2 getPos() const noexcept { return glm::ivec2(x, y); }
     inline Resident getResident() const noexcept { return resident; }
-    inline void setResident(Resident resident) noexcept { this->resident = resident; }
+
+    void placeWall();
+    void placeEmpty();
+    void placeAcid();
+    void placeAcid(uint8_t amount);
+    void placeEnergy();
+    void placeEnergy(uint8_t amount);
+    void placeProtein();
+    void placeProtein(uint8_t amount);
+    void placeBacteria();
 
     bool isNearWater(Board* board);
 
