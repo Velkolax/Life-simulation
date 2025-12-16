@@ -4,25 +4,13 @@
 #include <set>
 #include <algorithm>
 
-void markAll(std::vector<Hexagon *> hexagons)
-{
-    for(Hexagon* h : hexagons) h->mark();
-}
-
-void unmarkAll(std::vector<Hexagon*> hexagons)
-{
-    for(Hexagon* h : hexagons) h->unmark();
-}
-
 
 Hexagon::Hexagon() : x(0), y(0), resident(Resident::Wall){}
 
 Hexagon::Hexagon(coord x, coord y) : x(x), y(y), resident(Resident::Wall){}
 
 Hexagon::Hexagon(coord x, coord y, Resident resident) : x(x), y(y), resident(resident)
-{
-
-}
+{}
 
 Board::Board(coord width, coord height, Game* game) : width(width), height(height), game(game)
 {

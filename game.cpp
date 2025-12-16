@@ -39,12 +39,13 @@ void Game::Init()
 
     // Text = new TextRenderer(this->Width, this->Height);
     // Text->Load(24);
-    int bacteriaCount = 10000;
+    int bacteriaCount = 100000;
     int x = 500;
     int y = 500;
     board = new Board(x, y, this);
     int total = x*y;
-    board->InitializeRandom(total * 0.5, total * 0.9);
+    board->InitializeNeighbour(249, true);
+    //board->InitializeRandom(total * 0.5, total * 0.9);
 
     board->spawnBacteria(bacteriaCount);
     board->spawnFood(0.1);
@@ -59,6 +60,7 @@ void Game::Init()
 
 void Game::Update(float dt)
 {
+    Engine->Tick();
 }
 
 void Game::Resize(int width, int height)
@@ -138,7 +140,6 @@ void Game::Render()
     //double t2 = glfwGetTime();
     Renderer->DrawSprites(Engine->GetBacteriaSSBO(),board,"bacteria",0,ResourceManager::GetShader("sprite"));
     //double t3 = glfwGetTime();
-    Engine->Tick();
     //double t4 = glfwGetTime();
     // std::cout << "CZAS RENDEROWANIA HEXÓW: " << t2-t1 << std::endl;
     // std::cout << "CZAS RENDEROWANIA BAKTERII: " << t3-t2 << std::endl;

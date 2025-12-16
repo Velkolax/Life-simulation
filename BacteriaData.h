@@ -46,6 +46,7 @@ struct alignas(16) BacteriaData
 
     glm::vec4 network[NETWORK_SIZE_VEC4];
 
+    BacteriaData() = default;
     BacteriaData(glm::ivec2 pos,uint32_t id,uint32_t alive,int32_t lifespan);
     void fillNetworkWithRandom();
 };

@@ -47,9 +47,9 @@ class Game; // kosmita 👽👽👽
 union ResidentData
 {
     BacteriaData bacteria;
-    EnergyData energy;
-    ProteinData protein;
-    AcidData acid;
+    //EnergyData energy;
+    //ProteinData protein;
+    //AcidData acid;
 };
 
 
@@ -64,13 +64,11 @@ private:
 public:
     Hexagon();
     Hexagon(coord x, coord y);
-    Hexagon(coord x, coord y, uint8 ownerId, Resident resident);
+    Hexagon(coord x, coord y, Resident resident);
 
     inline coord getX() const noexcept { return x; }
     inline coord getY() const noexcept { return y; }
     inline glm::ivec2 getPos() const noexcept { return glm::ivec2(x, y); }
-    inline uint8 getOwnerId() const noexcept { return ownerId; }
-    inline void setOwnerId(uint8 ownerId) noexcept { this->ownerId = ownerId; }
     inline Resident getResident() const noexcept { return resident; }
     inline void setResident(Resident resident) noexcept { this->resident = resident; }
 
