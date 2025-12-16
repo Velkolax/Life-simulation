@@ -76,13 +76,13 @@ void Game::Resize(int width, int height)
 
 
 
-void Game::Tick()
+/*void Game::Tick()
 {
     //board->moveBacteriasRandomly();
     //board->passTime();
     //board->tick();
     //step+=1;
-}
+}*/
 
 
 void Game::ProcessInput(float dt)
@@ -115,7 +115,7 @@ void Game::ProcessInput(float dt)
     }
     if (pressedKey==GLFW_KEY_SPACE)
     {
-        this->Tick();
+        //this->Tick();
     }
     if(pressedKey==GLFW_KEY_ENTER)
     {
@@ -124,8 +124,8 @@ void Game::ProcessInput(float dt)
     }
     if(pressedKey!=GLFW_KEY_ENTER && enterPressed)
     {
-        enterPressed = false;
-        this->Tick();
+        //enterPressed = false;
+        //this->Tick();
     }
 
 }

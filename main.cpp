@@ -29,6 +29,8 @@ Game* sim = new Game(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 int main(int argc, char *argv[])
 {
+    gen = std::mt19937(std::random_device{}());
+
     // OPENGL
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
