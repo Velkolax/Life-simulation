@@ -40,13 +40,13 @@ uniform int stride;
 uniform int indices;
 
 void main() {
-    uint i = gl_GlobalInvocationID.x;
-    if (i >= indices) return;
-    uint id = ids[i];
+    uint index = gl_GlobalInvocationID.x;
+    if (index >= indices) return;
+    uint id = ids[index];
     if(id >= stride) return;
 
     float inputLayer[INPUT];
-    for(int i=0; i<INPUT; i++) inputLayer[i] = inData[id][i];
+    for(int i=0; i<INPUT; i++) inputLayer[i] = inData[index][i];
 
     int bPtr = B1_START;
     int wPtr = W1_START;
@@ -97,7 +97,7 @@ void main() {
             sum += h3[j] * weight;
             wPtr++;
         }
-        outData[id][i] = tanh(sum);
+        outData[index][i] = tanh(sum);
     }
 
      //outData[id].outputs[0] = 123.456;
