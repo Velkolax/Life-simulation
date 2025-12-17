@@ -36,7 +36,6 @@ void Board::InitializeNeighbour(int recursion, bool includeMiddle)
     }
 }
 
-
 void Board::InitializeRandom(int min, int max)
 {
     std::uniform_int_distribution<int> randN(min, max);
@@ -68,6 +67,34 @@ void Board::InitializeRandom(int min, int max)
         }
         n--;
     }
+}
+
+
+void sendAllBacterias(Board* board, int size, std::vector<Hexagon*>& bacteriaHexes)
+{
+    float buffer[size];
+    float* p = buffer;
+    for(Hexagon* h : bacteriaHexes)
+    {
+        h->getData().bacteria.sendToNetwork(board, buffer, h->getX(), h->getY());
+        p += SEND_SIZE;
+    }
+
+    // WYSYŁANIE CAŁOŚCI
+}
+
+
+void Board::tick()
+{
+    std::vector<Hexagon*> bacteriaHexes;
+    bacteriaHexes.reserve(64);
+    int total = width * height;
+    for(int i = 0; i < total; i++)
+    {
+        if(bacteria(board[i].getResident())) bacteriaHexes.push_back(&(board[i]));
+    }
+
+    sendAllBacterias(this, bacteriaHexes.size() * SEND_SIZE, bacteriaHexes);
 }
 
 
@@ -123,10 +150,10 @@ void Hexagon::placeBacteria()
     data.bacteria.randomize();
 }
 
-bool Hexagon::isNearWater(Board *board)
+/*bool Hexagon::isNearWater(Board *board)
 {
     return (neighbours(board, 0, false, [](Hexagon* h) { return wall(h->resident); })).size() > 0;
-}
+}*/
 
 void Board::spawnFood(double foodRatio)
 {

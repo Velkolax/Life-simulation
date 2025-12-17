@@ -45,7 +45,6 @@ union ResidentData
     EnergyData energy;
     ProteinData protein;
     AcidData acid;
-    float* sendToNetwork(Board* board, coord x, coord y);
 };
 
 
@@ -79,7 +78,7 @@ public:
     void placeProtein(uint8_t amount);
     void placeBacteria();
 
-    bool isNearWater(Board* board);
+    //bool isNearWater(Board* board);
 
     std::vector<Hexagon*> neighbours(Board* board, int recursion = 0, bool includeSelf = false, std::function<bool(Hexagon*)> filter = nullptr);
     std::vector<Hexagon*> doubleFilterNeighbours(Board* board, int recursion, bool includeSelf, std::function<bool(Hexagon*)> expansionFilter, std::function<bool(Hexagon*)> resultFilter);
@@ -100,10 +99,11 @@ public:
     // inicjalizatory
     Board(coord width, coord height, Game* game);
     void InitializeRandom(int min, int max);
-    float* getAllInputData();
     void InitializeNeighbour(int recursion, bool includeMiddle);
-    void spawnFood(double foodRatio);
 
+    void tick();
+
+    void spawnFood(double foodRatio);
     void spawnBacteria(int bacteriaCount);
     size_t getBacteriasNumber();
     // gettery/settery

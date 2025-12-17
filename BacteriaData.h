@@ -99,7 +99,7 @@ struct BacteriaData
     uint8_t age;
 
     void randomize();
-    float* sendToNetwork(Board* board, coord x, coord y);
+    void sendToNetwork(Board* board, float* f, coord x, coord y);
 };
 
 static_assert(std::is_trivially_constructible_v<BacteriaData>);
@@ -110,7 +110,6 @@ static_assert(std::is_trivially_destructible_v<BacteriaData>);
 struct AcidData
 {
     uint8_t amount;
-    float* sendToNetwork(Board* board, coord x, coord y);
 };
 
 static_assert(std::is_trivially_constructible_v<AcidData>);
@@ -121,7 +120,6 @@ static_assert(std::is_trivially_destructible_v<AcidData>);
 struct EnergyData
 {
     uint8_t amount;
-    float* sendToNetwork(Board* board, coord x, coord y);
 };
 
 static_assert(std::is_trivially_constructible_v<EnergyData>);

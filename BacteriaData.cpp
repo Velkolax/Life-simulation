@@ -64,11 +64,8 @@ constexpr float INV_RESIDENT = 1.0f / float(Resident::Protein);
 constexpr float INV_MAX_ACCUSTOMABLE = 1.0f / MAX_ACCUSTOMABLE_VALUE;
 constexpr float INV_MAX_STORED = 1.0f / MAX_STORED_VALUE;
 
-float* BacteriaData::sendToNetwork(Board* board, coord x, coord y)
+void BacteriaData::sendToNetwork(Board* board, float* f, coord x, coord y)
 {
-    float buffor[SEND_SIZE];
-    float* f = buffor;
-
     memcpy(f, memory, sizeof(memory));
     f += MEMORY_SIZE;
 
@@ -106,7 +103,6 @@ float* BacteriaData::sendToNetwork(Board* board, coord x, coord y)
             *f++ = hex->getData().bacteria.protein * INV_MAX_STORED; // przekazujemy ilość białka by oszacować czy jest bogata
         }
     }
-    return f;
 }
 
 static_assert(MEMORY_SIZE + 1 + 6 + TWO_NEIGHBOUR_LAYERS_SIZE * 3 <= SEND_SIZE, "SEND_SIZE too small");
