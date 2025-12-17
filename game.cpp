@@ -17,7 +17,7 @@ SpriteRenderer* Renderer;
 SimulationEngine* Engine;
 
 
-Game::Game(unsigned int width, unsigned int height) : State(GameState::GAME_ACTIVE), Width(width), Height(height), board()
+Game::Game(unsigned int width, unsigned int height) : Width(width), Height(height), board()
 {
 }
 
