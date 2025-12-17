@@ -65,7 +65,7 @@ public:
     inline coord getY() const noexcept { return y; }
     inline glm::ivec2 getPos() const noexcept { return glm::ivec2(x, y); }
     inline Resident getResident() const noexcept { return resident; }
-    inline void setResident(Resident resident) noexcept { this->resident = resident; }
+    //inline void setResident(Resident resident) noexcept { this->resident = resident; } // Używaj funkcji place zamiast tego
     inline const ResidentData& getData() const noexcept { return data; }
 
     void placeWall();

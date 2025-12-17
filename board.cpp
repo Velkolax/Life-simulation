@@ -32,7 +32,7 @@ void Board::InitializeNeighbour(int recursion, bool includeMiddle)
     auto neighbours = middle->neighbours(this, recursion, includeMiddle);
     for(Hexagon* hex : neighbours)
     {
-        hex->setResident(Resident::Empty);
+        hex->placeEmpty();
     }
 }
 
@@ -56,7 +56,7 @@ void Board::InitializeRandom(int min, int max)
         addableS.erase(hex);
         addableV[index] = addableV.back();
         addableV.pop_back();
-        hex->setResident(Resident::Empty);
+        hex->placeEmpty();
         auto neighbours = hex->neighbours(this, 0, false, [](Hexagon* h) { return wall(h->getResident()); });
         for(Hexagon* neighbour : neighbours)
         {
@@ -139,7 +139,7 @@ void Board::spawnFood(double foodRatio)
     {
         if (empty(board[range[i]].getResident()))
         {
-            board[range[i]].setResident(Resident::Energy);
+            board[range[i]].placeEnergy();
         }
 
     }
@@ -159,7 +159,7 @@ void Board::spawnBacteria(int bacteriaCount)
         {
             int x = board[range[i]].getX();
             int y = board[range[i]].getY();
-            board[range[i]].setResident(Resident::Bacteria);
+            board[range[i]].placeBacteria();
         }
     }
 }
