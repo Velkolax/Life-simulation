@@ -3,9 +3,19 @@
 #include <glm/glm.hpp>
 #include <random>
 
-
-std::mt19937 gen;
 typedef int16_t coord;
+typedef uint16_t ucoord;
+
+class Hexagon; // deklaracje by nie było problemu z mieszaniem kolejności
+class Board;
+class Player;
+class Country;
+class Sight;
+
+class Game;
+
+inline std::mt19937 gen;
+
 #define MEMORY_SIZE 3
 
 #define MAX_ACCUSTOMABLE_VALUE 100
@@ -17,57 +27,57 @@ typedef int16_t coord;
 
 constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> evenDirections2l =
 {
-    {
-        // Pierwsza warstwa
-        { 0, -1}, // górny
-        {-1, -1}, // lewy górny
-        {-1,  0}, // lewy dolny
-        { 0,  1}, // dolny
-        { 1,  0}, // prawy dolny
-        { 1, -1}, // prawy górny
+{
+    // Pierwsza warstwa
+    { 0, -1}, // górny
+    {-1, -1}, // lewy górny
+    {-1,  0}, // lewy dolny
+    { 0,  1}, // dolny
+    { 1,  0}, // prawy dolny
+    { 1, -1}, // prawy górny
 
-        // Druga warstwa
-{ 0, -2},
-{-1, -2},
-{-2, -1},
-{-2,  0},
-{-2,  1},
-{-1,  1},
-{ 0,  2},
-{ 1,  1},
-{ 2,  1},
-{ 2,  0},
-{ 2, -1},
-{ 1, -2},
+    // Druga warstwa
+    { 0, -2},
+    {-1, -2},
+    {-2, -1},
+    {-2,  0},
+    {-2,  1},
+    {-1,  1},
+    { 0,  2},
+    { 1,  1},
+    { 2,  1},
+    { 2,  0},
+    { 2, -1},
+    { 1, -2}
 }
 };
 static_assert(evenDirections2l.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
 
 constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> oddDirections2l =
 {
-    {
-        // Pierwsza warstwa
-        { 0, -1}, // górny
-        {-1,  0}, // lewy górny
-        {-1,  1}, // lewy dolny
-        { 0,  1}, // dolny
-        { 1,  1}, // prawy dolny
-        { 1,  0},  // prawy górny
+{
+    // Pierwsza warstwa
+    { 0, -1}, // górny
+    {-1,  0}, // lewy górny
+    {-1,  1}, // lewy dolny
+    { 0,  1}, // dolny
+    { 1,  1}, // prawy dolny
+    { 1,  0}, // prawy górny
 
-        // Druga warstwa
-        { 0, -2},
-        {-1, -1},
-        {-2, -1},
-        {-2,  0},
-        {-2,  1},
-        {-1,  2},
-        { 0,  2},
-        { 1,  2},
-        { 2,  1},
-        { 2,  0},
-        { 2, -1},
-        { 1, -1},
-    }
+    // Druga warstwa
+    { 0, -2},
+    {-1, -1},
+    {-2, -1},
+    {-2,  0},
+    {-2,  1},
+    {-1,  2},
+    { 0,  2},
+    { 1,  2},
+    { 2,  1},
+    { 2,  0},
+    { 2, -1},
+    { 1, -1}
+}
 };
 static_assert(oddDirections2l.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
 
@@ -89,7 +99,7 @@ struct BacteriaData
     uint8_t age;
 
     void randomize();
-    void sendToNetwork(coord x, coord y);
+    void sendToNetwork(Board* board, coord x, coord y);
 };
 
 static_assert(std::is_trivially_constructible_v<BacteriaData>);

@@ -64,8 +64,6 @@ public:
     };
 };
 
-void executeActions(Board* board, char* actions, uint8 actionsNumber);
-
 
 
 
