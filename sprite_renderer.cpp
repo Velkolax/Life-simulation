@@ -18,7 +18,7 @@ SpriteRenderer::SpriteRenderer(Shader &shader,Board *board,int screenWidth, int 
     this->initRenderData(bWidth,bHeight);
     this->hexData.resize(bWidth*bHeight);
     this->residentData.resize(20);
-    this->getActualDimensions(board); 
+    this->getActualDimensions(board);
     for (auto& r : residentData) r.resize(bWidth*bHeight);
     this->InitPalette(board);
 }
@@ -261,7 +261,7 @@ void SpriteRenderer::generateSprites(Board *board)
     for (auto& r : residentData) r.clear();
 
     std::vector<int> ind = getAllIndicesOnAScreen(board);
-    for (int i =0;i<board->getHeight()*board->getWidth();i++)
+    for (int i : ind)
     {
         Hexagon *hex = board->getHexagon(i);
         glm::vec2 hexSizeVec(size, size * 1.73 / 2.0f);
@@ -293,7 +293,6 @@ void SpriteRenderer::DrawBoard(Board *board, int width, int height)
     {
         if (textures[i]!="nic")
         {
-            std::cout << "BBBB" << std::endl;
             RenderBatch(textures[i],residentData[i]);
         }
     }
