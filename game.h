@@ -37,7 +37,8 @@ public:
     int                     scroll = 0;
     unsigned int            Width, Height;
     bool                    enterPressed = false;
-
+    bool isPaused = true;
+    bool spacePressed = false;
     Board *board;
     TextRenderer  *Text;
     // constructor/destructor

@@ -25,7 +25,8 @@ public:
     void InitSsbos(Board *board);
     void InitNetworkData();
     void ssbo_barrier();
-    void Tick(std::function<void(DataInOut*)> updateCallback = nullptr);
+    void SendData(float *f);
+    void Tick(DataInOut* inputData,DataInOut* outputData);
     void killNetwork(int id);
     void reproduceNetwork(int idA,int idB);
     inline size_t getbCapacity(){return bCapacity;}
@@ -41,7 +42,7 @@ private:
     GLsync fences[2] = {0,0};
     float* networksPtr = nullptr;
     float* stagingPtr = nullptr;
-
+    std::vector<DataInOut> ramBuffer;
     const size_t BATCH_SIZE = 1000;
     Shader shader;
     size_t bWidth,bHeight;
