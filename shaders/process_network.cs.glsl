@@ -19,17 +19,16 @@ layout(std430, binding=0) readonly buffer NetworkBuffer {
     float allWeights[];
 };
 
-struct DataInOut {
-    float inputs[INPUT];
-    float outputs[OUTPUT];
-};
-
 layout(std430, binding=1) readonly buffer InBuffer {
-    DataInOut inData[];
+    float inData[][INPUT];
 };
 
 layout(std430, binding=2) buffer OutBuffer {
-    DataInOut outData[];
+    float outData[][OUTPUT];
+};
+
+layout(std430, binding=3) buffer IdBuffer {
+    uint ids[];
 };
 
 float relu(float x){
@@ -38,14 +37,16 @@ float relu(float x){
 
 uniform int activeBacteria;
 uniform int stride;
+uniform int indices;
 
 void main() {
-    uint id = gl_GlobalInvocationID.x;
-    if (id >= activeBacteria) return;
-
+    uint index = gl_GlobalInvocationID.x;
+    if (index >= indices) return;
+    uint id = ids[index];
+    if(id >= stride) return;
 
     float inputLayer[INPUT];
-    for(int i=0; i<INPUT; i++) inputLayer[i] = inData[id].inputs[i];
+    for(int i=0; i<INPUT; i++) inputLayer[i] = inData[index][i];
 
     int bPtr = B1_START;
     int wPtr = W1_START;
@@ -96,7 +97,7 @@ void main() {
             sum += h3[j] * weight;
             wPtr++;
         }
-        outData[id].outputs[i] = tanh(sum);
+        outData[index][i] = tanh(sum);
     }
 
      //outData[id].outputs[0] = 123.456;
