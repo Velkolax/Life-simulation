@@ -1,43 +1,31 @@
 #pragma once
 
-#ifndef NEURAL_NETWORK_H
-#define NEURAL_NETWORK_H
-
 #include <stdio.h>
 
-    typedef struct
-    {
-        int neuronCount;        // without input layer (no biases there)
-        float* neurons;
-        int connectionCount;
-        float* connections;
-    } NeuralNetwork;
+// ALL NETWORKS SHOULD HAVE THIS SIZE
+constexpr size_t INPUT = 64;
+constexpr size_t HIDDEN1 = 80;
+constexpr size_t HIDDEN2 = 32;
+constexpr size_t HIDDEN3 = 16;
+constexpr size_t OUTPUT = 8;
+constexpr size_t BIASES = HIDDEN1 + HIDDEN2 + HIDDEN3 + OUTPUT;
+constexpr size_t CONNECTIONS = INPUT * HIDDEN1 + HIDDEN1 * HIDDEN2 + HIDDEN2 * HIDDEN3 + HIDDEN3 * OUTPUT;
+constexpr size_t SIZE = BIASES + CONNECTIONS;
 
-    extern int matrixX;
-    extern int matrixY;
-    extern float* matrix;
-    static int* globalLayers;
+inline constexpr int layers[] = {INPUT, HIDDEN1, HIDDEN2, HIDDEN3, OUTPUT};
+inline constexpr int layersSize = std::size(layers);
 
-    static inline float relu(float value) { return value * (value > 0); }
+typedef struct
+{
+    float biases[BIASES];
+    float connections[CONNECTIONS];
 
-    // Build network
-    NeuralNetwork buildNetwork(int layerCount, int* layers);
+    void printNetwork();
+    void initializeRandom();
+} NeuralNetwork;
 
-    // Merge networks
-    NeuralNetwork childNetwork(NeuralNetwork* nn1, NeuralNetwork* nn2, float mutation);
+static inline float relu(float value) { return value * (value > 0); }
 
-    // Forward pass
-    float* forwardPass(NeuralNetwork* nn, float* input);
-
-    // Initialization
-    void initializeRandom(NeuralNetwork* nn);
-
-    // Debug printout
-    void printNetwork(NeuralNetwork* nn);
-    void printMatrix(NeuralNetwork* nn);
-
-    // Free memory
-    void freeNetwork(NeuralNetwork* nn);
-#endif
-
+// Merge networks
+NeuralNetwork childNetwork(NeuralNetwork* nn1, NeuralNetwork* nn2, float mutation);
 

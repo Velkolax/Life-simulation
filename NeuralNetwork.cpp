@@ -16,17 +16,8 @@ int resultBufforSize = 0;
 float* resultBuffor = NULL;
 
 
-NeuralNetwork buildNetwork(int layerCount, int* layers)
+/*NeuralNetwork buildNetwork(int layerCount, int* layers)
 {
-    int neuronCount = 0; // exclude input layer (no biases)
-    int connectionCount = 0;
-
-    for (int i = 0; i < layerCount - 1; i++)
-    {
-        neuronCount += layers[i + 1];
-        connectionCount += layers[i] * layers[i + 1];
-    }
-
     float* memory = (float*)malloc((neuronCount + connectionCount) * sizeof(float));
 
     NeuralNetwork nn;
@@ -36,33 +27,22 @@ NeuralNetwork buildNetwork(int layerCount, int* layers)
     nn.connections = memory + neuronCount;
 
     return nn;
-}
+}*/
 
 NeuralNetwork childNetwork(NeuralNetwork* nn1, NeuralNetwork* nn2, float mutation)
 {
-    NeuralNetwork res = {0};
-    /*if(mutation < 0. || mutation > 1.)
-    {
-        printf("Mutation must be a value between 0 and 1");
-        return res;
-    }
-    if(nn1->layerCount != nn2->layerCount || memcmp(nn1->layers, nn2->layers, nn1->layerCount * sizeof(int)) != 0)
-    {
-        printf("Different structure of provided networks");
-        return res;
-    }*/
-    res = buildNetwork(nn1->layerCount, nn1->layers);
+    NeuralNetwork res;
 
     float mutationBottom = 1. - mutation;
     float mutationTop = 1. + mutation;
     std::uniform_real_distribution<float> mutationDist(mutationBottom, mutationTop);
 
-    for(int i = 0; i < nn1->neuronCount; i++)
+    for(int i = 0; i < BIASES; i++)
     {
         res.neurons[i] = (nn1->neurons[i] + nn2->neurons[i]) / 2 * mutationDist(gen);
     }
 
-    for(int i = 0; i < nn1->connectionCount; i++)
+    for(int i = 0; i < CONNECTIONS; i++)
     {
         res.connections[i] = (nn1->connections[i] + nn2->connections[i]) / 2 * mutationDist(gen);
     }
@@ -70,99 +50,37 @@ NeuralNetwork childNetwork(NeuralNetwork* nn1, NeuralNetwork* nn2, float mutatio
     return res;
 }
 
-float* forwardPass(NeuralNetwork* nn, float* input)
+void NeuralNetwork::initializeRandom()
 {
-    int L = nn->layerCount;
-    int* layers = nn->layers;
-    float* neurons = nn->neurons;
-    float* connections = nn->connections;
-
-    // Resize matrix if necessary
-    int requiredX = 0;
-    for (int i = 0; i < L; i++)
-        if (layers[i] > requiredX)
-            requiredX = layers[i];
-
-    int requiredY = L;
-
-    if (requiredX > matrixX) matrixX = requiredX;
-    if (requiredY > matrixY) matrixY = requiredY;
-
-    matrix = (float*)realloc(matrix, matrixX * matrixY * sizeof(float));
-
-    // Copy input
-    memcpy(matrix, input, layers[0] * sizeof(float));
-
-    int neuronIndex = 0;
     int connectionIndex = 0;
 
-    // Forward pass
-    for (int y1 = 1; y1 < L; y1++)
+    for (int i = 0; i < BIASES; i++) biases[i] = 0.01f;
+
+    for (int i = 1; i < layersSize; i++)
     {
-        int y0 = y1 - 1;
-        int count1 = layers[y1];
-
-        for (int x1 = 0; x1 < count1; x1++)
-        {
-            int idx = y1 * matrixX + x1;
-
-            matrix[idx] = neurons[neuronIndex++]; // bias
-
-            int count0 = layers[y0];
-            for (int x0 = 0; x0 < count0; x0++)
-            {
-                matrix[idx] += connections[connectionIndex++] * matrix[y0 * matrixX + x0];
-            }
-
-            matrix[idx] = relu(matrix[idx]);
-        }
-    }
-
-    // Copy result
-    int size = layers[L - 1] * sizeof(float);
-    if(resultBufforSize < size)
-    {
-        resultBuffor = (float*)realloc(resultBuffor, size);
-        resultBufforSize = size;
-    }
-    memcpy(resultBuffor, matrix + ((L - 1) * matrixX), size);
-
-    return resultBuffor;
-}
-
-void initializeRandom(NeuralNetwork* nn)
-{
-    int neuronIndex = 0;
-    int connectionIndex = 0;
-
-    for (int i = 1; i < nn->layerCount; i++)
-    {
-        int n0 = nn->layers[i - 1];
-        int n1 = nn->layers[i];
+        int n0 = layers[i - 1];
+        int n1 = layers[i];
 
         float range = sqrtf(6.0f / n0);
         std::uniform_real_distribution<float> connectionsDist(-range, range);
 
-        for (int j = 0; j < n1; j++)
-            nn->neurons[neuronIndex++] = 0.01f;
-
         for (int j = 0; j < n1 * n0; j++)
-            nn->connections[connectionIndex++] = connectionsDist(gen);
+            connections[connectionIndex++] = connectionsDist(gen);
     }
 }
 
-void printNetwork(NeuralNetwork* nn)
+void NeuralNetwork::printNetwork()
 {
     printf("Network:\n");
 
     int index = 0;
-    for (int y = 1; y < nn->layerCount; y++)
+    for (int y = 1; y < layersSize; y++)
     {
-        if (y == nn->layerCount - 1) printf("Output: ");
+        if (y == layersSize - 1) printf("Output: ");
         else printf("Dense: ");
 
-        for (int x = 0; x < nn->layers[y]; x++)
-            printf("%f ", nn->neurons[index++]);
+        for (int x = 0; x < layers[y]; x++)
+            printf("%f ", biases[index++]);
 
         printf("\n");
     }
@@ -170,33 +88,13 @@ void printNetwork(NeuralNetwork* nn)
     printf("Connections:\n");
     index = 0;
 
-    for (int y = 1; y < nn->layerCount; y++)
+    for (int y = 1; y < layersSize; y++)
     {
-        int count = nn->layers[y] * nn->layers[y - 1];
+        int count = layers[y] * layers[y - 1];
 
         for (int x = 0; x < count; x++)
-            printf("%f ", nn->connections[index++]);
+            printf("%f ", connections[index++]);
 
         printf("\n");
     }
-}
-
-void printMatrix(NeuralNetwork* nn)
-{
-    printf("Matrix: %d x %d\n", matrixX, matrixY);
-
-    for (int y = 0; y < nn->layerCount; y++)
-    {
-        for (int x = 0; x < nn->layers[y]; x++)
-            printf("%f ", matrix[y * matrixX + x]);
-
-        printf("\n");
-    }
-}
-
-void freeNetwork(NeuralNetwork* nn)
-{
-    if (nn->neurons == NULL) return;
-    free(nn->neurons);
-    nn->neurons = NULL;
 }

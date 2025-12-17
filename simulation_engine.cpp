@@ -60,8 +60,7 @@ void SimulationEngine::InitNetworkData()
         #pragma omp parallel for
         for (int i = 0; i < localBacteriaCount; i++)
         {
-            int layers[] = {INPUT, HIDDEN1, HIDDEN2, HIDDEN3, OUTPUT};
-            NeuralNetwork nn = buildNetwork(5, layers);
+            NeuralNetwork nn = buildNetwork(layersSize, layers);
             initializeRandom(&nn);
             int paramIdx = 0;
             for(int j=0; j<nn.neuronCount; j++) {

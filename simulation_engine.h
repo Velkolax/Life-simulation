@@ -10,14 +10,6 @@ struct Counters
     uint32_t padding[2];
 };
 
-// ALL NETWORKS SHOULD HAVE THIS SIZE
-constexpr size_t INPUT = 64;
-constexpr size_t HIDDEN1 = 80;
-constexpr size_t HIDDEN2 = 32;
-constexpr size_t HIDDEN3 = 16;
-constexpr size_t OUTPUT = 8;
-constexpr size_t SIZE = INPUT * HIDDEN1 + HIDDEN1 + HIDDEN1 * HIDDEN2 + HIDDEN2 + HIDDEN2 * HIDDEN3 + HIDDEN3 + HIDDEN3 * OUTPUT + OUTPUT;
-
 // 100000 mieści się w 4GB VRAM
 // 30000 jest w miarę ok
 constexpr size_t NUMBER_OF_BACTERIA = 400; //temp
