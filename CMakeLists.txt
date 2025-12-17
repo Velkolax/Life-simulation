@@ -28,7 +28,7 @@ add_executable(life-sim
         font.h
         game.h
         game.cpp
-        NeuralNetwork.c
+        NeuralNetwork.cpp
         NeuralNetwork.h
         board.h
         board.cpp

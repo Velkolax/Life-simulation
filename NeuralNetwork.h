@@ -5,10 +5,6 @@
 
 #include <stdio.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
     typedef struct
     {
         int layerCount;
@@ -47,11 +43,6 @@ extern "C" {
 
     // Free memory
     void freeNetwork(NeuralNetwork* nn);
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif
 
 

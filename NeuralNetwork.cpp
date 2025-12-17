@@ -2,7 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <random>
 #include <time.h>
+
+#include "BacteriaData.h"
 
 
 int matrixX = 0;
@@ -15,7 +18,8 @@ float* resultBuffor = NULL;
 
 float randomFloat(float min, float max)
 {
-    return min + (max - min) * ((float)rand() / RAND_MAX);
+    std::uniform_real_distribution<float> randN(min, max);
+    return randN(gen);
 }
 
 NeuralNetwork buildNetwork(int layerCount, int* layers)
