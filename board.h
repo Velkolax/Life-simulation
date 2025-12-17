@@ -38,14 +38,6 @@ inline bool acid(Resident resident) noexcept {return resident == Resident::Acid;
 inline bool energy(Resident resident) noexcept { return resident == Resident::Energy; };
 inline bool protein(Resident resident) noexcept { return resident == Resident::Protein; };
 
-class Hexagon; // deklaracje by nie było problemu z mieszaniem kolejności
-class Board;
-class Player;
-class Country;
-class Sight;
-
-class Game; // kosmita 👽👽👽
-
 
 union ResidentData
 {
@@ -73,6 +65,7 @@ public:
     inline coord getY() const noexcept { return y; }
     inline glm::ivec2 getPos() const noexcept { return glm::ivec2(x, y); }
     inline Resident getResident() const noexcept { return resident; }
+    inline void setResident(Resident resident) noexcept { this->resident = resident; }
     inline const ResidentData& getData() const noexcept { return data; }
 
     void placeWall();
