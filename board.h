@@ -48,7 +48,8 @@ union ResidentData
     AcidData acid;
 };
 
-
+class Game;
+class SimulationEngine;
 
 class Hexagon
 {

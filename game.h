@@ -39,7 +39,8 @@ public:
     bool                    enterPressed = false;
     bool isPaused = true;
     bool spacePressed = false;
-    Board *board;
+    Board* board;
+    SimulationEngine* engine;
     TextRenderer  *Text;
     // constructor/destructor
     Game(unsigned int width, unsigned int height);

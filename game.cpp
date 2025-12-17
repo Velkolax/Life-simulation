@@ -14,7 +14,6 @@
 
 // Game-related State data
 SpriteRenderer* Renderer;
-SimulationEngine* Engine;
 
 
 Game::Game(unsigned int width, unsigned int height) : State(GameState::GAME_ACTIVE), Width(width), Height(height), board()
@@ -48,7 +47,7 @@ void Game::Init()
     board->spawnFood(0.1);
 
 
-    Engine = new SimulationEngine(board);
+    engine = new SimulationEngine(board);
     Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height);
 }
 

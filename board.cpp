@@ -80,8 +80,8 @@ void Board::tick()
 
     std::vector<uint32_t> idsBuffer;
     idsBuffer.reserve(256);
-    std::vector<DataIn> dataBuffer;
-    dataBuffer.reserve(256);
+    std::vector<DataIn> inBuffer;
+    inBuffer.reserve(256);
 
     size_t total = board.size();
     for(int i = 0; i < total; i++)
@@ -93,26 +93,22 @@ void Board::tick()
             if(step % b.speed == 0)
             {
                 idsBuffer.push_back(index);
-                dataBuffer.emplace_back();
-                b.addToBuffer(this, dataBuffer.back().input, board[i].getX(), board[i].getY());
+                inBuffer.emplace_back();
+                b.addToBuffer(this, inBuffer.back().input, board[i].getX(), board[i].getY());
             }
         }
     }
+
+    if (idsBuffer.empty()) return;
 
     struct DataOut
     {
         float output[OUTPUT];
     };
 
-    std::vector<DataIn> dataBuffer;
-    dataBuffer.reserve(idsBuffer.size());
+    std::vector<DataOut> outBuffer(idsBuffer.size());
 
-    /*for(int i = 0; i < size; i++)
-    {
-        Hexagon* h = bacteriaHexes[i];
-        idsBuffer[i] = h->getData().bacteriaIndex;
-        board->getBacteria(idsBuffer[i]).addToBuffer(board, dataBuffer[i].input, h->getX(), h->getY());
-    }*/
+    game->engine->Tick(idsBuffer.size(), idsBuffer.data(), inBuffer[0].input, outBuffer[0].output);
 }
 
 
