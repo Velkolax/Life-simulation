@@ -48,8 +48,6 @@ public:
 
     // game loop
     void ProcessInput(float dt);
-    int GetSelectedCastleReserves();
-    int GetSelectedCastleIncome();
     void RefreshSprites();
     void RefreshOutline();
     void Update(float dt);

@@ -7,8 +7,6 @@
 
     typedef struct
     {
-        int layerCount;
-        int* layers;
         int neuronCount;        // without input layer (no biases there)
         float* neurons;
         int connectionCount;
@@ -21,9 +19,6 @@
     static int* globalLayers;
 
     static inline float relu(float value) { return value * (value > 0); }
-
-    // Random
-    float randomFloat(float min, float max);
 
     // Build network
     NeuralNetwork buildNetwork(int layerCount, int* layers);

@@ -16,12 +16,6 @@ int resultBufforSize = 0;
 float* resultBuffor = NULL;
 
 
-float randomFloat(float min, float max)
-{
-    std::uniform_real_distribution<float> randN(min, max);
-    return randN(gen);
-}
-
 NeuralNetwork buildNetwork(int layerCount, int* layers)
 {
     int neuronCount = 0; // exclude input layer (no biases)
@@ -36,8 +30,6 @@ NeuralNetwork buildNetwork(int layerCount, int* layers)
     float* memory = (float*)malloc((neuronCount + connectionCount) * sizeof(float));
 
     NeuralNetwork nn;
-    nn.layerCount = layerCount;
-    nn.layers = layers;
     nn.neuronCount = neuronCount;
     nn.neurons = memory;
     nn.connectionCount = connectionCount;
@@ -49,7 +41,7 @@ NeuralNetwork buildNetwork(int layerCount, int* layers)
 NeuralNetwork childNetwork(NeuralNetwork* nn1, NeuralNetwork* nn2, float mutation)
 {
     NeuralNetwork res = {0};
-    if(mutation < 0. || mutation > 1.)
+    /*if(mutation < 0. || mutation > 1.)
     {
         printf("Mutation must be a value between 0 and 1");
         return res;
@@ -58,20 +50,21 @@ NeuralNetwork childNetwork(NeuralNetwork* nn1, NeuralNetwork* nn2, float mutatio
     {
         printf("Different structure of provided networks");
         return res;
-    }
+    }*/
     res = buildNetwork(nn1->layerCount, nn1->layers);
 
     float mutationBottom = 1. - mutation;
     float mutationTop = 1. + mutation;
+    std::uniform_real_distribution<float> mutationDist(mutationBottom, mutationTop);
 
     for(int i = 0; i < nn1->neuronCount; i++)
     {
-        res.neurons[i] = (nn1->neurons[i] + nn2->neurons[i]) / 2 * randomFloat(mutationBottom, mutationTop);
+        res.neurons[i] = (nn1->neurons[i] + nn2->neurons[i]) / 2 * mutationDist(gen);
     }
 
     for(int i = 0; i < nn1->connectionCount; i++)
     {
-        res.connections[i] = (nn1->connections[i] + nn2->connections[i]) / 2 * randomFloat(mutationBottom, mutationTop);
+        res.connections[i] = (nn1->connections[i] + nn2->connections[i]) / 2 * mutationDist(gen);
     }
 
     return res;
@@ -148,12 +141,13 @@ void initializeRandom(NeuralNetwork* nn)
         int n1 = nn->layers[i];
 
         float range = sqrtf(6.0f / n0);
+        std::uniform_real_distribution<float> connectionsDist(-range, range);
 
         for (int j = 0; j < n1; j++)
             nn->neurons[neuronIndex++] = 0.01f;
 
         for (int j = 0; j < n1 * n0; j++)
-            nn->connections[connectionIndex++] = randomFloat(-range, range);
+            nn->connections[connectionIndex++] = connectionsDist(gen);
     }
 }
 
