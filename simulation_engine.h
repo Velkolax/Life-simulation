@@ -9,13 +9,6 @@ constexpr size_t NUMBER_OF_BACTERIA = 400; //temp
 constexpr size_t NUMBER_OF_ACTIVE_BACTERIA = 300; //temp
 constexpr size_t STRIDE = NUMBER_OF_BACTERIA;
 
-struct alignas(16) DataInOut {
-    float input[INPUT];
-    float output[OUTPUT];
-};
-
-constexpr size_t INOUT_SIZE = sizeof(DataInOut);
-
 
 class SimulationEngine
 {

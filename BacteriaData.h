@@ -99,7 +99,7 @@ struct BacteriaData
     uint8_t age;
 
     void randomize();
-    void sendToNetwork(Board* board, float* f, coord x, coord y);
+    void addToBuffer(Board* board, float* buffer, coord x, coord y);
 };
 
 static_assert(std::is_trivially_constructible_v<BacteriaData>);
