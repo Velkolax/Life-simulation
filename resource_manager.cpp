@@ -25,17 +25,11 @@ Shader& ResourceManager::LoadComputeShader(std::vector<const char*> cShaderFiles
     return Shaders[name];
 }
 
-// Shader& ResourceManager::LoadShader(std::string name)
-// {
-//     Shaders[name] = loadDefaultShader();
-//     return Shaders[name];
-// }
-
-// Shader& ResourceManager::LoadShaderText(std::string name)
-// {
-//     Shaders[name] = loadTextShader();
-//     return Shaders[name];
-// }
+Shader& ResourceManager::LoadShaderText(std::string name)
+{
+    Shaders[name] = loadTextShader();
+    return Shaders[name];
+}
 
 Shader& ResourceManager::GetShader(std::string name)
 {
@@ -192,6 +186,13 @@ Shader ResourceManager::loadComputeShaderFromFile(std::vector<const char*> cShad
 //     return shader;
 // }
 
+
+Shader ResourceManager::loadTextShader()
+{
+    Shader shader;
+    shader.CompileText(shaders_text_vs,shaders_text_fs,nullptr);
+    return shader;
+}
 
 Texture2D ResourceManager::loadTextureFromFile(const char *file, bool alpha)
 {

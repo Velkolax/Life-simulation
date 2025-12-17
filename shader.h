@@ -22,6 +22,7 @@ public:
     Shader  &Use();
     // compiles the shader from given source code
     void    Compile(const char* vertexSources[], const char* fragmentSources[], GLint vLengths[], GLint fLengths[], GLuint vlen, GLuint flen); // note: geometry source code is optional
+    void CompileText(const char* vertexSource, const char* fragmentSource, const char* geometrySource);
     void    CompileCompute(const char *computeSource[], GLint lengths[],int len);
     // utility functions
     void    SetFloat    (const char *name, float value, bool useShader = false);
