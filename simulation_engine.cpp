@@ -77,5 +77,9 @@ void SimulationEngine::InitNetworkData()
 
 void SimulationEngine::Tick()
 {
+    int readIdx = tickCounter % 2;
+    int writeIdx = (tickCounter+1) % 2;
+
+    glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT | GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
 
 }
