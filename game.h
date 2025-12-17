@@ -13,13 +13,6 @@
 
 
 
-// Represents the current state of the game
-enum class GameState
-{
-    GAME_ACTIVE,
-    GAME_MENU,
-    GAME_WIN
-};
 
 
 // Game holds all game-related state and functionality.
@@ -28,8 +21,6 @@ enum class GameState
 class Game
 {
 public:
-    // game state
-    GameState               State;	
     int                     pressedKey = -1;
     bool                    mousePressed;
     float                   cursorPosX;
