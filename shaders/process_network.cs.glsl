@@ -49,9 +49,11 @@ float relu(float x){
     return max(0.0,x);
 }
 
+uniform int activeBacteria;
+
 void main() {
     uint id = gl_GlobalInvocationID.x;
-    if (id >= inData.length()) return;
+    if (id >= activeBacteria) return;
 
     /* WCZYTANIE WEJŚĆ */
     uint basePtr = id * SIZE;

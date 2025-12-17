@@ -20,6 +20,7 @@ constexpr size_t SIZE = INPUT * HIDDEN1 + HIDDEN1 + HIDDEN1 * HIDDEN2 + HIDDEN2 
 
 // 100000 mieści się w 4GB VRAM
 constexpr size_t NUMBER_OF_BACTERIA = 100000; //temp
+constexpr size_t NUMBER_OF_ACTIVE_BACTERIA = 20000; //temp
 
 struct alignas(16) DataInOut {
     float input[INPUT];
@@ -37,19 +38,22 @@ public:
     void InitSsbos(Board *board);
     void InitNetworkData();
     void ssbo_barrier();
-    void Tick();
+    void Tick(std::function<void(DataInOut*)> updateCallback = nullptr);
     void MoveBacteria();
     void PassTime();
+    DataInOut* InOutsPtr[2] = {nullptr,nullptr};
+    uint64_t tickCounter = 0;
 private:
 
 
     GLuint ssboNetworks;
     GLuint ssboStaging;
     GLuint ssboInOuts[2];
+    GLsync fences[2] = {0,0};
     float* networksPtr = nullptr;
     float* stagingPtr = nullptr;
-    uint64_t tickCounter = 0;
+
     const size_t BATCH_SIZE = 1000;
-    DataInOut* InOutsPtr[2] = {nullptr,nullptr};
+    Shader shader;
     int bWidth,bHeight;
 };

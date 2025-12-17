@@ -60,7 +60,19 @@ void Game::Init()
 
 void Game::Update(float dt)
 {
-    Engine->Tick();
+    Engine->Tick([&](DataInOut* ptr)
+    {
+        for (int i=0;i<NUMBER_OF_ACTIVE_BACTERIA;i++)
+        {
+            if (Engine->tickCounter>0)
+            {
+                float a = ptr[i].output[0];
+                float b = ptr[i].output[1];
+                std::cout << "OUT1: " << a << " OUT2: " << b << std::endl;
+            }
+            ptr[i].input[0] = 5;
+        }
+    });
 }
 
 void Game::Resize(int width, int height)

@@ -3,9 +3,10 @@
 #include <glm/glm.hpp>
 #include <random>
 
+
 inline std::mt19937 gen;
 
-
+typedef int16_t coord;
 #define MEMORY_SIZE 3
 
 #define MAX_ACCUSTOMABLE_VALUE 100
@@ -17,55 +18,59 @@ inline std::mt19937 gen;
 
 constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> evenDirections2l =
 {
-    // Pierwsza warstwa
-    { 0, -1}, // górny
-    {-1, -1}, // lewy górny
-    {-1,  0}, // lewy dolny
-    { 0,  1}, // dolny
-    { 1,  0}, // prawy dolny
-    { 1, -1}  // prawy górny
+    {
+        // Pierwsza warstwa
+        { 0, -1}, // górny
+        {-1, -1}, // lewy górny
+        {-1,  0}, // lewy dolny
+        { 0,  1}, // dolny
+        { 1,  0}, // prawy dolny
+        { 1, -1}, // prawy górny
 
-    // Druga warstwa
-    { 0, -2},
-    {-1, -2},
-    {-2, -1},
-    {-2,  0},
-    {-2,  1},
-    {-1,  1},
-    { 0,  2},
-    { 1,  1},
-    { 2,  1},
-    { 2,  0},
-    { 2, -1},
-    { 1, -2},
+        // Druga warstwa
+{ 0, -2},
+{-1, -2},
+{-2, -1},
+{-2,  0},
+{-2,  1},
+{-1,  1},
+{ 0,  2},
+{ 1,  1},
+{ 2,  1},
+{ 2,  0},
+{ 2, -1},
+{ 1, -2},
+}
 };
-static_assert(evenDirections.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
+static_assert(evenDirections2l.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
 
 constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> oddDirections2l =
 {
-    // Pierwsza warstwa
-    { 0, -1}, // górny
-    {-1,  0}, // lewy górny
-    {-1,  1}, // lewy dolny
-    { 0,  1}, // dolny
-    { 1,  1}, // prawy dolny
-    { 1,  0}  // prawy górny
+    {
+        // Pierwsza warstwa
+        { 0, -1}, // górny
+        {-1,  0}, // lewy górny
+        {-1,  1}, // lewy dolny
+        { 0,  1}, // dolny
+        { 1,  1}, // prawy dolny
+        { 1,  0},  // prawy górny
 
-    // Druga warstwa
-    { 0, -2},
-    {-1, -1},
-    {-2, -1},
-    {-2,  0},
-    {-2,  1},
-    {-1,  2},
-    { 0,  2},
-    { 1,  2},
-    { 2,  1},
-    { 2,  0},
-    { 2, -1},
-    { 1, -1},
+        // Druga warstwa
+        { 0, -2},
+        {-1, -1},
+        {-2, -1},
+        {-2,  0},
+        {-2,  1},
+        {-1,  2},
+        { 0,  2},
+        { 1,  2},
+        { 2,  1},
+        { 2,  0},
+        { 2, -1},
+        { 1, -1},
+    }
 };
-static_assert(oddDirections.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
+static_assert(oddDirections2l.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
 
 
 struct BacteriaData
