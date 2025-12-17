@@ -32,7 +32,7 @@ private:
     float* networksPtr = nullptr;
     float* stagingPtr = nullptr;
     uint32_t* idPtr = nullptr;
-    std::vector<DataInOut> ramBuffer;
+    //std::vector<DataInOut> ramBuffer;
     const size_t BATCH_SIZE = 1000;
     Shader shader;
     size_t bWidth,bHeight;

@@ -41,7 +41,7 @@ inline bool protein(Resident resident) noexcept { return resident == Resident::P
 
 union ResidentData
 {
-    int bacteriaIndex; // indeks w tablicy bacterias
+    uint32_t bacteriaIndex; // indeks w tablicy bacterias
     //BacteriaData bacteria;
     EnergyData energy;
     ProteinData protein;

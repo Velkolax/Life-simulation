@@ -71,30 +71,48 @@ void Board::InitializeRandom(int min, int max)
 }
 
 
-void sendAllBacterias(Board* board, int size, std::vector<Hexagon*>& bacteriaHexes)
-{
-    DataInOut buffer[size];
-    for(int i = 0; i < size; i++)
-    {
-        Hexagon* h = bacteriaHexes[i];
-        board->getBacteria(h->getData().bacteriaIndex).addToBuffer(board, buffer[i].input, h->getX(), h->getY());
-    }
-
-    // WYSYŁANIE CAŁOŚCI
-}
-
-
 void Board::tick()
 {
-    std::vector<Hexagon*> bacteriaHexes;
-    bacteriaHexes.reserve(64);
-    int total = width * height;
+    struct DataIn
+    {
+        float input[INPUT];
+    };
+
+    std::vector<uint32_t> idsBuffer;
+    idsBuffer.reserve(256);
+    std::vector<DataIn> dataBuffer;
+    dataBuffer.reserve(256);
+
+    size_t total = board.size();
     for(int i = 0; i < total; i++)
     {
-        if(bacteria(board[i].getResident()) && step % getBacteria(board[i].getData().bacteriaIndex).speed == 0) bacteriaHexes.push_back(&(board[i]));
+        if(bacteria(board[i].getResident()))
+        {
+            uint32_t index = board[i].getData().bacteriaIndex;
+            BacteriaData& b = getBacteria(index);
+            if(step % b.speed == 0)
+            {
+                idsBuffer.push_back(index);
+                dataBuffer.emplace_back();
+                b.addToBuffer(this, dataBuffer.back().input, board[i].getX(), board[i].getY());
+            }
+        }
     }
 
-    sendAllBacterias(this, bacteriaHexes.size(), bacteriaHexes);
+    struct DataOut
+    {
+        float output[OUTPUT];
+    };
+
+    std::vector<DataIn> dataBuffer;
+    dataBuffer.reserve(idsBuffer.size());
+
+    /*for(int i = 0; i < size; i++)
+    {
+        Hexagon* h = bacteriaHexes[i];
+        idsBuffer[i] = h->getData().bacteriaIndex;
+        board->getBacteria(idsBuffer[i]).addToBuffer(board, dataBuffer[i].input, h->getX(), h->getY());
+    }*/
 }
 
 
