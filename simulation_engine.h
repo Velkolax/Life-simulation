@@ -20,8 +20,8 @@ constexpr size_t SIZE = INPUT * HIDDEN1 + HIDDEN1 + HIDDEN1 * HIDDEN2 + HIDDEN2 
 
 // 100000 mieści się w 4GB VRAM
 // 30000 jest w miarę ok
-constexpr size_t NUMBER_OF_BACTERIA = 40000; //temp
-constexpr size_t NUMBER_OF_ACTIVE_BACTERIA = 30000; //temp
+constexpr size_t NUMBER_OF_BACTERIA = 400; //temp
+constexpr size_t NUMBER_OF_ACTIVE_BACTERIA = 300; //temp
 constexpr size_t STRIDE = NUMBER_OF_BACTERIA;
 
 struct alignas(16) DataInOut {
