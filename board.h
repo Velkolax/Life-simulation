@@ -11,7 +11,7 @@
 #include "glm/vec2.hpp"
 #include "BacteriaData.h"
 
-
+static int counter = 0;
 #define BIG_NUMBER 10000000
 
 enum class Resident : uint8_t

@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         sim->Render();
-
+        counter++;
         glfwSwapBuffers(window);
     }
 
