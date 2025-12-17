@@ -91,7 +91,7 @@ void Board::tick()
     int total = width * height;
     for(int i = 0; i < total; i++)
     {
-        if(bacteria(board[i].getResident())) bacteriaHexes.push_back(&(board[i]));
+        if(bacteria(board[i].getResident()) && step % board[i].getData().bacteria.speed == 0) bacteriaHexes.push_back(&(board[i]));
     }
 
     sendAllBacterias(this, bacteriaHexes.size() * SEND_SIZE, bacteriaHexes);
