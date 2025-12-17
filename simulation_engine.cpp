@@ -118,7 +118,9 @@ void SimulationEngine::InitNetworkData()
 }
 
 
-void SimulationEngine::Tick(std::function<void(DataInOut*)> updateCallback)
+
+
+void SimulationEngine::Tick(DataInOut *inputData,DataInOut *outputData)
 {
     GLsizeiptr ssboInOutsSize = (GLsizeiptr)(bCapacity * INOUT_SIZE);
     int readIdx = tickCounter % 2;
@@ -131,22 +133,8 @@ void SimulationEngine::Tick(std::function<void(DataInOut*)> updateCallback)
         glDeleteSync(fences[readIdx]);
         fences[readIdx]=0;
     }
-
-    static std::vector<DataInOut> ramBuffer;
-    if (ramBuffer.size() < bCapacity) {
-        ramBuffer.resize(bCapacity);
-    }
-    if (updateCallback != nullptr)
-    {
-        updateCallback(ramBuffer.data());
-    }
-    size_t dataSize = bSize * sizeof(DataInOut);
-    memcpy(ramBuffer.data(), InOutsPtr[readIdx], dataSize);
-    //std::cout << ramBuffer[0].output[0] << std::endl;
-    memcpy(InOutsPtr[readIdx], ramBuffer.data(), dataSize);
-
-
-
+    memcpy(outputData,InOutsPtr[readIdx],bSize*sizeof(DataInOut));
+    memcpy(InOutsPtr[readIdx],inputData,bSize*sizeof(DataInOut));
 
     glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
     shader.Use();

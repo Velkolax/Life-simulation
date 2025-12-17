@@ -59,20 +59,11 @@ void Game::Init()
 
 void Game::Update(float dt)
 {
-    Engine->Tick([&](DataInOut* gpuBuffer) {
-        #pragma omp parallel for
-        for(int i = 0; i < Engine->getbSize(); i++) {
-            float output1 = gpuBuffer[i].output[0];
-            float output2 = gpuBuffer[i].output[1];
+    if (!isPaused)
+    {
+        Engine->Tick();
+    }
 
-            std::cout << "OUT1: " << output1 << "OUT2: " << output2 << std::endl;
-            for (int j=0;j<INPUT;j++)
-            {
-                gpuBuffer[i].input[j] = 5.0f;
-            }
-        }
-
-    });
     // Engine->Tick();
 }
 
@@ -128,7 +119,7 @@ void Game::ProcessInput(float dt)
     }
     if (pressedKey==GLFW_KEY_SPACE)
     {
-        //this->Tick();
+        spacePressed = true;
     }
     if(pressedKey==GLFW_KEY_ENTER)
     {
@@ -139,6 +130,11 @@ void Game::ProcessInput(float dt)
     {
         //enterPressed = false;
         //this->Tick();
+    }
+    if(pressedKey!=GLFW_KEY_SPACE && spacePressed)
+    {
+        if (!isPaused) isPaused=true;
+        else isPaused=false;
     }
 
 }
