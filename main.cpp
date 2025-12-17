@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
 {
     unsigned int seed = std::random_device{}();
     gen = std::mt19937(seed);
+    Seed = seed;
 
     float a = 0.5;
     float b = 0.6;
@@ -106,7 +107,7 @@ int main(int argc, char *argv[])
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         sim->Render();
-
+        counter++;
         glfwSwapBuffers(window);
     }
 

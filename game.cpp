@@ -36,12 +36,12 @@ void Game::Init()
     ResourceManager::LoadTexture("textures/apple.png",true,"apple");
     ResourceManager::LoadTexture("textures/explosion.png",true,"explosion");
 
-    // Text = new TextRenderer(this->Width, this->Height);
-    // Text->Load(24);
+    Text = new TextRenderer(this->Width, this->Height);
+    Text->Load(24);
     int bacteriaCount = 30000;
     int x = 300;
     int y = 300;
-    board = new Board(x, y, this);
+    board = new Board(x, y, this,bacteriaCount);
     int total = x*y;
     board->InitializeNeighbour(249, true);
     board->spawnBacteria(bacteriaCount);
@@ -59,11 +59,6 @@ void Game::Init()
 
 void Game::Update(float dt)
 {
-    if (!isPaused)
-    {
-    }
-
-
 }
 
 void Game::Resize(int width, int height)
@@ -143,4 +138,18 @@ void Game::ProcessInput(float dt)
 void Game::Render()
 {
     Renderer -> DrawBoard(board,Width,Height);
+    if (mousePressed)
+    {
+        float size = Renderer -> getSize(board);
+        glm::ivec2 p = Renderer -> CheckWhichHexagon(cursorPosX,cursorPosY,size/2);
+        Hexagon *hex = board->getHexagon(p.x,p.y);
+        if (hex!=nullptr)
+        {
+            BacteriaData bac = board->getBacteria(p.y*board->getWidth()+p.x);
+            Text->RenderText("AGE: "+std::to_string(bac.age),0,0,1.0);
+            Text->RenderText("ENERGY: "+std::to_string(bac.energy),0,30,1.0);
+        }
+    }
+    Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getBacteriaCount()),Width*0.75,0,1.0);
+    Text->RenderText("GENERATION: "+std::to_string(counter),Width*0.75,0,1.0);
 }

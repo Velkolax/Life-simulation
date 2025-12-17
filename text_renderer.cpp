@@ -10,18 +10,20 @@
 
 TextRenderer::TextRenderer(unsigned int width, unsigned int height)
 {
-    // this->TextShader = ResourceManager::LoadShaderText("text");
-    // this->TextShader.SetMatrix4("projection", glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f), true);
-    // this->TextShader.SetInteger("text", 0);
-    // glGenVertexArrays(1, &this->VAO);
-    // glGenBuffers(1, &this->VBO);
-    // glBindVertexArray(this->VAO);
-    // glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-    // glEnableVertexAttribArray(0);
-    // glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-    // glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // glBindVertexArray(0);
+    // load and configure shader
+    this->TextShader = ResourceManager::LoadShaderText("text");
+    this->TextShader.SetMatrix4("projection", glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f), true);
+    this->TextShader.SetInteger("text", 0);
+    // configure VAO/VBO for texture quads
+    glGenVertexArrays(1, &this->VAO);
+    glGenBuffers(1, &this->VBO);
+    glBindVertexArray(this->VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
 void TextRenderer::Load(unsigned int fontSize)
@@ -123,8 +125,10 @@ void TextRenderer::Load(unsigned int fontSize)
             static_cast<unsigned int>(glyph->advance.x)
         };
         CharactersOutline.insert(std::pair<char,Character>(c,outlineChar));
+        FT_Done_Glyph(glyph);
     }
     glBindTexture(GL_TEXTURE_2D, 0);
+    FT_Stroker_Done(stroker);
     // destroy FreeType once we're finished
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
