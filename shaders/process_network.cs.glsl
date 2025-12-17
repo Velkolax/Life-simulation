@@ -74,7 +74,7 @@ void main() {
     float h2[HIDDEN2];
     for(int i=0;i<HIDDEN2;i++) {
         float sum = allWeights[bPtr++];
-        for(j=0;j<HIDDEN1;j++) sum += h1[j] * allWeights[wPtr++];
+        for(int j=0;j<HIDDEN1;j++) sum += h1[j] * allWeights[wPtr++];
         h2[i] = relu(sum);
     }
 
@@ -90,6 +90,7 @@ void main() {
         for(int j=0;j<HIDDEN3;j++) sum += h3[j] * allWeights[wPtr++];
         outData[id].outputs[i] = tanh(sum);
     }
-
+    outData[id].outputs[0] = 123.456;
+    outData[id].outputs[1] = float(id);
 
 }

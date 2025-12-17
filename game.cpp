@@ -36,8 +36,8 @@ void Game::Init()
     ResourceManager::LoadTexture("textures/apple.png",true,"apple");
     ResourceManager::LoadTexture("textures/explosion.png",true,"explosion");
 
-    Text = new TextRenderer(this->Width, this->Height);
-    Text->Load(24);
+    // Text = new TextRenderer(this->Width, this->Height);
+    // Text->Load(24);
     int bacteriaCount = 1000;
     int x = 100;
     int y = 100;

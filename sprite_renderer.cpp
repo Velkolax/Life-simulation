@@ -75,19 +75,6 @@ void SpriteRenderer::addToResizeMultiplier(double ds,Board *board,float width)
     resizeMultiplier *= ds;
 }
 
-void SpriteRenderer::setBrightenedHexes(std::vector<Hexagon*> hexes)
-{
-    for (auto hex : hexes)
-    {
-        brightenedHexes.push_back(hex);
-    }
-}
-
-void SpriteRenderer::ClearBrightenedHexes()
-{
-    brightenedHexes.clear();
-}
-
 void SpriteRenderer::InitPalette(Board *board) {
     std::vector<int> hexColors{
         0xCC3333,
@@ -292,7 +279,6 @@ void SpriteRenderer::DrawBoard(Board *board, int width, int height)
 {
     // This generates sprites and puts them in vectors ready to render
     generateSprites(board);
-    generateBorders(board);
 
     this->shader.Use();
     glm::mat4 projection = glm::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);

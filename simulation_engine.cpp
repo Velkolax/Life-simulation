@@ -106,4 +106,9 @@ void SimulationEngine::Tick(std::function<void(DataInOut*)> updateCallback)
     if (fences[writeIdx]) glDeleteSync(fences[writeIdx]);
     fences[writeIdx] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE,0);
     tickCounter++;
+    GLenum err;
+    while((err = glGetError()) != GL_NO_ERROR)
+    {
+        std::cout << "OpenGL Error: " << err << std::endl;
+    }
 }
