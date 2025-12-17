@@ -14,7 +14,7 @@
 
 void BacteriaData::randomize()
 {
-    std::uniform_real_distribution<float> memoryDist(0., 100.);
+    std::uniform_real_distribution<float> memoryDist(0., 1.);
     for(int i = 0; i < MEMORY_SIZE; i++) memory[i] = memoryDist(gen);
 
     std::uniform_int_distribution<uint8_t> accustomableDist(1, MAX_ACCUSTOMABLE_VALUE);
