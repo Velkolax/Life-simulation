@@ -145,7 +145,7 @@ void SimulationEngine::Tick(int id_size, int *ids, float* inputData, float* outp
 
 
     memcpy(InPtr,inputData,id_size*INPUT * sizeof(float));
-
+    memcpy(idPtr,ids,id_size*sizeof(uint32_t));
     glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
     shader.Use();
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER,0,ssboNetworks);
