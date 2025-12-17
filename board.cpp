@@ -76,7 +76,7 @@ void sendAllBacterias(Board* board, int size, std::vector<Hexagon*>& bacteriaHex
     float* p = buffer;
     for(Hexagon* h : bacteriaHexes)
     {
-        h->getData().bacteria.sendToNetwork(board, buffer, h->getX(), h->getY());
+        h->getData().bacteria.sendToNetwork(board, p, h->getX(), h->getY());
         p += SEND_SIZE;
     }
 
