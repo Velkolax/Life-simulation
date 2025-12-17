@@ -83,7 +83,7 @@ void Hexagon::placeEmpty()
 void Hexagon::placeAcid()
 {
     resident = Resident::Acid;
-    data.acid.amount = std::uniform_int_distribution<uint8_t>(1, MAX_STORED_VALUE)(gen);
+    data.acid.amount = std::uniform_int_distribution<uint8_t>(1, 10)(gen);
 }
 
 void Hexagon::placeAcid(uint8_t amount)
@@ -95,7 +95,7 @@ void Hexagon::placeAcid(uint8_t amount)
 void Hexagon::placeEnergy()
 {
     resident = Resident::Energy;
-    data.energy.amount = std::uniform_int_distribution<uint8_t>(1, MAX_STORED_VALUE)(gen);
+    data.energy.amount = std::uniform_int_distribution<uint8_t>(1, 10)(gen);
 }
 
 void Hexagon::placeEnergy(uint8_t amount)
@@ -107,7 +107,7 @@ void Hexagon::placeEnergy(uint8_t amount)
 void Hexagon::placeProtein()
 {
     resident = Resident::Protein;
-    data.protein.amount = std::uniform_int_distribution<uint8_t>(1, MAX_STORED_VALUE)(gen);
+    data.protein.amount = std::uniform_int_distribution<uint8_t>(1, 10)(gen);
 }
 
 void Hexagon::placeProtein(uint8_t amount)

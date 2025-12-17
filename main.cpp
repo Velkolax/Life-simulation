@@ -30,7 +30,8 @@ Game* sim = new Game(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 int main(int argc, char *argv[])
 {
-    gen = std::mt19937(std::random_device{}());
+    unsigned int seed = std::random_device{}();
+    gen = std::mt19937(seed);
 
     float a = 0.5;
     float b = 0.6;

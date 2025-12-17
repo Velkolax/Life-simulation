@@ -19,19 +19,27 @@ typedef uint16_t ucoord;
 
 enum class Resident : uint8_t
 {
+    // Plain
     Wall,
     Empty,
+
+    // Bacteria
     Bacteria,
+
+    // Resource
     Acid,
     Energy,
     Protein
 };
 
+inline bool plain(Resident resident) noexcept { return resident == Resident::Wall || resident == Resident::Empty; };
 inline bool wall(Resident resident) noexcept { return resident == Resident::Wall; };
 inline bool empty(Resident resident) noexcept { return resident == Resident::Empty; };
 inline bool bacteria(Resident resident) noexcept { return resident == Resident::Bacteria; };
-inline bool energy(Resident resident) noexcept {return resident == Resident::Energy;};
-inline bool protein(Resident resident) noexcept {return resident == Resident::Protein;};
+inline bool resource(Resident resident) noexcept { return resident >= Resident::Acid && resident <= Resident::Protein; };
+inline bool acid(Resident resident) noexcept {return resident == Resident::Acid;};
+inline bool energy(Resident resident) noexcept { return resident == Resident::Energy; };
+inline bool protein(Resident resident) noexcept { return resident == Resident::Protein; };
 
 inline std::mt19937 gen; // generator liczb losowych
 
@@ -70,6 +78,7 @@ public:
     inline coord getY() const noexcept { return y; }
     inline glm::ivec2 getPos() const noexcept { return glm::ivec2(x, y); }
     inline Resident getResident() const noexcept { return resident; }
+    inline ResidentData& getData() const noexcept { return data; }
 
     void placeWall();
     void placeEmpty();

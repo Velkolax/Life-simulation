@@ -6,10 +6,66 @@
 inline std::mt19937 gen;
 
 
-#define MEMORY_SIZE 4
+#define MEMORY_SIZE 3
 
 #define MAX_ACCUSTOMABLE_VALUE 100
 #define MAX_STORED_VALUE 200
+
+#define SEND_SIZE 64
+#define TWO_NEIGHBOUR_LAYERS_SIZE 18 // 6 sąsiadów w pierwszej warstwie i 12 w drugiej
+
+
+constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> evenDirections2l =
+{
+    // Pierwsza warstwa
+    { 0, -1}, // górny
+    {-1, -1}, // lewy górny
+    {-1,  0}, // lewy dolny
+    { 0,  1}, // dolny
+    { 1,  0}, // prawy dolny
+    { 1, -1}  // prawy górny
+
+    // Druga warstwa
+    { 0, -2},
+    {-1, -2},
+    {-2, -1},
+    {-2,  0},
+    {-2,  1},
+    {-1,  1},
+    { 0,  2},
+    { 1,  1},
+    { 2,  1},
+    { 2,  0},
+    { 2, -1},
+    { 1, -2},
+};
+static_assert(evenDirections.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
+
+constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> oddDirections2l =
+{
+    // Pierwsza warstwa
+    { 0, -1}, // górny
+    {-1,  0}, // lewy górny
+    {-1,  1}, // lewy dolny
+    { 0,  1}, // dolny
+    { 1,  1}, // prawy dolny
+    { 1,  0}  // prawy górny
+
+    // Druga warstwa
+    { 0, -2},
+    {-1, -1},
+    {-2, -1},
+    {-2,  0},
+    {-2,  1},
+    {-1,  2},
+    { 0,  2},
+    { 1,  2},
+    { 2,  1},
+    { 2,  0},
+    { 2, -1},
+    { 1, -1},
+};
+static_assert(oddDirections.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
 
 
 struct BacteriaData
@@ -29,6 +85,7 @@ struct BacteriaData
     uint8_t age;
 
     void randomize();
+    void sendToNetwork(coord x, coord y);
 };
 
 static_assert(std::is_trivially_constructible_v<BacteriaData>);
