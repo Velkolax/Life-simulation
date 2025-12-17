@@ -41,14 +41,28 @@ void SimulationEngine::InitSsbos(Board *board)
     /* CREATING INOUT BUFFERS */
 
     GLbitfield InOutFlags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
-    GLsizeiptr ssboInOutsSize = (GLsizeiptr)(bCapacity * INOUT_SIZE);
-    glCreateBuffers(2,ssboInOuts);
-    for (int i=0;i<2;i++)
-    {
-        glNamedBufferStorage(ssboInOuts[i],ssboInOutsSize,nullptr,InOutFlags);
-        InOutsPtr[i] = (DataInOut*)glMapNamedBufferRange(ssboInOuts[i],0,ssboInOutsSize,InOutFlags);
-        memset(InOutsPtr[i],0,ssboInOutsSize);
-    }
+    GLsizeiptr ssboInSize = (GLsizeiptr)(bCapacity * INPUT * sizeof(float));
+    GLsizeiptr ssboOutSize = (GLsizeiptr)(bCapacity * OUTPUT * sizeof(float));
+
+
+    glCreateBuffers(1,&ssboIn);
+    glNamedBufferStorage(ssboIn,ssboInSize,nullptr,InOutFlags);
+    InPtr = (float*)glMapNamedBufferRange(ssboIn,0,ssboInSize,InOutFlags);
+    memset(InPtr,0,ssboInSize);
+
+
+    glCreateBuffers(1,&ssboOut);
+    glNamedBufferStorage(ssboOut,ssboOutSize,nullptr,InOutFlags);
+    OutPtr = (float*)glMapNamedBufferRange(ssboOut,0,ssboOutSize,InOutFlags);
+    memset(OutPtr,0,ssboOutSize);
+
+    /* CREATING ID BUFFER */
+    GLbitfield IdFlags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+    GLsizeiptr ssboIdsSize = (GLsizeiptr)(bCapacity * sizeof(float));
+    glCreateBuffers(1,&ssboIds);
+    glNamedBufferStorage()
+
+
 }
 
 void SimulationEngine::InitNetworkData()
@@ -120,35 +134,26 @@ void SimulationEngine::InitNetworkData()
 
 
 
-void SimulationEngine::Tick(DataInOut *inputData,DataInOut *outputData)
+void SimulationEngine::Tick(int id_size, int *ids, float* inputData, float* outputData)
 {
-    GLsizeiptr ssboInOutsSize = (GLsizeiptr)(bCapacity * INOUT_SIZE);
-    int readIdx = tickCounter % 2;
-    int writeIdx = (tickCounter+1) % 2;
+    GLsizeiptr ssboInSize = (GLsizeiptr)(bCapacity * INPUT * sizeof(float));
+    GLsizeiptr ssboOutSize = (GLsizeiptr)(bCapacity * OUTPUT * sizeof(float));
 
 
-    if (fences[readIdx])
-    {
-        GLenum waitReturn = glClientWaitSync(fences[readIdx], GL_SYNC_FLUSH_COMMANDS_BIT, 10000000);
-        glDeleteSync(fences[readIdx]);
-        fences[readIdx]=0;
-    }
-    memcpy(outputData,InOutsPtr[readIdx],bSize*sizeof(DataInOut));
-    memcpy(InOutsPtr[readIdx],inputData,bSize*sizeof(DataInOut));
+    memcpy(InPtr,inputData,bSize*INPUT * sizeof(float));
 
     glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
     shader.Use();
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER,0,ssboNetworks);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER,1,ssboInOuts[readIdx]);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER,2,ssboInOuts[writeIdx]);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER,1,ssboIn);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER,2,ssboOut);
     shader.SetInteger("activeBacteria",bSize);
     shader.SetInteger("stride",bCapacity);
     glDispatchCompute((bSize + 63) / 64, 1, 1);
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
-    if (fences[writeIdx]) glDeleteSync(fences[writeIdx]);
-    fences[writeIdx] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE,0);
-    tickCounter++;
+    memcpy(outputData,OutPtr,bSize*OUTPUT*sizeof(float));
+
     GLenum err;
     while((err = glGetError()) != GL_NO_ERROR)
     {
