@@ -45,6 +45,7 @@ union ResidentData
     EnergyData energy;
     ProteinData protein;
     AcidData acid;
+    float* sendToNetwork(Board* board, coord x, coord y);
 };
 
 
@@ -99,11 +100,12 @@ public:
     // inicjalizatory
     Board(coord width, coord height, Game* game);
     void InitializeRandom(int min, int max);
+    float* getAllInputData();
     void InitializeNeighbour(int recursion, bool includeMiddle);
     void spawnFood(double foodRatio);
 
     void spawnBacteria(int bacteriaCount);
-    int getBacteriasNumber();
+    size_t getBacteriasNumber();
     // gettery/settery
     inline coord getWidth() const noexcept { return width; }
     inline coord getHeight() const noexcept { return height; }

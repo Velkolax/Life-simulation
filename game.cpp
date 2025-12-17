@@ -30,6 +30,7 @@ void Game::Init()
 {
     ResourceManager::LoadShader({"shaders/instance.vs.glsl"},{"shaders/instance.fs.glsl"},"instance");
     ResourceManager::LoadComputeShader({"shaders/process_network.cs.glsl"},"network");
+    ResourceManager::LoadComputeShader({"shaders/init_weights.cs.glsl"},"init");
     ResourceManager::LoadTexture("textures/square-16.png", true, "hexagon");
     ResourceManager::LoadTexture("textures/bacteria.png",true,"bacteria");
     ResourceManager::LoadTexture("textures/apple.png",true,"apple");
@@ -37,9 +38,9 @@ void Game::Init()
 
     // Text = new TextRenderer(this->Width, this->Height);
     // Text->Load(24);
-    int bacteriaCount = 1000;
-    int x = 100;
-    int y = 100;
+    int bacteriaCount = 30000;
+    int x = 300;
+    int y = 300;
     board = new Board(x, y, this);
     int total = x*y;
     board->InitializeNeighbour(249, true);
@@ -58,7 +59,21 @@ void Game::Init()
 
 void Game::Update(float dt)
 {
-    Engine->Tick();
+    Engine->Tick([&](DataInOut* gpuBuffer) {
+        #pragma omp parallel for
+        for(int i = 0; i < Engine->getbSize(); i++) {
+            float output1 = gpuBuffer[i].output[0];
+            float output2 = gpuBuffer[i].output[1];
+
+            std::cout << "OUT1: " << output1 << "OUT2: " << output2 << std::endl;
+            for (int j=0;j<INPUT;j++)
+            {
+                gpuBuffer[i].input[j] = 5.0f;
+            }
+        }
+
+    });
+    // Engine->Tick();
 }
 
 void Game::Resize(int width, int height)

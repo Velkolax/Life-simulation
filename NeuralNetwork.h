@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iterator>
 #include <stdio.h>
 
 // ALL NETWORKS SHOULD HAVE THIS SIZE

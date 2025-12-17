@@ -3,13 +3,6 @@
 #include "resource_manager.h"
 #include <omp.h>
 
-struct Counters
-{
-    uint32_t aliveCount;
-    uint32_t stackTop;
-    uint32_t padding[2];
-};
-
 // 100000 mieści się w 4GB VRAM
 // 30000 jest w miarę ok
 constexpr size_t NUMBER_OF_BACTERIA = 400; //temp
@@ -33,8 +26,10 @@ public:
     void InitNetworkData();
     void ssbo_barrier();
     void Tick(std::function<void(DataInOut*)> updateCallback = nullptr);
-    void MoveBacteria();
-    void PassTime();
+    void killNetwork(int id);
+    void reproduceNetwork(int idA,int idB);
+    inline size_t getbCapacity(){return bCapacity;}
+    inline size_t getbSize(){return bSize;}
     DataInOut* InOutsPtr[2] = {nullptr,nullptr};
     uint64_t tickCounter = 0;
 private:
@@ -49,5 +44,7 @@ private:
 
     const size_t BATCH_SIZE = 1000;
     Shader shader;
-    int bWidth,bHeight;
+    size_t bWidth,bHeight;
+    size_t bCapacity;
+    size_t bSize;
 };

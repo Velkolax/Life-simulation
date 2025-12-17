@@ -39,7 +39,7 @@ NeuralNetwork childNetwork(NeuralNetwork* nn1, NeuralNetwork* nn2, float mutatio
 
     for(int i = 0; i < BIASES; i++)
     {
-        res.neurons[i] = (nn1->neurons[i] + nn2->neurons[i]) / 2 * mutationDist(gen);
+        res.biases[i] = (nn1->biases[i] + nn2->biases[i]) / 2 * mutationDist(gen);
     }
 
     for(int i = 0; i < CONNECTIONS; i++)

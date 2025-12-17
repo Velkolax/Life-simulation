@@ -9,11 +9,14 @@
 
 SimulationEngine::SimulationEngine(Board* board)
 {
-    InitSsbos(board);
-    InitNetworkData();
     bWidth = board->getWidth();
     bHeight = board->getHeight();
+    bCapacity = bWidth * bHeight;
+    bSize = board->getBacteriasNumber();
     shader = ResourceManager::GetShader("network");
+    std::cout << "BCAPACITY: " << bCapacity << " BSIZE: " << bSize << std::endl;
+    InitSsbos(board);
+    InitNetworkData();
 }
 
 
@@ -23,7 +26,7 @@ void SimulationEngine::InitSsbos(Board *board)
 
     /* CREATING NETWORK BUFFER */
 
-    size_t ssboNetworksSize = sizeof(float) * SIZE * NUMBER_OF_BACTERIA;
+    size_t ssboNetworksSize = sizeof(float) * SIZE * bCapacity;
     if (ssboNetworksSize > 4000000000) std::cout << "UPEWNIJ SIĘ ŻE TWÓJ VRAM JEST WIĘKSZY NIŻ 4GB" << std::endl;
     std::cout << ssboNetworksSize << std::endl;
     glCreateBuffers(1,&ssboNetworks);
@@ -38,7 +41,7 @@ void SimulationEngine::InitSsbos(Board *board)
     /* CREATING INOUT BUFFERS */
 
     GLbitfield InOutFlags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
-    GLsizeiptr ssboInOutsSize = (GLsizeiptr)(NUMBER_OF_BACTERIA * INOUT_SIZE);
+    GLsizeiptr ssboInOutsSize = (GLsizeiptr)(bCapacity * INOUT_SIZE);
     glCreateBuffers(2,ssboInOuts);
     for (int i=0;i<2;i++)
     {
@@ -50,57 +53,74 @@ void SimulationEngine::InitSsbos(Board *board)
 
 void SimulationEngine::InitNetworkData()
 {
-    size_t globalStride = NUMBER_OF_BACTERIA;
+    Shader initShader = ResourceManager::GetShader("init");
 
-    for (size_t offset = 0; offset < NUMBER_OF_BACTERIA; offset += BATCH_SIZE)
-    {
-        size_t localBacteriaCount = std::min(BATCH_SIZE, NUMBER_OF_BACTERIA - offset);
-        std::vector<float> tempBuffer(localBacteriaCount * SIZE);
+    initShader.Use();
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssboNetworks);
+    initShader.SetInteger("stride", bCapacity);
+    initShader.SetFloat("seed", glfwGetTime());
 
-        #pragma omp parallel for
-        for (int i = 0; i < localBacteriaCount; i++)
-        {
-            NeuralNetwork nn = buildNetwork(layersSize, layers);
-            initializeRandom(&nn);
-            int paramIdx = 0;
-            for(int j=0; j<nn.neuronCount; j++) {
-                tempBuffer[j * localBacteriaCount + i] = nn.neurons[j];
-                paramIdx++;
-            }
-            for(int j=0; j<nn.connectionCount; j++) {
-                tempBuffer[(paramIdx + j) * localBacteriaCount + i] = nn.connections[j];
-            }
-            freeNetwork(&nn);
-        }
-        memcpy(stagingPtr, tempBuffer.data(), tempBuffer.size() * sizeof(float));
+    auto DispatchInit = [&](int startParam, int count, float range) {
+        initShader.SetInteger("paramOffset", startParam);
+        initShader.SetInteger("paramCount", count);
+        initShader.SetFloat("minVal", -range); // Np. -0.5
+        initShader.SetFloat("maxVal", range);  // Np. 0.5
 
-        for (int p = 0; p < SIZE; p++)
-        {
-            size_t srcOffset = p * localBacteriaCount * sizeof(float);
-            size_t dstOffset = (p * globalStride + offset) * sizeof(float);
 
-            glCopyNamedBufferSubData(
-                ssboStaging,
-                ssboNetworks,
-                srcOffset,
-                dstOffset,
-                localBacteriaCount * sizeof(float)
-            );
-        }
-        GLsync fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-        glClientWaitSync(fence, GL_SYNC_FLUSH_COMMANDS_BIT, 10000000000);
-        glDeleteSync(fence);
+        int groupsX = (bCapacity + 63) / 64;
+        int groupsY = count;
+
+        glDispatchCompute(groupsX, groupsY, 1);
+    };
+
+
+    int totalBiases = BIASES;
+    DispatchInit(0, totalBiases, 0.01f);
+
+    int currentParamOffset = BIASES;
+
+    float range1 = sqrt(6.0f / (INPUT + HIDDEN1));
+    DispatchInit(currentParamOffset, INPUT * HIDDEN1, range1);
+    currentParamOffset += INPUT * HIDDEN1;
+
+
+    float range2 = sqrt(6.0f / (HIDDEN1 + HIDDEN2));
+    DispatchInit(currentParamOffset, HIDDEN1 * HIDDEN2, range2);
+    currentParamOffset += HIDDEN1 * HIDDEN2;
+
+
+    float range3 = sqrt(6.0f / (HIDDEN2 + HIDDEN3));
+    DispatchInit(currentParamOffset, HIDDEN2 * HIDDEN3, range3);
+    currentParamOffset += HIDDEN2 * HIDDEN3;
+
+
+    float rangeOut = sqrt(6.0f / (HIDDEN3 + OUTPUT));
+    DispatchInit(currentParamOffset, HIDDEN3 * OUTPUT, rangeOut);
+
+
+    glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+
+    std::cout << "Inicjalizacja na GPU zakonczona." << std::endl;
+    std::vector<float> debugWeights(10 * bCapacity);
+
+    glGetNamedBufferSubData(ssboNetworks, 0, debugWeights.size() * sizeof(float), debugWeights.data());
+
+    std::cout << "--- DEBUG WAG (Pierwsze 10 dla bakterii 0) ---" << std::endl;
+    for(int i=0; i<10; i++) {
+
+        float val = debugWeights[i * bCapacity];
+        std::cout << "Param " << i << ": " << val << std::endl;
     }
 
-    glUnmapNamedBuffer(ssboStaging);
-    glDeleteBuffers(1, &ssboStaging);
-    stagingPtr = nullptr;
+    if (debugWeights[0] == 0.0f && debugWeights[bCapacity] == 0.0f) {
+        std::cout << "ALARM: Wagi to nadal same zera!" << std::endl;
+    }
 }
 
 
 void SimulationEngine::Tick(std::function<void(DataInOut*)> updateCallback)
 {
-    GLsizeiptr ssboInOutsSize = (GLsizeiptr)(NUMBER_OF_BACTERIA * INOUT_SIZE);
+    GLsizeiptr ssboInOutsSize = (GLsizeiptr)(bCapacity * INOUT_SIZE);
     int readIdx = tickCounter % 2;
     int writeIdx = (tickCounter+1) % 2;
 
@@ -113,11 +133,14 @@ void SimulationEngine::Tick(std::function<void(DataInOut*)> updateCallback)
     }
 
     static std::vector<DataInOut> ramBuffer;
-    if (ramBuffer.size() < NUMBER_OF_BACTERIA) {
-        ramBuffer.resize(NUMBER_OF_BACTERIA);
+    if (ramBuffer.size() < bCapacity) {
+        ramBuffer.resize(bCapacity);
     }
-
-    size_t dataSize = NUMBER_OF_ACTIVE_BACTERIA * sizeof(DataInOut);
+    if (updateCallback != nullptr)
+    {
+        updateCallback(ramBuffer.data());
+    }
+    size_t dataSize = bSize * sizeof(DataInOut);
     memcpy(ramBuffer.data(), InOutsPtr[readIdx], dataSize);
     //std::cout << ramBuffer[0].output[0] << std::endl;
     memcpy(InOutsPtr[readIdx], ramBuffer.data(), dataSize);
@@ -130,9 +153,9 @@ void SimulationEngine::Tick(std::function<void(DataInOut*)> updateCallback)
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER,0,ssboNetworks);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER,1,ssboInOuts[readIdx]);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER,2,ssboInOuts[writeIdx]);
-    shader.SetInteger("activeBacteria",NUMBER_OF_ACTIVE_BACTERIA);
-    shader.SetInteger("stride",STRIDE);
-    glDispatchCompute((NUMBER_OF_ACTIVE_BACTERIA + 63) / 64, 1, 1);
+    shader.SetInteger("activeBacteria",bSize);
+    shader.SetInteger("stride",bCapacity);
+    glDispatchCompute((bSize + 63) / 64, 1, 1);
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
     if (fences[writeIdx]) glDeleteSync(fences[writeIdx]);
@@ -143,4 +166,54 @@ void SimulationEngine::Tick(std::function<void(DataInOut*)> updateCallback)
     {
         std::cout << "OpenGL Error: " << err << std::endl;
     }
+}
+
+void SimulationEngine::killNetwork(int deadIdx)
+{
+    int lastIdx = bSize - 1;
+
+    if (deadIdx != lastIdx) {
+        Shader killShader = ResourceManager::GetShader("kill_shader");
+        killShader.Use();
+        killShader.SetInteger("stride", bCapacity);
+        killShader.SetInteger("paramCount", SIZE);
+        killShader.SetInteger("deadIdx", deadIdx);
+        killShader.SetInteger("lastIdx", lastIdx);
+
+        glDispatchCompute((SIZE + 63) / 64, 1, 1);
+        for(int k=0; k<2; k++) {
+             InOutsPtr[k][deadIdx] = InOutsPtr[k][lastIdx];
+        }
+
+    } else {
+    }
+
+    bSize--;
+}
+
+void SimulationEngine::reproduceNetwork(int parentA, int parentB)
+{
+    if (bSize >= bCapacity) return;
+
+    int childIdx = bSize;
+
+    Shader reproShader = ResourceManager::GetShader("reproduce_shader");
+    reproShader.Use();
+    reproShader.SetInteger("stride", bCapacity);
+    reproShader.SetInteger("paramCount", SIZE);
+    reproShader.SetInteger("parentAIdx", parentA);
+    reproShader.SetInteger("parentBIdx", parentB);
+    reproShader.SetInteger("childIdx", childIdx);
+
+    reproShader.SetFloat("mutationRate", 0.1f);
+    reproShader.SetFloat("mutationChance", 0.05f);
+    reproShader.SetFloat("seed", (float)glfwGetTime());
+
+    glDispatchCompute((SIZE + 63) / 64, 1, 1);
+
+    for(int k=0; k<2; k++) {
+        memset(&InOutsPtr[k][childIdx], 0, sizeof(DataInOut));
+    }
+
+    bSize++;
 }

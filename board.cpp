@@ -70,6 +70,7 @@ void Board::InitializeRandom(int min, int max)
     }
 }
 
+
 void Hexagon::placeWall()
 {
     resident = Resident::Wall;
@@ -164,10 +165,10 @@ void Board::spawnBacteria(int bacteriaCount)
     }
 }
 
-int Board::getBacteriasNumber()
+size_t Board::getBacteriasNumber()
 {
-    int bCount = 0;
-    for (int i = 0; i < getHeight() * getWidth(); i++)
+    size_t bCount = 0;
+    for (size_t i = 0; i < getHeight() * getWidth(); i++)
     {
         if (bacteria(getHexagon(i)->getResident())) bCount++;
     }
