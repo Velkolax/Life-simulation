@@ -13,6 +13,7 @@ SimulationEngine::SimulationEngine(Board* board)
     InitNetworkData();
     bWidth = board->getWidth();
     bHeight = board->getHeight();
+    shader = ResourceManager::GetShader("network");
 }
 
 
@@ -75,11 +76,34 @@ void SimulationEngine::InitNetworkData()
 }
 
 
-void SimulationEngine::Tick()
+void SimulationEngine::Tick(std::function<void(DataInOut*)> updateCallback)
 {
+    GLsizeiptr ssboInOutsSize = (GLsizeiptr)(NUMBER_OF_BACTERIA * INOUT_SIZE);
     int readIdx = tickCounter % 2;
     int writeIdx = (tickCounter+1) % 2;
 
-    glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT | GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
 
+    if (fences[readIdx])
+    {
+        GLenum waitReturn = glClientWaitSync(fences[readIdx], GL_SYNC_FLUSH_COMMANDS_BIT, 10000000);
+        glDeleteSync(fences[readIdx]);
+        fences[readIdx]=0;
+    }
+
+    if (updateCallback != nullptr)
+    {
+        updateCallback(InOutsPtr[readIdx]);
+    }
+    glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
+    shader.Use();
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER,0,ssboNetworks);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER,1,ssboInOuts[readIdx]);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER,2,ssboInOuts[writeIdx]);
+    shader.SetInteger("activeBacteria",NUMBER_OF_ACTIVE_BACTERIA);
+    glDispatchCompute((NUMBER_OF_ACTIVE_BACTERIA + 63) / 64, 1, 1);
+    glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+
+    if (fences[writeIdx]) glDeleteSync(fences[writeIdx]);
+    fences[writeIdx] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE,0);
+    tickCounter++;
 }

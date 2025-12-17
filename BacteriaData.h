@@ -9,7 +9,7 @@ typedef uint16_t ucoord;
 
 inline std::mt19937 gen;
 
-
+typedef int16_t coord;
 #define MEMORY_SIZE 3
 
 #define MAX_ACCUSTOMABLE_VALUE 100
@@ -69,6 +69,7 @@ constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> oddDire
     { 2, -1},
     { 1, -1}
 };
+static_assert(oddDirections2l.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
 static_assert(oddDirections2l.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
 
 
