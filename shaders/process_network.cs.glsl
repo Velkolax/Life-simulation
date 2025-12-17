@@ -19,7 +19,6 @@ layout(std430, binding=0) readonly buffer NetworkBuffer {
     float allWeights[];
 };
 
-
 layout(std430, binding=1) readonly buffer InBuffer {
     float inData[][INPUT];
 };
@@ -28,17 +27,23 @@ layout(std430, binding=2) buffer OutBuffer {
     float outData[][OUTPUT];
 };
 
+layout(std430, binding=3) buffer IdBuffer {
+    uint ids[];
+};
+
 float relu(float x){
     return max(0.0, x);
 }
 
 uniform int activeBacteria;
 uniform int stride;
+uniform int indices;
 
 void main() {
-    uint id = gl_GlobalInvocationID.x;
-    if (id >= activeBacteria) return;
-
+    uint i = gl_GlobalInvocationID.x;
+    if (i >= indices) return;
+    uint id = ids[i];
+    if(id >= stride) return;
 
     float inputLayer[INPUT];
     for(int i=0; i<INPUT; i++) inputLayer[i] = inData[id][i];
