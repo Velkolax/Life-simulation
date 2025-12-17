@@ -61,10 +61,9 @@ void Game::Update(float dt)
 {
     if (!isPaused)
     {
-        Engine->Tick();
     }
 
-    // Engine->Tick();
+
 }
 
 void Game::Resize(int width, int height)
