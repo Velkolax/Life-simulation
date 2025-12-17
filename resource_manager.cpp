@@ -39,6 +39,8 @@ Shader& ResourceManager::LoadComputeShader(std::vector<const char*> cShaderFiles
 
 Shader& ResourceManager::GetShader(std::string name)
 {
+    if (Shaders.contains(name)) return Shaders[name];
+    std::cout << "ERROR: SHADER NOT FOUND!!!" << std::endl;
     return Shaders[name];
 }
 

@@ -36,7 +36,7 @@ inline std::string textures[] = {
 class SpriteRenderer
 {
 public:
-    SpriteRenderer(Shader &shader, Board *board);
+    SpriteRenderer(Shader &shader, Board *board,int screenWidth, int screenHeight);
     void getActualDimensions(Board* board);
     ~SpriteRenderer();
     void constrainMapBounds(Board* board);

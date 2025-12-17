@@ -29,8 +29,6 @@ Game::~Game()
 void Game::Init()
 {
     ResourceManager::LoadShader({"shaders/instance.vs.glsl"},{"shaders/instance.fs.glsl"},"instance");
-    ResourceManager::LoadComputeShader({"shaders/common.glsl","shaders/movement.cs.glsl"},"movement");
-    ResourceManager::LoadComputeShader({"shaders/common.glsl","shaders/pass_time.cs.glsl"},"passTime");
     ResourceManager::LoadComputeShader({"shaders/process_network.cs.glsl"},"network");
     ResourceManager::LoadTexture("textures/square-16.png", true, "hexagon");
     ResourceManager::LoadTexture("textures/bacteria.png",true,"bacteria");
@@ -50,7 +48,7 @@ void Game::Init()
 
 
     Engine = new SimulationEngine(board);
-    Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board);
+    Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height);
 }
 
 
@@ -134,5 +132,5 @@ void Game::ProcessInput(float dt)
 
 void Game::Render()
 {
-    //Renderer -> DrawBoard(board,Width,Height);
+    Renderer -> DrawBoard(board,Width,Height);
 }
