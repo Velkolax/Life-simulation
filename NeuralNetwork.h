@@ -16,6 +16,16 @@ constexpr size_t SIZE = BIASES + CONNECTIONS;
 inline constexpr int layers[] = {INPUT, HIDDEN1, HIDDEN2, HIDDEN3, OUTPUT};
 inline constexpr int layersSize = std::size(layers);
 
+
+struct alignas(16) DataInOut
+{
+    float input[INPUT];
+    float output[OUTPUT];
+};
+
+constexpr size_t INOUT_SIZE = sizeof(DataInOut);
+
+
 typedef struct
 {
     float biases[BIASES];

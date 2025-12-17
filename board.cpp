@@ -72,12 +72,11 @@ void Board::InitializeRandom(int min, int max)
 
 void sendAllBacterias(Board* board, int size, std::vector<Hexagon*>& bacteriaHexes)
 {
-    float buffer[size];
-    float* p = buffer;
-    for(Hexagon* h : bacteriaHexes)
+    DataInOut buffer[size];
+    for(int i = 0; i < size; i++)
     {
-        h->getData().bacteria.sendToNetwork(board, p, h->getX(), h->getY());
-        p += SEND_SIZE;
+        Hexagon* h = bacteriaHexes[i];
+        h->getData().bacteria.addToBuffer(board, buffer[i].input, h->getX(), h->getY());
     }
 
     // WYSYŁANIE CAŁOŚCI
@@ -94,7 +93,7 @@ void Board::tick()
         if(bacteria(board[i].getResident()) && step % board[i].getData().bacteria.speed == 0) bacteriaHexes.push_back(&(board[i]));
     }
 
-    sendAllBacterias(this, bacteriaHexes.size() * SEND_SIZE, bacteriaHexes);
+    sendAllBacterias(this, bacteriaHexes.size(), bacteriaHexes);
 }
 
 

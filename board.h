@@ -90,6 +90,7 @@ private:
     const coord width;
     const coord height;
     std::vector<Hexagon> board;
+    std::vector<BacteriaData> bacterias;
 
     unsigned int step = 0;
 
