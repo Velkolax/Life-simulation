@@ -4,8 +4,7 @@
 #include <random>
 
 
-inline std::mt19937 gen;
-
+std::mt19937 gen;
 typedef int16_t coord;
 #define MEMORY_SIZE 3
 

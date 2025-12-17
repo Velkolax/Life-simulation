@@ -28,8 +28,7 @@ Game::~Game()
 
 void Game::Init()
 {
-    ResourceManager::LoadShader({"shaders/common.glsl","shaders/render_resident.vs.glsl"},{"shaders/render_resident.fs.glsl"},"sprite");
-    ResourceManager::LoadShader({"shaders/common.glsl","shaders/render_hex.vs.glsl"},{"shaders/render_resident.fs.glsl"},"hex");
+    ResourceManager::LoadShader({"shaders/instance.vs.glsl"},{"shaders/instance.fs.glsl"},"instance");
     ResourceManager::LoadComputeShader({"shaders/common.glsl","shaders/movement.cs.glsl"},"movement");
     ResourceManager::LoadComputeShader({"shaders/common.glsl","shaders/pass_time.cs.glsl"},"passTime");
     ResourceManager::LoadTexture("textures/square-16.png", true, "hexagon");
@@ -37,20 +36,20 @@ void Game::Init()
     ResourceManager::LoadTexture("textures/apple.png",true,"apple");
     ResourceManager::LoadTexture("textures/explosion.png",true,"explosion");
 
-    // Text = new TextRenderer(this->Width, this->Height);
-    // Text->Load(24);
+    Text = new TextRenderer(this->Width, this->Height);
+    Text->Load(24);
     int bacteriaCount = 1000;
     int x = 100;
     int y = 100;
     board = new Board(x, y, this);
     int total = x*y;
     board->InitializeNeighbour(249, true);
-    //board->InitializeRandom(total * 0.5, total * 0.9);
-
     board->spawnBacteria(bacteriaCount);
     board->spawnFood(0.1);
+
+
     Engine = new SimulationEngine(board);
-    Renderer = new SpriteRenderer(board);
+    Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board);
 }
 
 
@@ -146,23 +145,5 @@ void Game::ProcessInput(float dt)
 
 void Game::Render()
 {
-
-    //double t1 = glfwGetTime();
-    Renderer->DrawSprites(Engine->GetGridSSBO(),board,"hexagon",1,ResourceManager::GetShader("hex"));
-    //double t2 = glfwGetTime();
-    Renderer->DrawSprites(Engine->GetBacteriaSSBO(),board,"bacteria",0,ResourceManager::GetShader("sprite"));
-
-    //double t3 = glfwGetTime();
-    //double t4 = glfwGetTime();
-    // std::cout << "CZAS RENDEROWANIA HEXÓW: " << t2-t1 << std::endl;
-    // std::cout << "CZAS RENDEROWANIA BAKTERII: " << t3-t2 << std::endl;
-    // std::cout << "CZAS OBLICZANIA: " << t4-t3 << std::endl;
-    // Renderer -> DrawBoard(board, this->Width, this->Height,board->getCurrentPlayerId());
-    // Text->RenderText("KROK: "+std::to_string(step),10,10,1.0f);
-    // Text->RenderText("LICZBA BAKTERII: "+std::to_string(board->getBacterias().size()),10,40,1.0f);
-    // if (board->getBacterias().empty())
-    // {
-    //     Text->RenderText("KONIEC SYMULACJI",Width/2,10,1.0f);
-    // }
-    // RefreshSprites();
+    Renderer -> DrawBoard(board,Width,Height);
 }

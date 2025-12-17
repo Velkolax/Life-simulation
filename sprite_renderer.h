@@ -14,38 +14,58 @@
 #include <cstdlib>
 
 
+struct HexInstanceData {
+    glm::vec2 position;
+    glm::vec3 color;
+    float rotation;
+    glm::vec2 size;
+};
+
 inline std::string textures[] = {
     "nic",
     "nic",
     "bacteria",
-    "energy",
-    "protein"
+    "bacteria",
+    "bacteria",
+    "bacteria",
 };
+
+
+
 
 class SpriteRenderer
 {
 public:
-    SpriteRenderer(Board *board);
-    void setActualDimensions(Board* board);
+    SpriteRenderer(Shader &shader, Board *board);
+    void getActualDimensions(Board* board);
     ~SpriteRenderer();
+    void constrainMapBounds(Board* board);
 
     std::vector<int> getAllIndicesOnAScreen(Board* board);
     void generateSprites(Board* board);
-    void DrawBoard(Board* board);
+    void generateBorders(Board* board);
+    void DrawBoard(Board* board, int width, int height);
 
 
     bool isHexOnScreen(glm::vec2 hexPos);
     float getSize(Board* board);
+    void RenderBatch(const std::string& textureName, const std::vector<HexInstanceData>& data);
     glm::ivec2 CheckWhichHexagon(int x, int y, float size);
+    glm::ivec2 CheckWhichActualHexagon(int _x, int _y, float baseSize);
     void Zoom(float zoomFactor, float pivotX, float pivotY, Board* board);
     glm::vec2 calculateHexPosition(int gridX, int gridY, float size);
+    void InitPalette(Board *board);
 
     void addToDisplacementX(Board *board,int dx);
     void addToDisplacementY(Board *board,int dy);
     void addToResizeMultiplier(double ds, Board* board, float width);
-    void DrawSprites(GLuint bacteriaSSBO,Board *board,std::string textureName,int index,Shader shader);
+    void setBrightenedHexes(std::vector<Hexagon*> hexes);
+    void ClearBrightenedHexes();
 
     float size;
+    std::vector<HexInstanceData> hexData;
+    std::vector<std::vector<HexInstanceData>> residentData;
+    std::vector<glm::vec3> palette;
     int   displacementX = 0;
     int   displacementY = 0;
     int   actualBoardWidth=0;
@@ -58,7 +78,10 @@ public:
     int width;
     int height;
 private:
+    // Render state
+    Shader       shader;
     unsigned int quadVAO;
+    unsigned int instanceVBO;
     unsigned int quadVBO;
 
 

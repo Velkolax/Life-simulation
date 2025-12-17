@@ -49,7 +49,7 @@ float relu(float x){
     return max(0.0,x);
 }
 
-uniform int activeBacteria;
+uniform uint activeBacteria;
 
 void main() {
     uint id = gl_GlobalInvocationID.x;
