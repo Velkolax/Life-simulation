@@ -140,12 +140,14 @@ void SimulationEngine::InitNetworkData()
 
 void SimulationEngine::Tick(int id_size, int *ids, float* inputData, float* outputData)
 {
-    GLsizeiptr ssboInSize = (GLsizeiptr)(bCapacity * INPUT * sizeof(float));
-    GLsizeiptr ssboOutSize = (GLsizeiptr)(bCapacity * OUTPUT * sizeof(float));
-
-
-    memcpy(InPtr,inputData,id_size*INPUT * sizeof(float));
     memcpy(idPtr,ids,id_size*sizeof(uint32_t));
+    #pragma omp parallel for
+    for (int i = 0; i < id_size; i++) {
+        int targetID = ids[i];
+        float* gpuSlot = InPtr + (targetID * INPUT);
+        float* srcData = inputData + (i * INPUT);
+        memcpy(gpuSlot, srcData, INPUT * sizeof(float));
+    }
     glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
     shader.Use();
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER,0,ssboNetworks);
@@ -158,7 +160,17 @@ void SimulationEngine::Tick(int id_size, int *ids, float* inputData, float* outp
     glDispatchCompute((id_size + 63) / 64, 1, 1);
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
-    memcpy(outputData,OutPtr,id_size*OUTPUT*sizeof(float));
+    GLsync fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+    GLenum result = glClientWaitSync(fence, GL_SYNC_FLUSH_COMMANDS_BIT, 1000000000);
+    glDeleteSync(fence);
+
+    #pragma omp parallel for
+    for (int i = 0; i < id_size; i++) {
+        int targetID = ids[i];
+        float* gpuSlot = OutPtr + (targetID * OUTPUT);
+        float* dstData = outputData + (i * OUTPUT);
+        memcpy(dstData, gpuSlot, OUTPUT * sizeof(float));
+    }
 
     GLenum err;
     while((err = glGetError()) != GL_NO_ERROR)
