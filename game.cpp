@@ -31,6 +31,7 @@ void Game::Init()
     ResourceManager::LoadShader({"shaders/instance.vs.glsl"},{"shaders/instance.fs.glsl"},"instance");
     ResourceManager::LoadComputeShader({"shaders/common.glsl","shaders/movement.cs.glsl"},"movement");
     ResourceManager::LoadComputeShader({"shaders/common.glsl","shaders/pass_time.cs.glsl"},"passTime");
+    ResourceManager::LoadComputeShader({"shaders/process_network.cs.glsl"},"network");
     ResourceManager::LoadTexture("textures/square-16.png", true, "hexagon");
     ResourceManager::LoadTexture("textures/bacteria.png",true,"bacteria");
     ResourceManager::LoadTexture("textures/apple.png",true,"apple");
@@ -59,19 +60,7 @@ void Game::Init()
 
 void Game::Update(float dt)
 {
-    Engine->Tick([&](DataInOut* ptr)
-    {
-        for (int i=0;i<NUMBER_OF_ACTIVE_BACTERIA;i++)
-        {
-            if (Engine->tickCounter>0)
-            {
-                float a = ptr[i].output[0];
-                float b = ptr[i].output[1];
-                std::cout << "OUT1: " << a << " OUT2: " << b << std::endl;
-            }
-            ptr[i].input[0] = 5;
-        }
-    });
+    Engine->Tick();
 }
 
 void Game::Resize(int width, int height)
@@ -145,5 +134,5 @@ void Game::ProcessInput(float dt)
 
 void Game::Render()
 {
-    Renderer -> DrawBoard(board,Width,Height);
+    //Renderer -> DrawBoard(board,Width,Height);
 }
