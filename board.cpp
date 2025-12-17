@@ -12,7 +12,7 @@ Hexagon::Hexagon(coord x, coord y) : x(x), y(y), resident(Resident::Wall){}
 Hexagon::Hexagon(coord x, coord y, Resident resident) : x(x), y(y), resident(resident)
 {}
 
-Board::Board(coord width, coord height, Game* game) : width(width), height(height), game(game)
+Board::Board(coord width, coord height, Game* game, int bacteriaCount) : width(width), height(height), game(game)
 {
     board.reserve(width * height);
     for (coord y = 0; y < height; y++)
@@ -22,6 +22,7 @@ Board::Board(coord width, coord height, Game* game) : width(width), height(heigh
             board.emplace_back(x, y);
         }
     }
+    bacterias.reserve(bacteriaCount);
 }
 
 
@@ -76,7 +77,7 @@ void sendAllBacterias(Board* board, int size, std::vector<Hexagon*>& bacteriaHex
     for(int i = 0; i < size; i++)
     {
         Hexagon* h = bacteriaHexes[i];
-        h->getData().bacteria.addToBuffer(board, buffer[i].input, h->getX(), h->getY());
+        board->getBacteria(h->getData().bacteriaIndex).addToBuffer(board, buffer[i].input, h->getX(), h->getY());
     }
 
     // WYSYŁANIE CAŁOŚCI
@@ -90,7 +91,7 @@ void Board::tick()
     int total = width * height;
     for(int i = 0; i < total; i++)
     {
-        if(bacteria(board[i].getResident()) && step % board[i].getData().bacteria.speed == 0) bacteriaHexes.push_back(&(board[i]));
+        if(bacteria(board[i].getResident()) && step % getBacteria(board[i].getData().bacteriaIndex).speed == 0) bacteriaHexes.push_back(&(board[i]));
     }
 
     sendAllBacterias(this, bacteriaHexes.size(), bacteriaHexes);
@@ -143,10 +144,11 @@ void Hexagon::placeProtein(uint8_t amount)
     data.protein.amount = amount;
 }
 
-void Hexagon::placeBacteria()
+void Hexagon::placeBacteria(Board* board)
 {
     resident = Resident::Bacteria;
-    data.bacteria.randomize();
+    data.bacteriaIndex = board->getBacteriaCount();
+    board->addBacteria().randomize();
 }
 
 /*bool Hexagon::isNearWater(Board *board)
