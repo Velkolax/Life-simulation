@@ -14,9 +14,6 @@
 
 #define BIG_NUMBER 10000000
 
-typedef int16_t coord;
-typedef uint16_t ucoord;
-
 enum class Resident : uint8_t
 {
     // Plain
@@ -40,8 +37,6 @@ inline bool resource(Resident resident) noexcept { return resident >= Resident::
 inline bool acid(Resident resident) noexcept {return resident == Resident::Acid;};
 inline bool energy(Resident resident) noexcept { return resident == Resident::Energy; };
 inline bool protein(Resident resident) noexcept { return resident == Resident::Protein; };
-
-inline std::mt19937 gen; // generator liczb losowych
 
 class Hexagon; // deklaracje by nie było problemu z mieszaniem kolejności
 class Board;
@@ -78,7 +73,7 @@ public:
     inline coord getY() const noexcept { return y; }
     inline glm::ivec2 getPos() const noexcept { return glm::ivec2(x, y); }
     inline Resident getResident() const noexcept { return resident; }
-    inline ResidentData& getData() const noexcept { return data; }
+    inline const ResidentData& getData() const noexcept { return data; }
 
     void placeWall();
     void placeEmpty();

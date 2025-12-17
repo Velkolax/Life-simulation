@@ -3,6 +3,10 @@
 #include <glm/glm.hpp>
 #include <random>
 
+
+typedef int16_t coord;
+typedef uint16_t ucoord;
+
 inline std::mt19937 gen;
 
 
@@ -23,7 +27,7 @@ constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> evenDir
     {-1,  0}, // lewy dolny
     { 0,  1}, // dolny
     { 1,  0}, // prawy dolny
-    { 1, -1}  // prawy górny
+    { 1, -1}, // prawy górny
 
     // Druga warstwa
     { 0, -2},
@@ -37,9 +41,9 @@ constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> evenDir
     { 2,  1},
     { 2,  0},
     { 2, -1},
-    { 1, -2},
+    { 1, -2}
 };
-static_assert(evenDirections.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
+static_assert(evenDirections2l.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
 
 constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> oddDirections2l =
 {
@@ -49,7 +53,7 @@ constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> oddDire
     {-1,  1}, // lewy dolny
     { 0,  1}, // dolny
     { 1,  1}, // prawy dolny
-    { 1,  0}  // prawy górny
+    { 1,  0}, // prawy górny
 
     // Druga warstwa
     { 0, -2},
@@ -63,9 +67,9 @@ constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> oddDire
     { 2,  1},
     { 2,  0},
     { 2, -1},
-    { 1, -1},
+    { 1, -1}
 };
-static_assert(oddDirections.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
+static_assert(oddDirections2l.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
 
 
 struct BacteriaData
@@ -85,7 +89,7 @@ struct BacteriaData
     uint8_t age;
 
     void randomize();
-    void sendToNetwork(coord x, coord y);
+    void sendToNetwork(Board* board, coord x, coord y);
 };
 
 static_assert(std::is_trivially_constructible_v<BacteriaData>);

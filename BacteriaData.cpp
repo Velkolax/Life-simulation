@@ -64,7 +64,7 @@ constexpr float INV_RESIDENT = 1.0f / float(Resident::Protein);
 constexpr float INV_MAX_ACCUSTOMABLE = 1.0f / MAX_ACCUSTOMABLE_VALUE;
 constexpr float INV_MAX_STORED = 1.0f / MAX_STORED_VALUE;
 
-void BacteriaData::sendToNetwork(coord x, coord y)
+void BacteriaData::sendToNetwork(Board* board, coord x, coord y)
 {
     float buffor[SEND_SIZE];
     float* f = buffor;
@@ -107,7 +107,7 @@ void BacteriaData::sendToNetwork(coord x, coord y)
         }
     }
 
-    // Legendy głoszą że tu w swoim czasie pojawi się funkcja wysyłająca ten buffor
+    // Legendy głoszą że tu w swoim czasie pojawi się funkcja wysyłająca ten bufor
 }
 
 static_assert(MEMORY_SIZE + 1 + 6 + TWO_NEIGHBOUR_LAYERS_SIZE * 3 <= SEND_SIZE, "SEND_SIZE too small");
