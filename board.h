@@ -41,7 +41,8 @@ inline bool protein(Resident resident) noexcept { return resident == Resident::P
 
 union ResidentData
 {
-    BacteriaData bacteria;
+    int bacteriaIndex; // indeks w tablicy bacterias
+    //BacteriaData bacteria;
     EnergyData energy;
     ProteinData protein;
     AcidData acid;
@@ -98,7 +99,7 @@ private:
 
 public:
     // inicjalizatory
-    Board(coord width, coord height, Game* game);
+    Board(coord width, coord height, Game* game, int bacteriaCount);
     void InitializeRandom(int min, int max);
     void InitializeNeighbour(int recursion, bool includeMiddle);
 
@@ -112,6 +113,9 @@ public:
     inline coord getHeight() const noexcept { return height; }
     inline Hexagon* getHexagon(coord x, coord y) { return (x < 0 || y < 0 || x >= width || y >= height) ? nullptr : &(board[y * width + x]); }
     inline Hexagon* getHexagon(int i) { return (i < 0 || i >= width * height) ? nullptr : &(board[i]); }
+    inline int getBacteriaCount() const noexcept { return bacterias.size(); }
+    inline BacteriaData& getBacteria(int i) const noexcept { return bacterias[i]; }
+    inline BacteriaData& addBacteria() noexcept { return bacterias.emplace_back(); }
     inline const Game* getGame() const noexcept { return game; }
 
 };
