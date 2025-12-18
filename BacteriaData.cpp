@@ -125,7 +125,7 @@ Hexagon* directionToHex(Board* board, float dir, coord x, coord y)
     return board->getHexagon(x + dx, y + dy);
 }
 
-constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> evenDirections2lws =
+constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE+1> evenDirections2lws =
 {{
     { 0,  0},
     { 0, -1}, {-1, -1}, {-1,  0}, { 0,  1}, { 1,  0}, { 1, -1},
@@ -134,7 +134,7 @@ constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> evenDir
 }};
 static_assert(evenDirections2lws.size() == TWO_NEIGHBOUR_LAYERS_SIZE + 1);
 
-constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> oddDirections2lws =
+constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE+1> oddDirections2lws =
 {{
     { 0,  0},
     { 0, -1}, {-1,  0}, {-1,  1}, { 0,  1}, { 1,  1}, { 1,  0},
@@ -340,7 +340,11 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
     Hexagon* childHex = board->getHexagon(hex->getX()+dir.first,hex->getY()+dir.second);
     if (!childHex || !empty(childHex->getResident())) return;
     childHex->placeChild(board,wife,husband);
-    board->getGame()->engine->reproduceNetwork(oldHex->getData().bacteriaIndex,hex->getData().bacteriaIndex);
+    if (!board->emptyVacant())
+    {
+        board->getGame()->engine->reproduceNetwork(oldHex->getData().bacteriaIndex,hex->getData().bacteriaIndex, board->popVacant());
+    }
+
 }
 
 void BacteriaData::eat(Board* board, float* data, coord x, coord y)

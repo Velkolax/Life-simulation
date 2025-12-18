@@ -14,7 +14,7 @@ public:
     void SendData(float *f);
     void Process(uint32_t id_size, uint32_t* ids, float* inputData, float* outputData);
     void killNetwork(int id);
-    void reproduceNetwork(int idA,int idB);
+    void reproduceNetwork(int parentA, int parentB, int childIdx);
     inline size_t getbCapacity(){return bCapacity;}
     inline size_t getbSize(){return bSize;}
     float* InPtr = nullptr;
