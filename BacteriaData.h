@@ -105,6 +105,11 @@ struct BacteriaData
     void addToBuffer(Board* board, float* buffer, coord x, coord y);
     inline void execute(Board* board, float* data, coord x, coord y) { actions[clamp(int(*data * BACTERIA_ACTIONS_NUMBER), 0, BACTERIA_ACTIONS_NUMBER-1)](board, data + 1, x, y); }
 
+    /*void moveTo(Board* board, Hexagon* destination, coord x, coord y)
+    {
+        destination.
+    }*/
+
     void move(Board* board, float* data, coord x, coord y);
     void attack(Board* board, float* data, coord x, coord y);
     void breed(Board* board, float* data, coord x, coord y);

@@ -58,7 +58,12 @@ private:
     const coord y;
     Resident resident; // enum o wymuszonym rozmiarze bajta
     ResidentData data;
+
 public:
+    // Ilość kwasu i białka na planszy ma pozostawać stała więc jeśli jakiś zniknie (np ze względu na brak miejsca) musi zostać dodany przy następnym zrzucie zasobów
+    int acidShortage = 0;
+    int proteinShortage = 0;
+
     Hexagon();
     Hexagon(coord x, coord y);
     Hexagon(coord x, coord y, Resident resident);
@@ -79,6 +84,7 @@ public:
     void placeProtein();
     void placeProtein(uint8_t amount);
     void placeBacteria(Board* board);
+    void placeBacteria(Board* board, uint32_t id);
 
     //bool isNearWater(Board* board);
 

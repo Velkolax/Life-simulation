@@ -186,6 +186,12 @@ void Hexagon::placeBacteria(Board* board)
     board->addBacteria().randomize();
 }
 
+void Hexagon::placeBacteria(Board* board, uint32_t id)
+{
+    resident = Resident::Bacteria;
+    data.bacteriaIndex = id;
+}
+
 /*bool Hexagon::isNearWater(Board *board)
 {
     return (neighbours(board, 0, false, [](Hexagon* h) { return wall(h->resident); })).size() > 0;
