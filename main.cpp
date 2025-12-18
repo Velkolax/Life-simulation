@@ -169,9 +169,9 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
         sim -> cursorPosX = xpos;
         sim -> cursorPosY = ypos;
     }
-    // else if(action == GLFW_RELEASE){
-    //     sim -> mousePressed = false;
-    // }
+    else if(action == GLFW_RELEASE){
+        sim -> mousePressed = false;
+    }
 
 }
 

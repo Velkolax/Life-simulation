@@ -148,7 +148,6 @@ void Game::Render()
             Text->RenderText("AGE: "+std::to_string(bac.age),10,10,1.0);
             Text->RenderText("ENERGY: "+std::to_string(bac.energy),10,40,1.0);
         }
-        mousePressed=false;
     }
 
     Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getBacteriaCount()),Width*0.5,10,1.0);
