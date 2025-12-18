@@ -30,6 +30,8 @@ void Game::Init()
     ResourceManager::LoadShader({"shaders/instance.vs.glsl"},{"shaders/instance.fs.glsl"},"instance");
     ResourceManager::LoadComputeShader({"shaders/process_network.cs.glsl"},"network");
     ResourceManager::LoadComputeShader({"shaders/init_weights.cs.glsl"},"init");
+    ResourceManager::LoadComputeShader({"shaders/kill.cs.glsl"},"kill");
+    ResourceManager::LoadComputeShader({"shaders/reproduce.cs.glsl"},"reproduce");
     ResourceManager::LoadTexture("textures/square-16.png", true, "hexagon");
     ResourceManager::LoadTexture("textures/bacteria.png",true,"bacteria");
     ResourceManager::LoadTexture("textures/apple.png",true,"apple");
@@ -39,9 +41,9 @@ void Game::Init()
 
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load(24);
-    int bacteriaCount = 10000;
-    int x = 300;
-    int y = 300;
+    int bacteriaCount = 1000;
+    int x = 100;
+    int y = 100;
     board = new Board(x, y, this,bacteriaCount);
     int total = x*y;
     board->InitializeNeighbour(249, true);

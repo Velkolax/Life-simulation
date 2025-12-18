@@ -12,7 +12,7 @@ SimulationEngine::SimulationEngine(Board* board)
     bWidth = board->getWidth();
     bHeight = board->getHeight();
     bCapacity = bWidth * bHeight;
-    bSize = board->getBacteriasNumber();
+    bSize = board->getBacteriaCount();
     shader = ResourceManager::GetShader("network");
     std::cout << "BCAPACITY: " << bCapacity << " BSIZE: " << bSize << std::endl;
     InitSsbos(board);
@@ -185,7 +185,7 @@ void SimulationEngine::killNetwork(int deadIdx)
     int lastIdx = bSize - 1;
 
     if (deadIdx != lastIdx) {
-        Shader killShader = ResourceManager::GetShader("kill_shader");
+        Shader killShader = ResourceManager::GetShader("kill");
         killShader.Use();
         killShader.SetInteger("stride", bCapacity);
         killShader.SetInteger("paramCount", SIZE);
@@ -203,7 +203,7 @@ void SimulationEngine::reproduceNetwork(int parentA, int parentB)
 
     int childIdx = bSize;
 
-    Shader reproShader = ResourceManager::GetShader("reproduce_shader");
+    Shader reproShader = ResourceManager::GetShader("reproduce");
     reproShader.Use();
     reproShader.SetInteger("stride", bCapacity);
     reproShader.SetInteger("paramCount", SIZE);

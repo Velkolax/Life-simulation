@@ -28,10 +28,12 @@ private:
     GLuint ssboIn;
     GLuint ssboOut;
     GLuint ssboIds;
+    GLuint ssboEmpty;
     GLsync fences[2] = {0,0};
     float* networksPtr = nullptr;
     float* stagingPtr = nullptr;
     uint32_t* idPtr = nullptr;
+    uint32_t* emptyPtr = nullptr;
     //std::vector<DataInOut> ramBuffer;
     const size_t BATCH_SIZE = 1000;
     Shader shader;
