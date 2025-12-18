@@ -1,7 +1,7 @@
 #version 450 core
 layout(local_size_x = 64) in;
 
-const int INPUT = 68;
+const int INPUT = 64;
 const int HIDDEN1 = 80;
 const int HIDDEN2 = 32;
 const int HIDDEN3 = 16;

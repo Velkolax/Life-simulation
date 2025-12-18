@@ -138,7 +138,7 @@ void SimulationEngine::InitNetworkData()
 
 
 
-void SimulationEngine::Process(uint32_t id_size, int *ids, float* inputData, float* outputData)
+void SimulationEngine::Process(uint32_t id_size, uint32_t *ids, float* inputData, float* outputData)
 {
     memcpy(idPtr,ids,id_size*sizeof(uint32_t));
     memcpy(InPtr, inputData, id_size * INPUT * sizeof(float));
