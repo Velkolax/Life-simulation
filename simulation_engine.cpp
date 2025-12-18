@@ -158,7 +158,6 @@ void SimulationEngine::Process(uint32_t id_size, uint32_t *ids, float* inputData
     GLsync fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     GLenum result = glClientWaitSync(fence, GL_SYNC_FLUSH_COMMANDS_BIT, 1000000000);
     glDeleteSync(fence);
-
     memcpy(outputData,OutPtr,id_size*OUTPUT*sizeof(float));
 
     GLenum err;

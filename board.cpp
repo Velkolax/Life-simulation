@@ -76,22 +76,20 @@ void Board::InitializeRandom(int min, int max)
 
 void Board::tick()
 {
-    struct DataIn
-    {
-        float input[INPUT];
-    };
     struct Point
     {
         coord x;
         coord y;
     };
-
+    int count = getBacteriaCount();
     std::vector<uint32_t> idsBuffer;
-    idsBuffer.reserve(256);
-    std::vector<DataIn> inBuffer;
-    inBuffer.reserve(256);
+    idsBuffer.reserve(count);
     std::vector<Point> points;
-    points.reserve(256);
+    points.reserve(count);
+    std::vector<float> hostInBuffer;
+    hostInBuffer.reserve(count*INPUT);
+    float* inBuffer;
+    float* outBuffer;
 
     size_t total = board.size();
     for(int i = 0; i < total; i++)
@@ -103,32 +101,23 @@ void Board::tick()
             if(step % b.speed == 0)
             {
                 idsBuffer.push_back(index);
-                inBuffer.emplace_back();
-                b.addToBuffer(this, inBuffer.back().input, board[i].getX(), board[i].getY());
                 points.push_back({board[i].getX(), board[i].getY()});
+                size_t currentIdx = hostInBuffer.size();
+                hostInBuffer.resize(currentIdx + INPUT);
+                b.addToBuffer(this, &hostInBuffer[currentIdx], board[i].getX(), board[i].getY());
             }
         }
     }
-
     if (idsBuffer.empty()) return;
-
-    struct DataOut
-    {
-        float output[OUTPUT];
-    };
-
-    std::vector<DataOut> outBuffer(idsBuffer.size());
-
-    game->engine->Process(idsBuffer.size(), idsBuffer.data(), inBuffer[0].input, outBuffer[0].output);
-
+    std::vector<float> hostOutBuffer; hostOutBuffer.resize(count*OUTPUT);
+    game->engine->Process(idsBuffer.size(), idsBuffer.data(), hostInBuffer.data(), hostOutBuffer.data());
     for(int i = 0; i < idsBuffer.size(); i++)
     {
         BacteriaData& b = getBacteria(idsBuffer[i]);
-
-        auto& out = outBuffer[i];
-
-        memcpy(b.memory, out.output, MEMORY_SIZE * sizeof(float));
-        b.execute(this, out.output + MEMORY_SIZE, points[i].x, points[i].y);
+        float* currentOutput = &hostOutBuffer[i*OUTPUT];
+        std::cout << "AAA" << std::endl;
+        memcpy(b.memory, currentOutput, MEMORY_SIZE * sizeof(float));
+        b.execute(this, currentOutput + MEMORY_SIZE, points[i].x, points[i].y);
     }
 }
 
