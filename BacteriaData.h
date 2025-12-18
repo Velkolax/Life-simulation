@@ -67,25 +67,25 @@ struct BacteriaData
     void addToBuffer(Board* board, float* buffer, coord x, coord y);
 
 
-    inline bool consumeEnergy(float multiplier)
+    inline bool consumeEnergy(float multiplier, Board* board, coord x, coord y)
     {
         int e = int(energy) - std::max(int(multiplier * (acid + protein + energy) * 0.05), 1);
-        if (e <= 0) { die(); return false; }
+        if (e <= 0) { die(board, x, y); return false; }
         energy = e;
         return true;
     }
     inline void getOlder()
     {
         age += 1;
-        if(age > lifespan) die();
+        if(age > lifespan) die(board, x, y);
         float ageNorm = float(age) / float(lifespan);
         float lifespanNorm = float(lifespan) / 100.0f;
         float diseaseChance = 0.0001f + ageNorm * ageNorm * lifespanNorm * 0.02f;
 
         std::uniform_real_distribution<float> dist(0.0f, 1.0f);
-        if (dist(gen) < diseaseChance) die(); // Choroba (prawdopodobieństwo wzrasta z lifespan)
+        if (dist(gen) < diseaseChance) die(board, x, y); // Choroba (prawdopodobieństwo wzrasta z lifespan)
     }
-    void die();
+    void die(Board* board, coord x, coord y);
 
     void move(Board* board, float* data, coord x, coord y);
     void attack(Board* board, float* data, coord x, coord y);
