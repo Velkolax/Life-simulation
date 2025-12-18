@@ -78,11 +78,23 @@ void SimulationEngine::InitNetworkData()
     initShader.SetInteger("stride", bCapacity);
     initShader.SetFloat("seed", glfwGetTime());
 
-    auto DispatchInit = [&](int startParam, int count, float range) {
+    auto DispatchInit = [&](int startParam, int count, float minVal,float maxVal) {
         initShader.SetInteger("paramOffset", startParam);
         initShader.SetInteger("paramCount", count);
-        initShader.SetFloat("minVal", -range); // Np. -0.5
-        initShader.SetFloat("maxVal", range);  // Np. 0.5
+        initShader.SetFloat("minVal", minVal);
+        initShader.SetFloat("maxVal", maxVal);
+
+
+        int groupsX = (bCapacity + 63) / 64;
+        int groupsY = count;
+
+        glDispatchCompute(groupsX, groupsY, 1);
+    };
+    auto DispatchInit2 = [&](int startParam, int count, float range) {
+        initShader.SetInteger("paramOffset", startParam);
+        initShader.SetInteger("paramCount", count);
+        initShader.SetFloat("minVal", -range);
+        initShader.SetFloat("maxVal", range);
 
 
         int groupsX = (bCapacity + 63) / 64;
@@ -93,45 +105,41 @@ void SimulationEngine::InitNetworkData()
 
 
     int totalBiases = BIASES;
-    DispatchInit(0, totalBiases, 0.01f);
+    DispatchInit(0, totalBiases, 0.05f,0.1f);
 
     int currentParamOffset = BIASES;
 
     float range1 = sqrt(6.0f / (INPUT + HIDDEN1));
-    DispatchInit(currentParamOffset, INPUT * HIDDEN1, range1);
+    DispatchInit2(currentParamOffset, INPUT * HIDDEN1, range1);
     currentParamOffset += INPUT * HIDDEN1;
 
 
     float range2 = sqrt(6.0f / (HIDDEN1 + HIDDEN2));
-    DispatchInit(currentParamOffset, HIDDEN1 * HIDDEN2, range2);
+    DispatchInit2(currentParamOffset, HIDDEN1 * HIDDEN2, range2);
     currentParamOffset += HIDDEN1 * HIDDEN2;
 
 
     float range3 = sqrt(6.0f / (HIDDEN2 + HIDDEN3));
-    DispatchInit(currentParamOffset, HIDDEN2 * HIDDEN3, range3);
+    DispatchInit2(currentParamOffset, HIDDEN2 * HIDDEN3, range3);
     currentParamOffset += HIDDEN2 * HIDDEN3;
 
 
     float rangeOut = sqrt(6.0f / (HIDDEN3 + OUTPUT));
-    DispatchInit(currentParamOffset, HIDDEN3 * OUTPUT, rangeOut);
+    DispatchInit2(currentParamOffset, HIDDEN3 * OUTPUT, rangeOut);
 
 
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
     std::cout << "Inicjalizacja na GPU zakonczona." << std::endl;
-    std::vector<float> debugWeights(10 * bCapacity);
+    size_t weightStartOffset = (size_t)BIASES * bCapacity;
 
-    glGetNamedBufferSubData(ssboNetworks, 0, debugWeights.size() * sizeof(float), debugWeights.data());
+    std::vector<float> debugWeights(10);
 
-    std::cout << "--- DEBUG WAG (Pierwsze 10 dla bakterii 0) ---" << std::endl;
+    glGetNamedBufferSubData(ssboNetworks, weightStartOffset * sizeof(float), 10 * sizeof(float), debugWeights.data());
+
+    std::cout << "--- DEBUG WAG (Warstwa 1) ---" << std::endl;
     for(int i=0; i<10; i++) {
-
-        float val = debugWeights[i * bCapacity];
-        std::cout << "Param " << i << ": " << val << std::endl;
-    }
-
-    if (debugWeights[0] == 0.0f && debugWeights[bCapacity] == 0.0f) {
-        std::cout << "ALARM: Wagi to nadal same zera!" << std::endl;
+        std::cout << "Waga " << i << ": " << debugWeights[i] << std::endl;
     }
 }
 
@@ -160,6 +168,11 @@ void SimulationEngine::Process(uint32_t id_size, uint32_t *ids, float* inputData
     glDeleteSync(fence);
     memcpy(outputData,OutPtr,id_size*OUTPUT*sizeof(float));
 
+    // std::vector<float> debugOut(bCapacity * OUTPUT);
+    // glGetNamedBufferSubData(ssboOut, 0, debugOut.size() * sizeof(float), debugOut.data());
+    //
+    // std::cout << "--- OUTPUT BAKTERII 0 ---" << std::endl;
+    // std::cout << "X: " << debugOut[0] << "  Y: " << debugOut[1] << " Z:" << debugOut[2] << " V:" << debugOut[3] << std::endl;
     GLenum err;
     while((err = glGetError()) != GL_NO_ERROR)
     {

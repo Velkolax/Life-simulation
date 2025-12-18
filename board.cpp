@@ -122,7 +122,6 @@ void Board::tick()
         BacteriaData& b = getBacteria(idsBuffer[i]);
         if(!b.age) continue; // Nowonarodzona zastąpiła starą martwą ale nie powinna wykonywać jej ruchów
         float* currentOutput = &hostOutBuffer[i*OUTPUT];
-        std::cout << "AAA" << std::endl;
         memcpy(b.memory, currentOutput, MEMORY_SIZE * sizeof(float));
         b.execute(this, currentOutput + MEMORY_SIZE, points[i].x, points[i].y);
     }
@@ -195,6 +194,7 @@ void Hexagon::placeBacteria(Board* board, uint32_t id)
 
 void Board::spawnFood(double foodRatio)
 {
+    std::uniform_int_distribution<int> dist(0,100);
     int count = board.size();
     std::vector<int> range(count);
     std::iota(range.begin(), range.end(), 0);
@@ -203,9 +203,12 @@ void Board::spawnFood(double foodRatio)
     std::shuffle(range.begin(),range.end(),gen);
     for (int i=0;i<range.size()*foodRatio;i++)
     {
+        int index = dist(gen);
         if (empty(board[range[i]].getResident()))
         {
-            board[range[i]].placeEnergy();
+            if (index<50) board[range[i]].placeEnergy();
+            else if (index<90) board[range[i]].placeProtein();
+            else board[range[i]].placeAcid();
         }
 
     }

@@ -5,6 +5,7 @@
 #include <utility>
 #include <cstdint>
 #include <algorithm>
+#include <iostream>
 #include <glm/glm.hpp>
 
 
@@ -103,6 +104,7 @@ struct BacteriaData
     inline void execute(Board* board, float* data, coord x, coord y)
     {
         int index = std::clamp(int(*data * BACTERIA_ACTIONS_NUMBER), 0, BACTERIA_ACTIONS_NUMBER - 1);
+        //std::cout << "INDEX: " << index << std::endl;
         (this->*actions[index])(board, data + 1, x, y);
     }
 };

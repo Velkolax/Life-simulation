@@ -113,6 +113,10 @@ Hexagon* directionToHex(Board* board, float dir, coord x, coord y)
     return board->getHexagon(x + dx, y + dy);
 }
 
+void BacteriaData::die()
+{
+}
+
 void BacteriaData::move(Board* board, float* data, coord x, coord y)
 {
     int movesCount = std::min(speed / 20, 4);
@@ -122,7 +126,9 @@ void BacteriaData::move(Board* board, float* data, coord x, coord y)
     {
         if(!consumeEnergy(1.f)) return;
         Hexagon* hex = directionToHex(board, data[i], oldHex->getX(), oldHex->getY());
-        if(!hex || !empty(hex->getResident())) return; // próbuje wejść w coś
+        // if (!hex) {std::cout << "BRAK HEXA!" << std::endl; return;}
+        // if (!empty(hex->getResident())) {std::cout << "HEX NIE JEST PUSTY" << std::endl; return;}
+        if(!hex || !empty(hex->getResident())) return;
         hex->placeBacteria(board, id);
         oldHex->placeEmpty();
         oldHex = hex;
@@ -139,7 +145,7 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
     }
     if(!consumeEnergy(4.f)) return;
     BacteriaData& attacked = board->getBacteria(hex->getData().bacteriaIndex);
-    int acidUsed = std::clamp(int(data[1] * acid), 0, acid);
+    int acidUsed = std::clamp(int(data[1] * acid), 0, (int)acid);
     acid -= acidUsed;
     int sum = attacked.acid + attacked.energy + attacked.protein;
     int total = acidUsed * sum / MAX_STORED_VALUE;
@@ -154,9 +160,9 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
     int energyDrained = r2 - r1;
     int proteinDrained = total - r2;
 
-    acidDrained = std::min(acidDrained, attacked.acid);
-    energyDrained = std::min(energyDrained, attacked.energy);
-    proteinDrained = std::min(proteinDrained, attacked.protein);
+    acidDrained = std::min(acidDrained, (int)attacked.acid);
+    energyDrained = std::min(energyDrained, (int)attacked.energy);
+    proteinDrained = std::min(proteinDrained, (int)attacked.protein);
 
     attacked.acid -= acidDrained;
     attacked.energy -= energyDrained;
