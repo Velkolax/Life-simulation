@@ -101,6 +101,7 @@ struct BacteriaData
 
     void randomize();
     void addToBuffer(Board* board, float* buffer, coord x, coord y);
+    void execute(Board* board, float* data, coord x, coord y);
 };
 
 static_assert(std::is_trivially_constructible_v<BacteriaData>);
