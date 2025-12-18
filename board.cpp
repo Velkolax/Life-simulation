@@ -80,11 +80,18 @@ void Board::tick()
     {
         float input[INPUT];
     };
+    struct Point
+    {
+        coord x;
+        coord y;
+    };
 
     std::vector<uint32_t> idsBuffer;
     idsBuffer.reserve(256);
     std::vector<DataIn> inBuffer;
     inBuffer.reserve(256);
+    std::vector<Point> points;
+    points.reserve(256);
 
     size_t total = board.size();
     for(int i = 0; i < total; i++)
@@ -98,6 +105,7 @@ void Board::tick()
                 idsBuffer.push_back(index);
                 inBuffer.emplace_back();
                 b.addToBuffer(this, inBuffer.back().input, board[i].getX(), board[i].getY());
+                points.push_back({board[i].getX(), board[i].getY()});
             }
         }
     }
@@ -112,6 +120,13 @@ void Board::tick()
     std::vector<DataOut> outBuffer(idsBuffer.size());
 
     game->engine->Process(idsBuffer.size(), idsBuffer.data(), inBuffer[0].input, outBuffer[0].output);
+
+    for(int i = 0; i < idsBuffer.size(); i++)
+    {
+        BacteriaData& b = getBacteria(index);
+        memcpy(b.memory, outBuffer.data(), MEMORY_SIZE);
+        b.execute(this, outBuffer.data() + MEMORY_SIZE, points[i].x, points[i].y);
+    }
 }
 
 
