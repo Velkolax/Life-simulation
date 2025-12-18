@@ -33,8 +33,8 @@ void BacteriaData::randomize()
 
 void BacteriaData::cross(BacteriaData& dad, BacteriaData& mom,float energySent,float proteinSent, float acidSent)
 {
-    lifespan = (dad.lifespan+mom.lifespan)/2;
-    speed = (dad.speed+mom.speed)/2;
+    lifespan = 50;
+    speed = 50;
     acid =10;
     energy=100;
     protein=10;
