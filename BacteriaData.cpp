@@ -146,8 +146,9 @@ static_assert(oddDirections2lws.size() == TWO_NEIGHBOUR_LAYERS_SIZE + 1);
 void BacteriaData::die(Board* board, coord x, coord y)
 {
     Hexagon* hex = board->getHexagon(x, y);
-    uint32_t id = hex->getData().bacteriaIndex;
+    int32_t id = hex->getData().bacteriaIndex;
     hex->placeEmpty();
+    board->addVacant(id);
 
     int acidDrained = acid;
     int energyDrained = energy;
@@ -208,7 +209,7 @@ void BacteriaData::move(Board* board, float* data, coord x, coord y)
 {
     int movesCount = std::min(speed / 20, 4);
     Hexagon* oldHex = board->getHexagon(x, y);
-    uint32_t id = oldHex->getData().bacteriaIndex;
+    int32_t id = oldHex->getData().bacteriaIndex;
     for(int i = 0; i < movesCount; i++)
     {
         if(!consumeEnergy(1.f)) return;

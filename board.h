@@ -41,7 +41,7 @@ inline bool protein(Resident resident) noexcept { return resident == Resident::P
 
 union ResidentData
 {
-    uint32_t bacteriaIndex; // indeks w tablicy bacterias
+    int32_t bacteriaIndex; // indeks w tablicy bacterias
     //BacteriaData bacteria;
     EnergyData energy;
     ProteinData protein;
@@ -126,6 +126,8 @@ public:
     inline int getBacteriaCount() const noexcept { return bacterias.size(); }
     inline BacteriaData& getBacteria(int i) noexcept { return bacterias[i]; }
     inline BacteriaData& addBacteria() noexcept { return bacterias.emplace_back(); }
+    inline void addVacant(int32_t i) noexcept { vacantSlots.push_back(i); }
+    inline int32_t popVacant() noexcept { int32_t r = vacantSlots.back(); vacantSlots.pop_back(); return r; }
     inline const Game* getGame() const noexcept { return game; }
 
 };
