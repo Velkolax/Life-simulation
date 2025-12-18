@@ -78,7 +78,7 @@ public:
     void placeEnergy(uint8_t amount);
     void placeProtein();
     void placeProtein(uint8_t amount);
-    void placeBacteria();
+    void placeBacteria(Board* board);
 
     //bool isNearWater(Board* board);
 
