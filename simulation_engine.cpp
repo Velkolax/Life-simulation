@@ -197,11 +197,11 @@ void SimulationEngine::killNetwork(int deadIdx)
     bSize--;
 }
 
-void SimulationEngine::reproduceNetwork(int parentA, int parentB)
+void SimulationEngine::reproduceNetwork(int parentA, int parentB, int childIdx)
 {
     if (bSize >= bCapacity) return;
 
-    int childIdx = bSize;
+    //int childIdx = bSize;
 
     Shader reproShader = ResourceManager::GetShader("reproduce");
     reproShader.Use();

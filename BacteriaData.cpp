@@ -338,7 +338,7 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
     Hexagon* childHex = board->getHexagon(hex->getX()+dir.first,hex->getY()+dir.second);
     if (!childHex || !empty(childHex->getResident())) return;
     childHex->placeChild(board,wife,husband);
-    board->getGame()->engine->reproduceNetwork(oldHex->getData().bacteriaIndex,hex->getData().bacteriaIndex);
+    //board->getGame()->engine->reproduceNetwork(oldHex->getData().bacteriaIndex,hex->getData().bacteriaIndex, TODO);
 }
 
 void BacteriaData::eat(Board* board, float* data, coord x, coord y)
