@@ -136,8 +136,6 @@ void Game::ProcessInput(float dt)
     }
     if(pressedKey!=GLFW_KEY_SPACE && spacePressed)
     {
-        if (!isPaused) isPaused=true;
-        else isPaused=false;
     }
 
 }
@@ -157,6 +155,8 @@ void Game::Render()
             BacteriaData bac = board->getBacteria(p.y*board->getWidth()+p.x);
             Text->RenderText("AGE: "+std::to_string(bac.age),10,10,1.0);
             Text->RenderText("ENERGY: "+std::to_string(bac.energy),10,40,1.0);
+            Text->RenderText("SPEED: "+std::to_string(bac.speed),10,70,1.0);
+            Text->RenderText("LIFESPAN: "+std::to_string(bac.lifespan),10,100,1.0);
         }
     }
 
