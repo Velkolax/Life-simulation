@@ -211,6 +211,7 @@ void BacteriaData::move(Board* board, float* data, coord x, coord y)
     int movesCount = std::min(speed / 20, 4);
     Hexagon* oldHex = board->getHexagon(x, y);
     int32_t id = oldHex->getData().bacteriaIndex;
+    lastAction = 0;
     for(int i = 0; i < movesCount; i++)
     {
         if(!consumeEnergy(1.f, board, oldHex->getX(), oldHex->getY())) return;
@@ -218,6 +219,7 @@ void BacteriaData::move(Board* board, float* data, coord x, coord y)
         // if (!hex) {std::cout << "BRAK HEXA!" << std::endl; return;}
         // if (!empty(hex->getResident())) {std::cout << "HEX NIE JEST PUSTY" << std::endl; return;}
         if(!hex || !empty(hex->getResident())) return;
+        lastAction = 1;
         hex->placeBacteria(board, id);
         oldHex->placeEmpty();
         oldHex = hex;
@@ -226,6 +228,7 @@ void BacteriaData::move(Board* board, float* data, coord x, coord y)
 
 void BacteriaData::attack(Board* board, float* data, coord x, coord y)
 {
+    lastAction = 0;
     Hexagon* hex = directionToHex(board, *data, x, y);
     if(!hex || !bacteria(hex->getResident()))
     {
@@ -306,6 +309,9 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
             else break;
         }
     }
+
+    lastAction = 2;
+
     board->acidShortage += acidDrained;
     board->proteinShortage += proteinDrained;
     // ilość energii nie musi pozostawać stała więc nie ma niedoboru
@@ -313,6 +319,7 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
 
 void BacteriaData::breed(Board* board, float* data, coord x, coord y)
 {
+    lastAction = 0;
     Hexagon* oldHex = board->getHexagon(x, y);
     Hexagon *hex = directionToHex(board,*data,x,y);
     if (!hex || !bacteria(hex->getResident())) return;
