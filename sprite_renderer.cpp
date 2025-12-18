@@ -261,7 +261,7 @@ void SpriteRenderer::generateSprites(Board *board)
     for (auto& r : residentData) r.clear();
 
     std::vector<int> ind = getAllIndicesOnAScreen(board);
-    for (int i : ind)
+    for (int i =0;i<board->getWidth()*board->getHeight();i++)
     {
         Hexagon *hex = board->getHexagon(i);
         glm::vec2 hexSizeVec(size, size * 1.73 / 2.0f);
