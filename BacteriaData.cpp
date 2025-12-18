@@ -121,7 +121,7 @@ void BacteriaData::move(Board* board, float* data, coord x, coord y)
     uint32_t id = oldHex->getData().bacteriaIndex;
     for(int i = 0; i < movesCount; i++)
     {
-        if(!consumeEnergy(1f)) return;
+        if(!consumeEnergy(1.f)) return;
         Hexagon* hex = directionToHex(board, data[i], oldHex->getX(), oldHex->getY());
         if(!empty(hex->getResident())) return; // próbuje wejść w coś
         hex->placeBacteria(board, id);
@@ -135,10 +135,10 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
     Hexagon* hex = directionToHex(board, *data, x, y);
     if(!bacteria(hex->getResident()))
     {
-        if(!consumeEnergy(2f)) return;
+        if(!consumeEnergy(2.f)) return;
         return;
     }
-    if(!consumeEnergy(4f)) return;
+    if(!consumeEnergy(4.f)) return;
     BacteriaData& attacked = board->getBacteria(hex->getData().bacteriaIndex);
     int acidUsed = data[1] * acid;
     int sum = attacked.acid + attacked.energy + attacked.protein;
@@ -213,7 +213,7 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
 
 void BacteriaData::eat(Board* board, float* data, coord x, coord y)
 {
-    if(!consumeEnergy(2f)) return;
+    if(!consumeEnergy(2.f)) return;
     Hexagon* hex = directionToHex(board, *data, x, y);
     if(!resource(hex->getResident())) return;
     int toEat = data[1] * hex->getData().acid.amount;
