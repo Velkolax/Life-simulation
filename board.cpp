@@ -102,7 +102,7 @@ void Board::tick()
             if(!b.age) b.age = 1;
             if(step % 1000 == 0)
             {
-                b.getOlder();
+                b.getOlder(this, board[i].getX(), board[i].getY());
                 if(!bacteria(board[i].getResident())) continue; // Bakteria zginęła przez stary wiek
             }
             if(step % b.speed == 0)
@@ -120,6 +120,7 @@ void Board::tick()
     game->engine->Process(idsBuffer.size(), idsBuffer.data(), hostInBuffer.data(), hostOutBuffer.data());
     for(int i = 0; i < idsBuffer.size(); i++)
     {
+        if(!bacteria(getHexagon(points[i].x, points[i].y)->getResident())) continue; // Bakteria zginęła i teraz na heksie jest pustka
         BacteriaData& b = getBacteria(idsBuffer[i]);
         if(!b.age) continue; // Nowonarodzona zastąpiła starą martwą ale nie powinna wykonywać jej ruchów
         float* currentOutput = &hostOutBuffer[i*OUTPUT];
