@@ -236,7 +236,6 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
 
 void BacteriaData::breed(Board* board, float* data, coord x, coord y)
 {
-
     Hexagon* oldHex = board->getHexagon(x, y);
     Hexagon *hex = directionToHex(board,*data,x,y);
     if (!hex || !bacteria(hex->getResident())) return;
@@ -245,21 +244,24 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
     BacteriaData& wife = board->getBacteria(oldHex->getData().bacteriaIndex);
 
     if (husband.protein+wife.protein<10) return;
+    if (!husband.consumeEnergy(3) || !wife.consumeEnergy(3)) return;
     std::vector<std::pair<coord,coord>> possibleDirections;
     auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
     for(auto& [dx,dy] : directions)
     {
         Hexagon* h = board->getHexagon(hex->getX() + dx, hex->getY() + dy);
+        if (!h) continue;
         if (::empty(h->getResident()))
         {
             possibleDirections.push_back({dx,dy});
         }
     }
-    std::uniform_int_distribution<int> dist(0,possibleDirections.size());
+    if (possibleDirections.empty()) return;
+    std::uniform_int_distribution<int> dist(0,possibleDirections.size()-1);
     int index = dist(gen);
     std::pair<coord,coord> dir = possibleDirections[index];
     Hexagon* childHex = board->getHexagon(hex->getX()+dir.first,hex->getY()+dir.second);
-
+    if (!childHex || !empty(childHex->getResident())) return;
     childHex->placeChild(board,wife,husband);
     board->getGame()->engine->reproduceNetwork(oldHex->getData().bacteriaIndex,hex->getData().bacteriaIndex);
 }
