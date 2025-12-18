@@ -76,7 +76,7 @@ void SimulationEngine::InitNetworkData()
     initShader.Use();
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssboNetworks);
     initShader.SetInteger("stride", bCapacity);
-    initShader.SetFloat("seed", (int)Seed);
+    initShader.SetFloat("seed", glfwGetTime());
 
     auto DispatchInit = [&](int startParam, int count, float range) {
         initShader.SetInteger("paramOffset", startParam);

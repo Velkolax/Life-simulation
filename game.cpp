@@ -145,10 +145,12 @@ void Game::Render()
         if (hex!=nullptr)
         {
             BacteriaData bac = board->getBacteria(p.y*board->getWidth()+p.x);
-            Text->RenderText("AGE: "+std::to_string(bac.age),0,0,1.0);
-            Text->RenderText("ENERGY: "+std::to_string(bac.energy),0,30,1.0);
+            Text->RenderText("AGE: "+std::to_string(bac.age),10,10,1.0);
+            Text->RenderText("ENERGY: "+std::to_string(bac.energy),10,40,1.0);
         }
+        mousePressed=false;
     }
-    Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getBacteriaCount()),Width*0.75,0,1.0);
-    Text->RenderText("GENERATION: "+std::to_string(counter),Width*0.75,0,1.0);
+
+    Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getBacteriaCount()),Width*0.5,10,1.0);
+    Text->RenderText("GENERATION: "+std::to_string(counter),Width*0.5,40,1.0);
 }

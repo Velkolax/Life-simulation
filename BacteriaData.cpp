@@ -99,7 +99,7 @@ void BacteriaData::addToBuffer(Board* board, float* buffer, coord x, coord y)
         }
         else // bacteria
         {
-            BacteriaData& b = board->getBacteria(hex->getData().bacteriaIndex);
+            BacteriaData b = board->getBacteria(hex->getData().bacteriaIndex);
             *buffer++ = b.acid * INV_MAX_STORED; // przekazujemy ilość kwasu by oszacować czy jest groźna
             *buffer++ = b.protein * INV_MAX_STORED; // przekazujemy ilość białka by oszacować czy jest bogata
         }

@@ -29,6 +29,7 @@ public:
     unsigned int            Width, Height;
     bool                    enterPressed = false;
     bool isPaused = true;
+    bool isBacteriaSelected = false;
     bool spacePressed = false;
     Board* board;
     SimulationEngine* engine;
