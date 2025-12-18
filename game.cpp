@@ -62,7 +62,11 @@ void Game::Init()
 
 void Game::Update(float dt)
 {
-    board->tick();
+    if (!isPaused)
+    {
+        board->tick();
+    }
+
 }
 
 void Game::Resize(int width, int height)
@@ -127,7 +131,8 @@ void Game::ProcessInput(float dt)
     if(pressedKey!=GLFW_KEY_ENTER && enterPressed)
     {
         //enterPressed = false;
-        //this->Tick();
+        board->tick();
+        enterPressed=false;
     }
     if(pressedKey!=GLFW_KEY_SPACE && spacePressed)
     {
@@ -147,7 +152,7 @@ void Game::Render()
         float size = Renderer -> getSize(board);
         glm::ivec2 p = Renderer -> CheckWhichHexagon(cursorPosX,cursorPosY,size/2);
         Hexagon *hex = board->getHexagon(p.x,p.y);
-        if (hex!=nullptr)
+        if (hex!=nullptr && bacteria(hex->getResident()))
         {
             BacteriaData bac = board->getBacteria(p.y*board->getWidth()+p.x);
             Text->RenderText("AGE: "+std::to_string(bac.age),10,10,1.0);
