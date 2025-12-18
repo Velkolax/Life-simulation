@@ -125,8 +125,83 @@ Hexagon* directionToHex(Board* board, float dir, coord x, coord y)
     return board->getHexagon(x + dx, y + dy);
 }
 
-void BacteriaData::die()
+constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> evenDirections2lws =
+{{
+    { 0,  0},
+    { 0, -1}, {-1, -1}, {-1,  0}, { 0,  1}, { 1,  0}, { 1, -1},
+    { 0, -2}, {-1, -2}, {-2, -1}, {-2,  0}, {-2,  1}, {-1,  1},
+    { 0,  2}, { 1,  1}, { 2,  1}, { 2,  0}, { 2, -1}, { 1, -2}
+}};
+static_assert(evenDirections2lws.size() == TWO_NEIGHBOUR_LAYERS_SIZE + 1);
+
+constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> oddDirections2lws =
+{{
+    { 0,  0},
+    { 0, -1}, {-1,  0}, {-1,  1}, { 0,  1}, { 1,  1}, { 1,  0},
+    { 0, -2}, {-1, -1}, {-2, -1}, {-2,  0}, {-2,  1}, {-1,  2},
+    { 0,  2}, { 1,  2}, { 2,  1}, { 2,  0}, { 2, -1}, { 1, -1}
+}};
+static_assert(oddDirections2lws.size() == TWO_NEIGHBOUR_LAYERS_SIZE + 1);
+
+void BacteriaData::die(Board* board, coord x, coord y)
 {
+    Hexagon* hex = board->getHexagon(x, y);
+    uint32_t id = hex->getData().bacteriaIndex;
+    hex->placeEmpty();
+
+    int acidDrained = acid;
+    int energyDrained = energy;
+    int proteinDrained = protein + lifespan + speed + BACTERIA_BODY_SIZE;
+    
+    auto& directions = (x & 1) ? oddDirections2lws : evenDirections2lws;
+    for(auto& [dx, dy] : directions)
+    {
+        if(!acidDrained && !energyDrained && !proteinDrained) break;
+        Hexagon* h = board->getHexagon(hex->getX() + dx, hex->getY() + dy);
+        if(!h) continue;
+        if(::acid(h->getResident()))
+        {
+            int flow = std::min(acidDrained, MAX_STORED_VALUE - h->getData().acid.amount);
+            h->getData().acid.amount += flow;
+            acidDrained -= flow;
+        }
+        else if(::protein(h->getResident()))
+        {
+            int flow = std::min(proteinDrained, MAX_STORED_VALUE - h->getData().protein.amount);
+            h->getData().protein.amount += flow;
+            proteinDrained -= flow;
+        }
+        else if(::energy(h->getResident()))
+        {
+            int flow = std::min(energyDrained, MAX_STORED_VALUE - h->getData().energy.amount);
+            h->getData().energy.amount += flow;
+            energyDrained -= flow;
+        }
+        else if(empty(h->getResident()))
+        {
+            if(proteinDrained)
+            {
+                int flow = std::min(proteinDrained, MAX_STORED_VALUE);
+                h->placeProtein(flow);
+                proteinDrained -= flow;
+            }
+            else if(acidDrained)
+            {
+                int flow = std::min(acidDrained, MAX_STORED_VALUE);
+                h->placeAcid(flow);
+                acidDrained -= flow;
+            }
+            else if(energyDrained)
+            {
+                int flow = std::min(energyDrained, MAX_STORED_VALUE);
+                h->placeEnergy(flow);
+                energyDrained -= flow;
+            }
+            else break;
+        }
+    }
+    board->acidShortage += acidDrained;
+    board->proteinShortage += proteinDrained;
 }
 
 void BacteriaData::move(Board* board, float* data, coord x, coord y)
@@ -192,19 +267,19 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
         if(!h) continue;
         if(::acid(h->getResident()))
         {
-            int flow = (h->getData().acid.amount + acidDrained <= MAX_STORED_VALUE) ? acidDrained : MAX_STORED_VALUE - h->getData().acid.amount;
+            int flow = std::min(acidDrained, MAX_STORED_VALUE - h->getData().acid.amount);
             h->getData().acid.amount += flow;
             acidDrained -= flow;
         }
         else if(::protein(h->getResident()))
         {
-            int flow = (h->getData().protein.amount + proteinDrained <= MAX_STORED_VALUE) ? proteinDrained : MAX_STORED_VALUE - h->getData().protein.amount;
+            int flow = std::min(proteinDrained, MAX_STORED_VALUE - h->getData().protein.amount);
             h->getData().protein.amount += flow;
             proteinDrained -= flow;
         }
         else if(::energy(h->getResident()))
         {
-            int flow = (h->getData().energy.amount + energyDrained <= MAX_STORED_VALUE) ? energyDrained : MAX_STORED_VALUE - h->getData().energy.amount;
+            int flow = std::min(energyDrained, MAX_STORED_VALUE - h->getData().energy.amount);
             h->getData().energy.amount += flow;
             energyDrained -= flow;
         }
@@ -310,7 +385,7 @@ void BacteriaData::sleep(Board* board, float* data, coord x, coord y)
     if(!consumeEnergy(0.5f)) return;
 }
 
-static_assert(MEMORY_SIZE + 1 + 6 + TWO_NEIGHBOUR_LAYERS_SIZE * 3 <= SEND_SIZE, "SEND_SIZE too small");
+static_assert(MEMORY_SIZE + 1 + 6 + TWO_NEIGHBOUR_LAYERS_SIZE * 3 == INPUT, "SEND_SIZE too small");
 
 /*AcidData::AcidData(uint8_t amount)
 {

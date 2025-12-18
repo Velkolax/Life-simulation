@@ -25,9 +25,10 @@ inline unsigned int Seed;
 #define MEMORY_SIZE 3
 #define MAX_ACCUSTOMABLE_VALUE 100
 #define MAX_STORED_VALUE 200
-#define SEND_SIZE 64
 #define TWO_NEIGHBOUR_LAYERS_SIZE 18
 #define BACTERIA_ACTIONS_NUMBER 5
+
+#define BACTERIA_BODY_SIZE 10
 
 constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> evenDirections2l =
 {{

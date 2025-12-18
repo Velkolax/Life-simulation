@@ -100,6 +100,7 @@ private:
     const coord height;
     std::vector<Hexagon> board;
     std::vector<BacteriaData> bacterias;
+    std::vector<int32_t> vacantSlots;
 
     unsigned int step = 0;
 
