@@ -64,6 +64,9 @@ struct BacteriaData
     void addToBuffer(Board* board, float* buffer, coord x, coord y);
 
 
+    inline bool consumeEnergy(float multiplier) { energy -= std::max(int(multiplier * (acid + protein + energy) * 0.05), 1); if(energy <= 0) { die(); return false; } return true; }
+    void die();
+
     void move(Board* board, float* data, coord x, coord y);
     void attack(Board* board, float* data, coord x, coord y);
     void breed(Board* board, float* data, coord x, coord y);

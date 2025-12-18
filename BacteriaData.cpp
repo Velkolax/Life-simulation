@@ -121,6 +121,7 @@ void BacteriaData::move(Board* board, float* data, coord x, coord y)
     uint32_t id = oldHex->getData().bacteriaIndex;
     for(int i = 0; i < movesCount; i++)
     {
+        if(!consumeEnergy(1.f)) return;
         Hexagon* hex = directionToHex(board, data[i], oldHex->getX(), oldHex->getY());
         if(!empty(hex->getResident())) return; // próbuje wejść w coś
         hex->placeBacteria(board, id);
@@ -132,8 +133,13 @@ void BacteriaData::move(Board* board, float* data, coord x, coord y)
 void BacteriaData::attack(Board* board, float* data, coord x, coord y)
 {
     Hexagon* hex = directionToHex(board, *data, x, y);
-    if(!bacteria(hex->getResident())) return;
-    BacteriaData attacked = board->getBacteria(hex->getData().bacteriaIndex);
+    if(!bacteria(hex->getResident()))
+    {
+        if(!consumeEnergy(2.f)) return;
+        return;
+    }
+    if(!consumeEnergy(4.f)) return;
+    BacteriaData& attacked = board->getBacteria(hex->getData().bacteriaIndex);
     int acidUsed = data[1] * acid;
     int sum = attacked.acid + attacked.energy + attacked.protein;
     int total = acidUsed * sum / MAX_STORED_VALUE;
@@ -207,6 +213,7 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
 
 void BacteriaData::eat(Board* board, float* data, coord x, coord y)
 {
+    if(!consumeEnergy(2.f)) return;
     Hexagon* hex = directionToHex(board, *data, x, y);
     if(!resource(hex->getResident())) return;
     int toEat = data[1] * hex->getData().acid.amount;
@@ -244,6 +251,7 @@ void BacteriaData::eat(Board* board, float* data, coord x, coord y)
 
 void BacteriaData::sleep(Board* board, float* data, coord x, coord y)
 {
+    if(!consumeEnergy(0.5f)) return;
 }
 
 static_assert(MEMORY_SIZE + 1 + 6 + TWO_NEIGHBOUR_LAYERS_SIZE * 3 <= SEND_SIZE, "SEND_SIZE too small");
