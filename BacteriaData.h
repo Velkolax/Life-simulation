@@ -74,7 +74,7 @@ struct BacteriaData
         energy = e;
         return true;
     }
-    inline void getOlder(Board *board, coord x,coord y)
+    inline void getOlder(Board* board, coord x, coord y)
     {
         age += 1;
         if(age > lifespan) die(board, x, y);
