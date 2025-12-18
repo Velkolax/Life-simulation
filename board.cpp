@@ -26,6 +26,7 @@ Board::Board(coord width, coord height, Game* game, int bacteriaCount) : width(w
         }
     }
     bacterias.reserve(bacteriaCount);
+    vacantSlots.reserve(bacteriaCount);
 }
 
 
