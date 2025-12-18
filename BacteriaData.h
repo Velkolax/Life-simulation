@@ -103,15 +103,15 @@ struct BacteriaData
 
     void randomize();
     void addToBuffer(Board* board, float* buffer, coord x, coord y);
-    void execute(Board* board, float* data, coord x, coord y);
+    inline void execute(Board* board, float* data, coord x, coord y) { actions[clamp(int(*data * BACTERIA_ACTIONS_NUMBER), 0, BACTERIA_ACTIONS_NUMBER-1)](board, data + 1, x, y); }
 
-    void move(float* data);
-    void attack(float* data);
-    void breed(float* data);
-    void eat(float* data);
-    void sleep(float* data);
+    void move(Board* board, float* data, coord x, coord y);
+    void attack(Board* board, float* data, coord x, coord y);
+    void breed(Board* board, float* data, coord x, coord y);
+    void eat(Board* board, float* data, coord x, coord y);
+    void sleep(Board* board, float* data, coord x, coord y);
 
-    void (BacteriaData::*actions[])(float*) = { move, attack, breed, eat, sleep };
+    void (BacteriaData::*actions[])(Board*, float*, coord, coord) = { move, attack, breed, eat, sleep };
     static_assert(std::size(actions) == BACTERIA_ACTIONS_NUMBER);
 };
 

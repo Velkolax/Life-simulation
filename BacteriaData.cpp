@@ -108,12 +108,6 @@ void BacteriaData::addToBuffer(Board* board, float* buffer, coord x, coord y)
 
 static_assert(MEMORY_SIZE + 1 + 6 + TWO_NEIGHBOUR_LAYERS_SIZE * 3 <= SEND_SIZE, "SEND_SIZE too small");
 
-void BacteriaData::execute(Board* board, float* data, coord x, coord y)
-{
-    int action = clamp(int(*data * BACTERIA_ACTIONS_NUMBER), 0, BACTERIA_ACTIONS_NUMBER-1);
-    actions[action](data + 1);
-}
-
 /*AcidData::AcidData(uint8_t amount)
 {
     this->amount = amount;
