@@ -62,7 +62,7 @@ void Game::Init()
 
 void Game::Update(float dt)
 {
-    if (!isPaused)
+    if (pressedKey==GLFW_KEY_SPACE)
     {
         board->tick();
     }
