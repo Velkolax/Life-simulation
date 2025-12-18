@@ -34,13 +34,6 @@ int main(int argc, char *argv[])
     gen = std::mt19937(seed);
     Seed = seed;
 
-    float a = 0.5;
-    float b = 0.6;
-    uint f = glm::packHalf2x16(glm::vec2(a,b));
-    glm::uvec4 g = glm::uvec4(f,f,f,f);
-    glm::vec2 e = glm::unpackHalf2x16(g.x);
-    std::cout << e.x << " " << e.y << std::endl;
-
 
     // OPENGL
     glfwInit();

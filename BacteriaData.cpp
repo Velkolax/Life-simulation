@@ -35,9 +35,9 @@ void BacteriaData::cross(BacteriaData& dad, BacteriaData& mom,float energySent,f
 {
     lifespan = (dad.lifespan+mom.lifespan)/2;
     speed = (dad.speed+mom.speed)/2;
-    acid =acidSent*(mom.acid+dad.acid);
-    energy=energySent*(mom.energy+dad.energy);
-    protein=proteinSent*(mom.protein+dad.protein);
+    acid =10;
+    energy=100;
+    protein=10;
     age=0;
 }
 
