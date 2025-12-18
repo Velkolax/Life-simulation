@@ -96,7 +96,7 @@ void Board::tick()
     {
         if(bacteria(board[i].getResident()))
         {
-            uint32_t index = board[i].getData().bacteriaIndex;
+            int32_t index = board[i].getData().bacteriaIndex;
             BacteriaData& b = getBacteria(index);
             if(!b.age) b.age = 1;
             if(step % 1000 == 0)
