@@ -98,11 +98,12 @@ void Board::tick()
         if(bacteria(board[i].getResident()))
         {
             int32_t index = board[i].getData().bacteriaIndex;
+            Hexagon *h = getHexagon(i);
             BacteriaData& b = getBacteria(index);
             if(!b.age) b.age = 1;
             if(step % 1000 == 0)
             {
-                b.getOlder();
+                b.getOlder(this,h->getX(),h->getY());
                 if(!bacteria(board[i].getResident())) continue; // Bakteria zginęła przez stary wiek
             }
             if(step % b.speed == 0)
