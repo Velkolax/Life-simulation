@@ -256,7 +256,7 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
     attacked.energy -= energyDrained;
     attacked.protein -= proteinDrained;
 
-    if(attacked.energy == 0) attacked.die(TODO, TODO, TODO);
+    if(attacked.energy == 0) attacked.die();
 
     acidDrained += acidUsed;
 
