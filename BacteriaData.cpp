@@ -108,8 +108,8 @@ void BacteriaData::addToBuffer(Board* board, float* buffer, coord x, coord y)
 
 Hexagon* directionToHex(Board* board, float dir, coord x, coord y)
 {
-    auto& directions = (x & 1) oddDirections2l : evenDirections2l;
-    auto& [dx, dy] = directions[clamp(int(dir * 6), 0, 5)];
+    auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
+    auto& [dx, dy] = directions[std::clamp(int(dir * 6), 0, 5)];
     return board->getHexagon(x + dx, y + dy);
 }
 
@@ -133,7 +133,7 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
 {
     Hexagon* hex = directionToHex(board, *data, x, y);
     if(!bacteria(hex->getResident())) return;
-    BacteriaData& attacked = board->getBacteria(hex->getData().bacteriaIndex());
+    BacteriaData attacked = board->getBacteria(hex->getData().bacteriaIndex);
     int acidUsed = data[1] * acid;
     int sum = attacked.acid + attacked.energy + attacked.protein;
     int total = acidUsed * sum / MAX_STORED_VALUE;
@@ -152,7 +152,7 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
     attacked.energy -= energyDrained;
     attacked.protein -= proteinDrained;
 
-    auto& directions = (x & 1) oddDirections2l : evenDirections2l;
+    auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
     for(auto& [dx, dy] : directions)
     {
         if(!acidDrained && !energyDrained && !proteinDrained) break;
@@ -195,8 +195,8 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
             else break;
         }
 
-        board->acidShortage += acidDrained;
-        board->proteinShortage += proteinDrained;
+        //board->acidShortage += acidDrained;
+        //board->proteinShortage += proteinDrained;
         // ilość energii nie musi pozostawać stała więc nie ma niedoboru
     }
 }
@@ -222,7 +222,7 @@ void BacteriaData::eat(Board* board, float* data, coord x, coord y)
     }
     else // białko
     {
-        int proteinPlacement = clamp(int(data[2] * 3), 0, 2);
+        int proteinPlacement = std::clamp(int(data[2] * 3), 0, 2);
         if(proteinPlacement == 0) // magazyn
         {
             if(toEat > MAX_STORED_VALUE - protein) toEat = MAX_STORED_VALUE - protein;
