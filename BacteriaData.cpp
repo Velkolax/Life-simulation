@@ -148,6 +148,7 @@ void BacteriaData::die(Board* board, coord x, coord y)
     Hexagon* hex = board->getHexagon(x, y);
     int32_t id = hex->getData().bacteriaIndex;
     hex->placeEmpty();
+    *this = BacteriaData{};
     board->addVacant(id);
 
     int acidDrained = acid;
@@ -212,7 +213,7 @@ void BacteriaData::move(Board* board, float* data, coord x, coord y)
     int32_t id = oldHex->getData().bacteriaIndex;
     for(int i = 0; i < movesCount; i++)
     {
-        if(!consumeEnergy(1.f)) return;
+        if(!consumeEnergy(1.f, board, oldHex->getX(), oldHex->getY())) return;
         Hexagon* hex = directionToHex(board, data[i], oldHex->getX(), oldHex->getY());
         // if (!hex) {std::cout << "BRAK HEXA!" << std::endl; return;}
         // if (!empty(hex->getResident())) {std::cout << "HEX NIE JEST PUSTY" << std::endl; return;}
@@ -228,10 +229,10 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
     Hexagon* hex = directionToHex(board, *data, x, y);
     if(!hex || !bacteria(hex->getResident()))
     {
-        if(!consumeEnergy(2.f)) return;
+        if(!consumeEnergy(2.f, board, x, y)) return;
         return;
     }
-    if(!consumeEnergy(4.f)) return;
+    if(!consumeEnergy(4.f, board, x, y)) return;
     BacteriaData& attacked = board->getBacteria(hex->getData().bacteriaIndex);
     int acidUsed = std::clamp(int(data[1] * acid), 0, (int)acid);
     acid -= acidUsed;
@@ -256,7 +257,7 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
     attacked.energy -= energyDrained;
     attacked.protein -= proteinDrained;
 
-    if(attacked.energy == 0) attacked.die();
+    if(attacked.energy == 0) attacked.die(board, hex->getX(), hex->getY());
 
     acidDrained += acidUsed;
 
@@ -320,7 +321,7 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
     BacteriaData& wife = board->getBacteria(oldHex->getData().bacteriaIndex);
 
     if (husband.protein+wife.protein<10) return;
-    if (!husband.consumeEnergy(3) || !wife.consumeEnergy(3)) return;
+    if (!(wife.consumeEnergy(3.f, board, x, y) && husband.consumeEnergy(3.f, board, hex->getX(), hex->getY()))) return;
     std::vector<std::pair<coord,coord>> possibleDirections;
     auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
     for(auto& [dx,dy] : directions)
@@ -344,7 +345,7 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
 
 void BacteriaData::eat(Board* board, float* data, coord x, coord y)
 {
-    if(!consumeEnergy(2.f)) return;
+    if(!consumeEnergy(2.f, board, x, y)) return;
     Hexagon* hex = directionToHex(board, *data, x, y);
     if(!hex || !resource(hex->getResident())) return;
     int toEat = data[1] * hex->getData().acid.amount; // wszystkie zasoby mają tylko parametr amount więc pobranie go z byle którego nic nie zmienia
@@ -383,7 +384,7 @@ void BacteriaData::eat(Board* board, float* data, coord x, coord y)
 
 void BacteriaData::sleep(Board* board, float* data, coord x, coord y)
 {
-    if(!consumeEnergy(0.5f)) return;
+    if(!consumeEnergy(0.5f, board, x, y)) return;
 }
 
 static_assert(MEMORY_SIZE + 1 + 6 + TWO_NEIGHBOUR_LAYERS_SIZE * 3 == INPUT, "SEND_SIZE too small");
