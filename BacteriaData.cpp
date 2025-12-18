@@ -139,7 +139,7 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
         return;
     }
     if(!consumeEnergy(4f)) return;
-    BacteriaData& attacked = board->getBacteria(hex->getData().bacteriaIndex());
+    BacteriaData& attacked = board->getBacteria(hex->getData().bacteriaIndex);
     int acidUsed = data[1] * acid;
     int sum = attacked.acid + attacked.energy + attacked.protein;
     int total = acidUsed * sum / MAX_STORED_VALUE;
