@@ -126,7 +126,9 @@ void BacteriaData::move(Board* board, float* data, coord x, coord y)
     {
         if(!consumeEnergy(1.f)) return;
         Hexagon* hex = directionToHex(board, data[i], oldHex->getX(), oldHex->getY());
-        if(!hex || !empty(hex->getResident())) return; // próbuje wejść w coś
+        // if (!hex) {std::cout << "BRAK HEXA!" << std::endl; return;}
+        // if (!empty(hex->getResident())) {std::cout << "HEX NIE JEST PUSTY" << std::endl; return;}
+        if(!hex || !empty(hex->getResident())) return;
         hex->placeBacteria(board, id);
         oldHex->placeEmpty();
         oldHex = hex;
