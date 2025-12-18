@@ -125,7 +125,7 @@ Hexagon* directionToHex(Board* board, float dir, coord x, coord y)
     return board->getHexagon(x + dx, y + dy);
 }
 
-constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> evenDirections2lws =
+constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE+1> evenDirections2lws =
 {{
     { 0,  0},
     { 0, -1}, {-1, -1}, {-1,  0}, { 0,  1}, { 1,  0}, { 1, -1},
@@ -134,7 +134,7 @@ constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> evenDir
 }};
 static_assert(evenDirections2lws.size() == TWO_NEIGHBOUR_LAYERS_SIZE + 1);
 
-constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> oddDirections2lws =
+constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE+1> oddDirections2lws =
 {{
     { 0,  0},
     { 0, -1}, {-1,  0}, {-1,  1}, { 0,  1}, { 1,  1}, { 1,  0},
@@ -256,7 +256,7 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
     attacked.energy -= energyDrained;
     attacked.protein -= proteinDrained;
 
-    if(attacked.energy == 0) attacked.die();
+    if(attacked.energy == 0) attacked.die(TODO, TODO, TODO);
 
     acidDrained += acidUsed;
 
