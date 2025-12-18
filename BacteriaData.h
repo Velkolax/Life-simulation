@@ -25,6 +25,8 @@ inline unsigned int Seed;
 #define SEND_SIZE 64
 #define TWO_NEIGHBOUR_LAYERS_SIZE 18 // 6 sąsiadów w pierwszej warstwie i 12 w drugiej
 
+#define BACTERIA_ACTIONS_NUMBER 5
+
 
 constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> evenDirections2l =
 {
@@ -102,6 +104,15 @@ struct BacteriaData
     void randomize();
     void addToBuffer(Board* board, float* buffer, coord x, coord y);
     void execute(Board* board, float* data, coord x, coord y);
+
+    void move(float* data);
+    void attack(float* data);
+    void breed(float* data);
+    void eat(float* data);
+    void sleep(float* data);
+
+    void (BacteriaData::*actions[])(float*) = { move, attack, breed, eat, sleep };
+    static_assert(std::size(actions) == BACTERIA_ACTIONS_NUMBER);
 };
 
 static_assert(std::is_trivially_constructible_v<BacteriaData>);
