@@ -34,10 +34,12 @@ void Game::Init()
     ResourceManager::LoadTexture("textures/bacteria.png",true,"bacteria");
     ResourceManager::LoadTexture("textures/apple.png",true,"apple");
     ResourceManager::LoadTexture("textures/explosion.png",true,"explosion");
+    ResourceManager::LoadTexture("textures/acid.png",true,"acid");
+    ResourceManager::LoadTexture("textures/protein.png",true,"protein");
 
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load(24);
-    int bacteriaCount = 30000;
+    int bacteriaCount = 10000;
     int x = 300;
     int y = 300;
     board = new Board(x, y, this,bacteriaCount);
