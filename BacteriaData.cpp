@@ -162,6 +162,8 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
     attacked.energy -= energyDrained;
     attacked.protein -= proteinDrained;
 
+    if(attacked.energy == 0) attacked.die();
+
     acidDrained += acidUsed;
 
     auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;

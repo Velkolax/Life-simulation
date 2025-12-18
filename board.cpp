@@ -98,6 +98,12 @@ void Board::tick()
         {
             uint32_t index = board[i].getData().bacteriaIndex;
             BacteriaData& b = getBacteria(index);
+            if(!b.age) b.age = 1;
+            if(step % 1000 == 0)
+            {
+                b.getOlder();
+                if(!bacteria(board[i].getResident())) continue; // Bakteria zginęła przez stary wiek
+            }
             if(step % b.speed == 0)
             {
                 idsBuffer.push_back(index);
@@ -114,6 +120,7 @@ void Board::tick()
     for(int i = 0; i < idsBuffer.size(); i++)
     {
         BacteriaData& b = getBacteria(idsBuffer[i]);
+        if(!b.age) continue; // Nowonarodzona zastąpiła starą martwą ale nie powinna wykonywać jej ruchów
         float* currentOutput = &hostOutBuffer[i*OUTPUT];
         std::cout << "AAA" << std::endl;
         memcpy(b.memory, currentOutput, MEMORY_SIZE * sizeof(float));

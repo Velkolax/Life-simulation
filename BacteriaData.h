@@ -71,6 +71,17 @@ struct BacteriaData
         energy = e;
         return true;
     }
+    inline void getOlder()
+    {
+        age += 1;
+        if(age > lifespan) die();
+        float ageNorm = float(age) / float(lifespan);
+        float lifespanNorm = float(lifespan) / 100.0f;
+        float diseaseChance = 0.0001f + ageNorm * ageNorm * lifespanNorm * 0.02f;
+
+        std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+        if (dist(gen) < diseaseChance) die(); // Choroba (prawdopodobieństwo wzrasta z lifespan)
+    }
     void die();
 
     void move(Board* board, float* data, coord x, coord y);
