@@ -105,6 +105,8 @@ private:
     Game* game;
 
 public:
+    int acidShortage = 0;
+    int proteinShortage = 0;
     // inicjalizatory
     Board(coord width, coord height, Game* game, int bacteriaCount);
     void InitializeRandom(int min, int max);

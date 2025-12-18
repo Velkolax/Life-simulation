@@ -127,7 +127,7 @@ void Board::tick()
 
         auto& out = outBuffer[i];
 
-        memcpy(b.memory, out.output, MEMORY_SIZE);
+        memcpy(b.memory, out.output, MEMORY_SIZE * sizeof(float));
         b.execute(this, out.output + MEMORY_SIZE, points[i].x, points[i].y);
     }
 }

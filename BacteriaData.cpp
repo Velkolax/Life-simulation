@@ -115,15 +115,14 @@ Hexagon* directionToHex(Board* board, float dir, coord x, coord y)
 
 void BacteriaData::move(Board* board, float* data, coord x, coord y)
 {
-    int movesCount = speed / 20;
-    if(speed > 4) speed = 4;
+    int movesCount = std::min(speed / 20, 4);
     Hexagon* oldHex = board->getHexagon(x, y);
     uint32_t id = oldHex->getData().bacteriaIndex;
     for(int i = 0; i < movesCount; i++)
     {
         if(!consumeEnergy(1.f)) return;
         Hexagon* hex = directionToHex(board, data[i], oldHex->getX(), oldHex->getY());
-        if(!empty(hex->getResident())) return; // próbuje wejść w coś
+        if(!hex || !empty(hex->getResident())) return; // próbuje wejść w coś
         hex->placeBacteria(board, id);
         oldHex->placeEmpty();
         oldHex = hex;
@@ -133,14 +132,15 @@ void BacteriaData::move(Board* board, float* data, coord x, coord y)
 void BacteriaData::attack(Board* board, float* data, coord x, coord y)
 {
     Hexagon* hex = directionToHex(board, *data, x, y);
-    if(!bacteria(hex->getResident()))
+    if(!hex || !bacteria(hex->getResident()))
     {
         if(!consumeEnergy(2.f)) return;
         return;
     }
     if(!consumeEnergy(4.f)) return;
     BacteriaData& attacked = board->getBacteria(hex->getData().bacteriaIndex);
-    int acidUsed = data[1] * acid;
+    int acidUsed = std::clamp(int(data[1] * acid), 0, acid);
+    acid -= acidUsed;
     int sum = attacked.acid + attacked.energy + attacked.protein;
     int total = acidUsed * sum / MAX_STORED_VALUE;
 
@@ -154,15 +154,22 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
     int energyDrained = r2 - r1;
     int proteinDrained = total - r2;
 
+    acidDrained = std::min(acidDrained, attacked.acid);
+    energyDrained = std::min(energyDrained, attacked.energy);
+    proteinDrained = std::min(proteinDrained, attacked.protein);
+
     attacked.acid -= acidDrained;
     attacked.energy -= energyDrained;
     attacked.protein -= proteinDrained;
+
+    acidDrained += acidUsed;
 
     auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
     for(auto& [dx, dy] : directions)
     {
         if(!acidDrained && !energyDrained && !proteinDrained) break;
         Hexagon* h = board->getHexagon(hex->getX() + dx, hex->getY() + dy);
+        if(!h) continue;
         if(::acid(h->getResident()))
         {
             int flow = (h->getData().acid.amount + acidDrained <= MAX_STORED_VALUE) ? acidDrained : MAX_STORED_VALUE - h->getData().acid.amount;
@@ -181,12 +188,13 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
             h->getData().energy.amount += flow;
             energyDrained -= flow;
         }
-        else
+        else if(empty(h->getResident()))
         {
             if(acidDrained)
             {
-                h->placeAcid(acidDrained);
-                acidDrained = 0;
+                int flow = std::min(acidDrained, MAX_STORED_VALUE); // Połączenie wysączonego i użytego kwasu, jako jedyny ma szansę być więszky niż MAX_STORED_VALUE
+                h->placeAcid(flow);
+                acidDrained -= flow;
             }
             else if(proteinDrained)
             {
@@ -200,11 +208,10 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
             }
             else break;
         }
-
-        //board->acidShortage += acidDrained;
-        //board->proteinShortage += proteinDrained;
-        // ilość energii nie musi pozostawać stała więc nie ma niedoboru
     }
+    board->acidShortage += acidDrained;
+    board->proteinShortage += proteinDrained;
+    // ilość energii nie musi pozostawać stała więc nie ma niedoboru
 }
 
 void BacteriaData::breed(Board* board, float* data, coord x, coord y)
@@ -215,8 +222,8 @@ void BacteriaData::eat(Board* board, float* data, coord x, coord y)
 {
     if(!consumeEnergy(2.f)) return;
     Hexagon* hex = directionToHex(board, *data, x, y);
-    if(!resource(hex->getResident())) return;
-    int toEat = data[1] * hex->getData().acid.amount;
+    if(!hex || !resource(hex->getResident())) return;
+    int toEat = data[1] * hex->getData().acid.amount; // wszystkie zasoby mają tylko parametr amount więc pobranie go z byle którego nic nie zmienia
     if(::acid(hex->getResident()))
     {
         if(toEat > MAX_STORED_VALUE - acid) toEat = MAX_STORED_VALUE - acid;
@@ -246,6 +253,7 @@ void BacteriaData::eat(Board* board, float* data, coord x, coord y)
             speed += toEat;
         }
     }
+    hex->getData().acid.amount -= toEat;
     if(hex->getData().acid.amount == 0) hex->placeEmpty();
 }
 
