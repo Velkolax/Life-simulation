@@ -110,6 +110,8 @@ struct BacteriaData
         destination.
     }*/
 
+    inline bool consumeEnergy(float multiplier) { energy -= std::max(multiplier * (acid + protein + energy) * 0.05, 1); if(energy <= 0) { die(); return false }; return true; }
+
     void move(Board* board, float* data, coord x, coord y);
     void attack(Board* board, float* data, coord x, coord y);
     void breed(Board* board, float* data, coord x, coord y);
