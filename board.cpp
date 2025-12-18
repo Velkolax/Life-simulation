@@ -77,6 +77,12 @@ void Board::InitializeRandom(int min, int max)
 
 void Board::tick()
 {
+    step++;
+    for(int i = 0; i < 10; i++)
+    {
+        getBacteria(i).printBacteria();
+    }
+
     struct Point
     {
         coord x;
@@ -89,8 +95,6 @@ void Board::tick()
     points.reserve(count);
     std::vector<float> hostInBuffer;
     hostInBuffer.reserve(count*INPUT);
-    float* inBuffer;
-    float* outBuffer;
 
     size_t total = board.size();
     for(int i = 0; i < total; i++)

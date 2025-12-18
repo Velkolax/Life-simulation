@@ -157,7 +157,7 @@ void Game::Render()
             Text->RenderText("ENERGY: "+std::to_string(bac.energy),10,40,1.0);
             Text->RenderText("SPEED: "+std::to_string(bac.speed),10,70,1.0);
             Text->RenderText("LIFESPAN: "+std::to_string(bac.lifespan),10,100,1.0);
-            bac.printBacteria();
+            //bac.printBacteria();
         }
     }
 

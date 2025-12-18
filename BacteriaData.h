@@ -74,7 +74,7 @@ struct BacteriaData
 
     inline void printBacteria()
     {
-        std::cout << "Baceria:\n- age: " << (int)age << "\n- last action: " << stringActions[lastAction] << "\n- kills: " << (int)kills << "\n-mothered: " << (int)mothered << ", fathered: " << (int)fathered << '\n'; 
+        std::cout << "Baceria:\n- age: " << (int)age << "\n- last action: " << stringActions[lastAction] << "\n- kills: " << (int)kills << "\n- mothered: " << (int)mothered << ", fathered: " << (int)fathered << '\n'; 
     }
 
 
