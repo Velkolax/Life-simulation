@@ -241,6 +241,18 @@ void Board::spawnBacteria(int bacteriaCount)
         }
     }
 }
+
+int Board::getAliveBacteriaCount()
+{
+    int counter=0;
+    for (int i=0;i<getHeight()*getWidth();i++)
+    {
+        Hexagon *hex = getHexagon(i);
+        if (bacteria(hex->getResident())) counter++;
+    }
+    return counter;
+}
+
 std::vector<std::pair<coord, coord>> evenDirections =
 {
     { 0, -1}, // górny

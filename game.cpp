@@ -155,6 +155,6 @@ void Game::Render()
         }
     }
 
-    Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getBacteriaCount()),Width*0.5,10,1.0);
+    Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getAliveBacteriaCount()),Width*0.5,10,1.0);
     Text->RenderText("GENERATION: "+std::to_string(counter),Width*0.5,40,1.0);
 }

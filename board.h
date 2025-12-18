@@ -124,6 +124,7 @@ public:
     inline Hexagon* getHexagon(coord x, coord y) { return (x < 0 || y < 0 || x >= width || y >= height) ? nullptr : &(board[y * width + x]); }
     inline Hexagon* getHexagon(int i) { return (i < 0 || i >= width * height) ? nullptr : &(board[i]); }
     inline int getBacteriaCount() const noexcept { return bacterias.size(); }
+    int getAliveBacteriaCount();
     inline BacteriaData& getBacteria(int i) noexcept { return bacterias[i]; }
     inline BacteriaData& addBacteria() noexcept { return bacterias.emplace_back(); }
     inline void addVacant(int32_t i) noexcept { vacantSlots.push_back(i); }
