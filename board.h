@@ -73,7 +73,7 @@ public:
     inline glm::ivec2 getPos() const noexcept { return glm::ivec2(x, y); }
     inline Resident getResident() const noexcept { return resident; }
     //inline void setResident(Resident resident) noexcept { this->resident = resident; } // Używaj funkcji place zamiast tego
-    inline const ResidentData& getData() const noexcept { return data; }
+    inline ResidentData& getData() noexcept { return data; }
 
     void placeWall();
     void placeEmpty();
@@ -121,7 +121,7 @@ public:
     inline Hexagon* getHexagon(coord x, coord y) { return (x < 0 || y < 0 || x >= width || y >= height) ? nullptr : &(board[y * width + x]); }
     inline Hexagon* getHexagon(int i) { return (i < 0 || i >= width * height) ? nullptr : &(board[i]); }
     inline int getBacteriaCount() const noexcept { return bacterias.size(); }
-    inline BacteriaData& getBacteria(int i) const noexcept { return bacterias[i]; }
+    inline BacteriaData& getBacteria(int i) noexcept { return bacterias[i]; }
     inline BacteriaData& addBacteria() noexcept { return bacterias.emplace_back(); }
     inline const Game* getGame() const noexcept { return game; }
 
