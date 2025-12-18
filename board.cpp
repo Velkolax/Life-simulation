@@ -108,7 +108,7 @@ void Board::tick()
 
     std::vector<DataOut> outBuffer(idsBuffer.size());
 
-    game->engine->Tick(idsBuffer.size(), idsBuffer.data(), inBuffer[0].input, outBuffer[0].output);
+    game->engine->Process(idsBuffer.size(), idsBuffer.data(), inBuffer[0].input, outBuffer[0].output);
 }
 
 

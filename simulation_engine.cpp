@@ -138,7 +138,7 @@ void SimulationEngine::InitNetworkData()
 
 
 
-void SimulationEngine::Tick(int id_size, int *ids, float* inputData, float* outputData)
+void SimulationEngine::Process(int id_size, int *ids, float* inputData, float* outputData)
 {
     memcpy(idPtr,ids,id_size*sizeof(uint32_t));
     memcpy(InPtr, inputData, id_size * INPUT * sizeof(float));
