@@ -46,7 +46,7 @@ constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> oddDire
 }};
 static_assert(oddDirections2l.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
 
-inline constexpr std::string[] = {"Failure", "Move", "Attack", "Breed", "Eat", "Sleep"};
+inline std::string stringActions[] = {"Failure", "Move", "Attack", "Breed", "Eat", "Sleep"};
 
 struct BacteriaData
 {
@@ -74,7 +74,7 @@ struct BacteriaData
 
     inline void printBacteria()
     {
-        std::cout << "Baceria:\n- age: " << (int)age << "\n- last action: " stringActions[lastAction] << "\n- kills: " << (int)kills << "\n-mothered: " << (int)mothered << ", fathered: " << (int)fathered << '\n'; 
+        std::cout << "Baceria:\n- age: " << (int)age << "\n- last action: " << stringActions[lastAction] << "\n- kills: " << (int)kills << "\n-mothered: " << (int)mothered << ", fathered: " << (int)fathered << '\n'; 
     }
 
 
