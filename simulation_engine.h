@@ -12,7 +12,7 @@ public:
     void InitNetworkData();
     void ssbo_barrier();
     void SendData(float *f);
-    void Process(int id_size, int *ids, float* inputData, float* outputData);
+    void Process(uint32_t id_size, int *ids, float* inputData, float* outputData);
     void killNetwork(int id);
     void reproduceNetwork(int idA,int idB);
     inline size_t getbCapacity(){return bCapacity;}

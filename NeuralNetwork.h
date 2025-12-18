@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 // ALL NETWORKS SHOULD HAVE THIS SIZE
-constexpr size_t INPUT = 64;
+constexpr size_t INPUT = 68;
 constexpr size_t HIDDEN1 = 80;
 constexpr size_t HIDDEN2 = 32;
 constexpr size_t HIDDEN3 = 16;

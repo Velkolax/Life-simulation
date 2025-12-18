@@ -4,6 +4,9 @@
 #include <set>
 #include <algorithm>
 
+#include "game.h"
+#include "simulation_engine.h"
+
 
 Hexagon::Hexagon() : x(0), y(0), resident(Resident::Wall){}
 
@@ -202,7 +205,7 @@ void Board::spawnBacteria(int bacteriaCount)
         {
             int x = board[range[i]].getX();
             int y = board[range[i]].getY();
-            board[range[i]].placeBacteria();
+            board[range[i]].placeBacteria(TODO);
         }
     }
 }
