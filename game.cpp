@@ -58,6 +58,7 @@ void Game::Init()
 
 void Game::Update(float dt)
 {
+    board->tick();
 }
 
 void Game::Resize(int width, int height)

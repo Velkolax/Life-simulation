@@ -99,7 +99,4 @@ void main() {
         }
         outData[index][i] = tanh(sum);
     }
-
-     //outData[id].outputs[0] = 123.456;
-     //outData[id].outputs[1] = float(id);
 }

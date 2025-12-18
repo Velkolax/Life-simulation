@@ -2,9 +2,9 @@
 
 #include <random>
 #include <array>
-#include <utility> // dla std::pair
-#include <cstdint> // dla int16_t, uint8_t itp.
-#include <algorithm> // dla std::clamp
+#include <utility>
+#include <cstdint>
+#include <algorithm>
 #include <glm/glm.hpp>
 
 
