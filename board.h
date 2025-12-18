@@ -84,6 +84,7 @@ public:
     void placeProtein();
     void placeProtein(uint8_t amount);
     void placeBacteria(Board* board);
+    void placeChild(Board* board, BacteriaData& mom, BacteriaData& dad);
     void placeBacteria(Board* board, uint32_t id);
 
     //bool isNearWater(Board* board);
@@ -116,7 +117,6 @@ public:
 
     void spawnFood(double foodRatio);
     void spawnBacteria(int bacteriaCount);
-    size_t getBacteriasNumber();
     // gettery/settery
     inline coord getWidth() const noexcept { return width; }
     inline coord getHeight() const noexcept { return height; }

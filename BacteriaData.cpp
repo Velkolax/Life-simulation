@@ -1,6 +1,8 @@
 #include "BacteriaData.h"
 #include <iostream>
 #include "board.h"
+#include "game.h"
+#include "simulation_engine.h"
 
 /*BacteriaData::BacteriaData(glm::ivec2 pos,uint32_t id,uint32_t alive,int32_t lifespan):
     pos(pos),
@@ -27,6 +29,16 @@ void BacteriaData::randomize()
     protein = storedDist(gen);
 
     age = 0;
+}
+
+void BacteriaData::cross(BacteriaData& dad, BacteriaData& mom)
+{
+    lifespan = (dad.lifespan+mom.lifespan)/2;
+    speed = (dad.speed+mom.speed)/2;
+    acid =0;
+    energy=10;
+    protein=10;
+    age=0;
 }
 
 /*
@@ -224,6 +236,32 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
 
 void BacteriaData::breed(Board* board, float* data, coord x, coord y)
 {
+
+    Hexagon* oldHex = board->getHexagon(x, y);
+    Hexagon *hex = directionToHex(board,*data,x,y);
+    if (!hex || !bacteria(hex->getResident())) return;
+
+    BacteriaData& husband = board->getBacteria(hex->getData().bacteriaIndex);
+    BacteriaData& wife = board->getBacteria(oldHex->getData().bacteriaIndex);
+
+    if (husband.protein+wife.protein<10) return;
+    std::vector<std::pair<coord,coord>> possibleDirections;
+    auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
+    for(auto& [dx,dy] : directions)
+    {
+        Hexagon* h = board->getHexagon(hex->getX() + dx, hex->getY() + dy);
+        if (::empty(h->getResident()))
+        {
+            possibleDirections.push_back({dx,dy});
+        }
+    }
+    std::uniform_int_distribution<int> dist(0,possibleDirections.size());
+    int index = dist(gen);
+    std::pair<coord,coord> dir = possibleDirections[index];
+    Hexagon* childHex = board->getHexagon(hex->getX()+dir.first,hex->getY()+dir.second);
+
+    childHex->placeChild(board,wife,husband);
+    board->getGame()->engine->reproduceNetwork(oldHex->getData().bacteriaIndex,hex->getData().bacteriaIndex);
 }
 
 void BacteriaData::eat(Board* board, float* data, coord x, coord y)

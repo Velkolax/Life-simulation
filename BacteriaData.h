@@ -62,6 +62,7 @@ struct BacteriaData
     uint8_t age;
 
     void randomize();
+    void cross(BacteriaData& dad, BacteriaData& mom);
     void addToBuffer(Board* board, float* buffer, coord x, coord y);
 
 
