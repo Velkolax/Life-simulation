@@ -31,13 +31,13 @@ void BacteriaData::randomize()
     age = 0;
 }
 
-void BacteriaData::cross(BacteriaData& dad, BacteriaData& mom)
+void BacteriaData::cross(BacteriaData& dad, BacteriaData& mom,float energySent,float proteinSent, float acidSent)
 {
     lifespan = (dad.lifespan+mom.lifespan)/2;
     speed = (dad.speed+mom.speed)/2;
-    acid =0;
-    energy=10;
-    protein=10;
+    acid =acidSent*(mom.acid+dad.acid);
+    energy=energySent*(mom.energy+dad.energy);
+    protein=proteinSent*(mom.protein+dad.protein);
     age=0;
 }
 
@@ -319,7 +319,9 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
 
     BacteriaData& husband = board->getBacteria(hex->getData().bacteriaIndex);
     BacteriaData& wife = board->getBacteria(oldHex->getData().bacteriaIndex);
-
+    float energySent = data[1];
+    float proteinSent = data[2];
+    float acidSent = data[3];
     if (husband.protein+wife.protein<10) return;
     if (!(wife.consumeEnergy(3.f, board, x, y) && husband.consumeEnergy(3.f, board, hex->getX(), hex->getY()))) return;
     std::vector<std::pair<coord,coord>> possibleDirections;
@@ -339,7 +341,9 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
     std::pair<coord,coord> dir = possibleDirections[index];
     Hexagon* childHex = board->getHexagon(hex->getX()+dir.first,hex->getY()+dir.second);
     if (!childHex || !empty(childHex->getResident())) return;
-    childHex->placeChild(board,wife,husband);
+
+    childHex->placeChild(board,wife,husband,energySent,proteinSent,acidSent);
+
     if (!board->emptyVacant())
     {
         board->getGame()->engine->reproduceNetwork(oldHex->getData().bacteriaIndex,hex->getData().bacteriaIndex, board->popVacant());
