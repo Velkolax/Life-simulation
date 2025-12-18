@@ -123,9 +123,12 @@ void Board::tick()
 
     for(int i = 0; i < idsBuffer.size(); i++)
     {
-        BacteriaData& b = getBacteria(index);
-        memcpy(b.memory, outBuffer.data(), MEMORY_SIZE);
-        b.execute(this, outBuffer.data() + MEMORY_SIZE, points[i].x, points[i].y);
+        BacteriaData& b = getBacteria(idsBuffer[i]);
+
+        auto& out = outBuffer[i];
+
+        memcpy(b.memory, out.output, MEMORY_SIZE);
+        b.execute(this, out.output + MEMORY_SIZE, points[i].x, points[i].y);
     }
 }
 
@@ -218,9 +221,9 @@ void Board::spawnBacteria(int bacteriaCount)
     {
         if (i < bacteriaCount)
         {
-            int x = board[range[i]].getX();
-            int y = board[range[i]].getY();
-            board[range[i]].placeBacteria(TODO);
+            //int x = board[range[i]].getX();
+            //int y = board[range[i]].getY();
+            board[range[i]].placeBacteria(this);
         }
     }
 }
