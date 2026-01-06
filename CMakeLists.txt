@@ -36,5 +36,5 @@ target_link_libraries(life-sim
         glfw
         glad::glad
         glm::glm
-        freetype::freetype
+        freetype
 )
