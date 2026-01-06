@@ -22,7 +22,7 @@ class Game
 {
 public:
     int                     pressedKey = -1;
-    bool                    mousePressed;
+    bool                    mousePressed = false;
     float                   cursorPosX;
     float                   cursorPosY;
     int                     scroll = 0;

@@ -15,9 +15,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
-// The Width of the screen
 unsigned int SCREEN_WIDTH = 800;
-// The height of the screen
 unsigned int SCREEN_HEIGHT = 600;
 bool fullScreen = false;
 bool fPressed = false;
@@ -32,69 +30,45 @@ int main(int argc, char *argv[])
     gen = std::mt19937(seed);
     Seed = seed;
 
-
-    // OPENGL
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
     glfwWindowHint(GLFW_RESIZABLE, false);
-
     GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Simulation", nullptr, nullptr);
     glfwMakeContextCurrent(window);
-
-    glfwSwapInterval(1); // FPS zsynchronizowany z odświeżaniem monitora (zazwyczaj 60 FPS)
-
-    // glad: load all OpenGL function pointers
-    // ---------------------------------------
+    glfwSwapInterval(1);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-
     glfwSetKeyCallback(window, key_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetScrollCallback(window, scroll_callback);
-
-
-    // OpenGL configuration
-    // --------------------
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // initialize game
-    // ---------------
+
     sim->Init();
-    // deltaTime variables
-    // -------------------
+
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
 
     while (!glfwWindowShouldClose(window))
     {
-        // calculate delta time
-        // --------------------
+
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         glfwPollEvents();
 
-        // manage user input
-        // -----------------
         sim->ProcessInput(deltaTime);
-
-        // update game state
-        // -----------------
         sim->Update(deltaTime);
 
-        // render
-        // ------
+
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         sim->Render();
@@ -102,8 +76,6 @@ int main(int argc, char *argv[])
         glfwSwapBuffers(window);
     }
 
-    // delete all resources as loaded using the resource manager
-    // ---------------------------------------------------------
     ResourceManager::Clear();
     delete sim;
     glfwTerminate();
@@ -112,7 +84,6 @@ int main(int argc, char *argv[])
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-    // when a user presses the escape key, we set the WindowShouldClose property to true, closing the application
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (key == GLFW_KEY_F && action == GLFW_PRESS && !fullScreen && !fPressed)
@@ -127,7 +98,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         fPressed = true;
     }
     else if (key == GLFW_KEY_F && action == GLFW_RELEASE && fullScreen && fPressed){fullScreen=false;fPressed=false;}
-    // std::cout << "PRESSED: " << fPressed << " FULLSCREEN: " << fullScreen << std::endl;
     if (key > 0 && key < 1024)
     {
         if (action == GLFW_PRESS)

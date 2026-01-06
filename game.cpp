@@ -81,16 +81,6 @@ void Game::Resize(int width, int height)
 }
 
 
-
-/*void Game::Tick()
-{
-    //board->moveBacteriasRandomly();
-    //board->passTime();
-    //board->tick();
-    //step+=1;
-}*/
-
-
 void Game::ProcessInput(float dt)
 {
     if (this->scroll != 0)
@@ -149,14 +139,17 @@ void Game::Render()
     {
         float size = Renderer -> getSize(board);
         glm::ivec2 p = Renderer -> CheckWhichHexagon(cursorPosX,cursorPosY,size/2);
-        Hexagon *hex = board->getHexagon(p.x,p.y);
-        if (hex!=nullptr && bacteria(hex->getResident()))
+        Hexagon *hex = board->getHexagon(p.y*board->getWidth()+p.x);
+        if (hex!=nullptr)
         {
-            BacteriaData &bac = board->getBacteria(p.y*board->getWidth()+p.x);
-            Text->RenderText("AGE: "+std::to_string(bac.age),10,10,1.0);
-            Text->RenderText("ENERGY: "+std::to_string(bac.energy),10,40,1.0);
-            Text->RenderText("SPEED: "+std::to_string(bac.speed),10,70,1.0);
-            Text->RenderText("LIFESPAN: "+std::to_string(bac.lifespan),10,100,1.0);
+            Text->RenderText("HEX posX: "+ std::to_string(hex->getX()),10,10,1.0);
+            Text->RenderText("HEX posY: "+ std::to_string(hex->getY()),10,40,1.0);
+            if (bacteria(hex->getResident())) BacteriaData bac = board->getBacteria(p.y*board->getWidth()+p.x);
+
+             // Text->RenderText("AGE: "+std::to_string(bac.age),10,10,1.0);
+             // Text->RenderText("ENERGY: "+std::to_string(bac.energy),10,40,1.0);
+             // Text->RenderText("SPEED: "+std::to_string(bac.speed),10,70,1.0);
+             // Text->RenderText("LIFESPAN: "+std::to_string(bac.lifespan),10,100,1.0);
             //bac.printBacteria();
         }
     }

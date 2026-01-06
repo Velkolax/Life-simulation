@@ -116,7 +116,6 @@ glm::ivec2 fromAxial(int q,int r)
 
 glm::ivec2 SpriteRenderer::CheckWhichHexagon(int _x, int _y, float baseSize)
 {
-
     float worldX = _x - this->displacementX;
     float worldY = _y - this->displacementY;
 
