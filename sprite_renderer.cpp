@@ -20,7 +20,6 @@ SpriteRenderer::SpriteRenderer(Shader &shader,Board *board,int screenWidth, int 
     this->residentData.resize(20);
     this->getActualDimensions(board);
     for (auto& r : residentData) r.resize(bWidth*bHeight);
-    this->InitPalette(board);
 }
 
 void SpriteRenderer::getActualDimensions(Board *board)
@@ -44,7 +43,6 @@ void SpriteRenderer::getActualDimensions(Board *board)
     actualMinY = minY;
     actualBoardWidth=abs(maxX-minX);
     actualBoardHeight=abs(maxY-minY);
-    //std::cout << actualBoardWidth << " " << actualBoardHeight << std::endl;
 }
 
 SpriteRenderer::~SpriteRenderer()

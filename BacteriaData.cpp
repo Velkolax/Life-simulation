@@ -4,15 +4,6 @@
 #include "game.h"
 #include "simulation_engine.h"
 
-/*BacteriaData::BacteriaData(glm::ivec2 pos,uint32_t id,uint32_t alive,int32_t lifespan):
-    pos(pos),
-    target_pos(pos),
-    lifespan(lifespan),
-    remaining_lifespan(lifespan),
-    alive(alive)
-{
-    if (alive==1) fillNetworkWithRandom();
-}*/
 
 void BacteriaData::randomize()
 {
@@ -30,47 +21,6 @@ void BacteriaData::randomize()
 
     age = 0;
 }
-
-void BacteriaData::cross(BacteriaData& dad, BacteriaData& mom,float energySent,float proteinSent, float acidSent)
-{
-    lifespan = 50;
-    speed = 50;
-    acid =10;
-    energy=100;
-    protein=10;
-    age=0;
-}
-
-/*
-void BacteriaData::fillNetworkWithRandom()
-{
-
-        std::normal_distribution<float> distribution_W1(0.0f, std::sqrt(2.0f / INPUT_SIZE));
-        std::normal_distribution<float> distribution_W2(0.0f, std::sqrt(2.0f / HIDDEN_SIZE));
-        float* w1_start = (float*)&network[W1_OFFSET_VEC4];
-
-        for (int i = 0; i < W1_SIZE_F; ++i) {
-                w1_start[i] = distribution_W1(gen);
-        }
-        float* b1_start = (float*)&network[B1_OFFSET_VEC4];
-        for (int i = 0; i < B1_SIZE_F; ++i) {
-                b1_start[i] = 0.1f;
-        }
-
-        float* w2_start = (float*)&network[W2_OFFSET_VEC4];
-
-        for (int i = 0; i < W2_SIZE_F; ++i) {
-                w2_start[i] = distribution_W2(gen);
-        }
-
-        float* b2_start = (float*)&network[B2_OFFSET_VEC4];
-        for (int i = 0; i < B2_SIZE_F; ++i) {
-                b2_start[i] = 0.1f;
-        }
-
-}
-*/
-
 
 constexpr float INV_RESIDENT = 1.0f / float(Resident::Protein);
 constexpr float INV_MAX_ACCUSTOMABLE = 1.0f / MAX_ACCUSTOMABLE_VALUE;
@@ -315,6 +265,16 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
     // ilość energii nie musi pozostawać stała więc nie ma niedoboru
 
     lastAction = 2;
+}
+
+void BacteriaData::cross(BacteriaData& dad, BacteriaData& mom,float energySent,float proteinSent, float acidSent)
+{
+    lifespan = (mom.lifespan+dad.lifespan) * 0.5f + (mom.protein + dad.protein) * 0.5f * proteinSent;
+    speed = (mom.speed+dad.speed) * 0.5f + (mom.protein + dad.protein) * 0.5f * proteinSent;
+    acid =(mom.acid+dad.acid)*acidSent;
+    energy=(mom.energy+dad.energy)*energySent;
+    protein=0;
+    age=0;
 }
 
 void BacteriaData::breed(Board* board, float* data, coord x, coord y)
