@@ -2,19 +2,11 @@ cmake_minimum_required(VERSION 4.0)
 
 set(CMAKE_CXX_STANDARD 23)
 project(life-sim)
-cmake_policy(SET CMP0072 NEW)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-find_package(OpenGL REQUIRED)
-find_package(glfw3 REQUIRED)
-
-set(FT_DISABLE_HARFBUZZ ON CACHE BOOL "" FORCE)
-set(FT_DISABLE_ZLIB ON CACHE BOOL "" FORCE)
-set(FT_DISABLE_BZIP2 ON CACHE BOOL "" FORCE)
-set(FT_DISABLE_PNG ON CACHE BOOL "" FORCE)
-set(FT_DISABLE_BROTLI ON CACHE BOOL "" FORCE)
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-add_subdirectory(freetype)
+find_package(glfw3 CONFIG REQUIRED)
+find_package(glad CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
+find_package(freetype CONFIG REQUIRED)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 add_executable(life-sim
         main.cpp
@@ -39,6 +31,10 @@ add_executable(life-sim
 
 )
 include_directories(life-sim PRIVATE include)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64")
-target_link_libraries(life-sim ${GLFW3_LIBRARY} OpenGL::GL freetype)
-
+target_link_libraries(life-sim
+        PRIVATE
+        glfw
+        glad::glad
+        glm::glm
+        freetype::freetype
+)

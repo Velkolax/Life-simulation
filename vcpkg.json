@@ -1,0 +1,24 @@
+{
+  "name" : "life-sim",
+  "version-string" : "1.0.0",
+  "builtin-baseline" : "0b9083a630f84bdd50c13167740409d075ee6f98",
+  "dependencies" : [ {
+    "name" : "vcpkg-cmake-config",
+    "version>=" : "2024-05-23"
+  }, {
+    "name" : "vcpkg-cmake",
+    "version>=" : "2024-04-23"
+  },
+  {
+    "name" : "glfw3"
+  },
+  {
+    "name" : "glad"
+  },
+  {
+    "name" : "glm"
+  },{
+      "name" : "freetype"
+    }
+  ]
+}

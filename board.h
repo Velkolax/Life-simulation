@@ -6,7 +6,7 @@
 #include <functional>
 #include <unordered_set>
 #include <random>
-#include <unistd.h>
+
 #include "NeuralNetwork.h"
 #include "glm/vec2.hpp"
 #include "BacteriaData.h"
