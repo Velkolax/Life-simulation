@@ -78,10 +78,6 @@ void Board::InitializeRandom(int min, int max)
 void Board::tick()
 {
     step++;
-    for(int i = 0; i < 10; i++)
-    {
-        getBacteria(i).printBacteria();
-    }
 
     struct Point
     {

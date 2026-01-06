@@ -142,15 +142,13 @@ void Game::Render()
         Hexagon *hex = board->getHexagon(p.y*board->getWidth()+p.x);
         if (hex!=nullptr)
         {
-            Text->RenderText("HEX posX: "+ std::to_string(hex->getX()),10,10,1.0);
-            Text->RenderText("HEX posY: "+ std::to_string(hex->getY()),10,40,1.0);
-            if (bacteria(hex->getResident())) BacteriaData bac = board->getBacteria(p.y*board->getWidth()+p.x);
-
-             // Text->RenderText("AGE: "+std::to_string(bac.age),10,10,1.0);
-             // Text->RenderText("ENERGY: "+std::to_string(bac.energy),10,40,1.0);
-             // Text->RenderText("SPEED: "+std::to_string(bac.speed),10,70,1.0);
-             // Text->RenderText("LIFESPAN: "+std::to_string(bac.lifespan),10,100,1.0);
-            //bac.printBacteria();
+            if (bacteria(hex->getResident())) {
+                ResidentData res = hex->getData();
+                BacteriaData bac = board->getBacteria(res.bacteriaIndex);
+                Text->RenderText("AGE: "+ std::to_string(bac.age),10,10,1.0);
+                Text->RenderText("ENERGY: "+ std::to_string(bac.energy),10,40,1.0);
+                Text->RenderText("ACID: "+ std::to_string(bac.acid),10,70,1.0);
+            }
         }
     }
 
