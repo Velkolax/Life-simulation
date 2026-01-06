@@ -168,11 +168,6 @@ void SimulationEngine::Process(uint32_t id_size, uint32_t *ids, float* inputData
     glDeleteSync(fence);
     memcpy(outputData,OutPtr,id_size*OUTPUT*sizeof(float));
 
-    // std::vector<float> debugOut(bCapacity * OUTPUT);
-    // glGetNamedBufferSubData(ssboOut, 0, debugOut.size() * sizeof(float), debugOut.data());
-    //
-    // std::cout << "--- OUTPUT BAKTERII 0 ---" << std::endl;
-    // std::cout << "X: " << debugOut[0] << "  Y: " << debugOut[1] << " Z:" << debugOut[2] << " V:" << debugOut[3] << std::endl;
     GLenum err;
     while((err = glGetError()) != GL_NO_ERROR)
     {
@@ -200,8 +195,6 @@ void SimulationEngine::killNetwork(int deadIdx)
 void SimulationEngine::reproduceNetwork(int parentA, int parentB, int childIdx)
 {
     if (bSize >= bCapacity) return;
-
-    //int childIdx = bSize;
 
     Shader reproShader = ResourceManager::GetShader("reproduce");
     reproShader.Use();

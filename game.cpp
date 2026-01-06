@@ -55,11 +55,6 @@ void Game::Init()
     Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height);
 }
 
-
-
-
-
-
 void Game::Update(float dt)
 {
     if (pressedKey==GLFW_KEY_SPACE)
@@ -116,16 +111,11 @@ void Game::ProcessInput(float dt)
     if(pressedKey==GLFW_KEY_ENTER)
     {
         enterPressed = true;
-
     }
     if(pressedKey!=GLFW_KEY_ENTER && enterPressed)
     {
-        //enterPressed = false;
         board->tick();
         enterPressed=false;
-    }
-    if(pressedKey!=GLFW_KEY_SPACE && spacePressed)
-    {
     }
 
 }
@@ -140,15 +130,13 @@ void Game::Render()
         float size = Renderer -> getSize(board);
         glm::ivec2 p = Renderer -> CheckWhichHexagon(cursorPosX,cursorPosY,size/2);
         Hexagon *hex = board->getHexagon(p.y*board->getWidth()+p.x);
-        if (hex!=nullptr)
+        if (hex!=nullptr && bacteria(hex->getResident()))
         {
-            if (bacteria(hex->getResident())) {
-                ResidentData res = hex->getData();
-                BacteriaData bac = board->getBacteria(res.bacteriaIndex);
-                Text->RenderText("AGE: "+ std::to_string(bac.age),10,10,1.0);
-                Text->RenderText("ENERGY: "+ std::to_string(bac.energy),10,40,1.0);
-                Text->RenderText("ACID: "+ std::to_string(bac.acid),10,70,1.0);
-            }
+            ResidentData res = hex->getData();
+            BacteriaData bac = board->getBacteria(res.bacteriaIndex);
+            Text->RenderText("AGE: "+ std::to_string(bac.age),10,10,1.0);
+            Text->RenderText("ENERGY: "+ std::to_string(bac.energy),10,40,1.0);
+            Text->RenderText("ACID: "+ std::to_string(bac.acid),10,70,1.0);
         }
     }
 

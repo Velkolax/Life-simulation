@@ -78,34 +78,6 @@ void SpriteRenderer::addToResizeMultiplier(double ds,Board *board,float width)
     resizeMultiplier *= ds;
 }
 
-void SpriteRenderer::InitPalette(Board *board) {
-    std::vector<int> hexColors{
-        0xCC3333,
-        0x33CC33,
-        0x3333CC,
-        0xCCCC33,
-        0x33CCCC,
-        0xCC33CC,
-        0xCC6633,
-        0x99CC33,
-        0x3399CC,
-        0x9933CC
-    };
-    std::shuffle(hexColors.begin(),hexColors.end(),gen);
-    for (auto hex : hexColors)
-    {
-
-        double red, green, blue;
-        red = hex >> 16 ;
-
-        green = (hex & 0x00ff00) >> 8;
-
-        blue = (hex & 0x0000ff);
-        // std::cout << red << " " << green << " " << blue << std::endl;
-        palette.push_back(glm::vec3(red/255.0f,green/255.0f,blue/255.0f));
-    }
-}
-
 glm::ivec2 fromAxial(int q,int r)
 {
     int parity = q&1;
