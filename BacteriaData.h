@@ -46,7 +46,7 @@ constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> oddDire
 }};
 static_assert(oddDirections2l.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
 
-inline std::string stringActions[] = {
+inline std::string stringActions[] = {"Nothing",
     "Move", "Attack", "Breed", "Eat", "Sleep",
     "MoveFailure", "AttackFailure", "BreedFailure", "EatFailure", "SleepFailure"
 };

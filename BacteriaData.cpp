@@ -158,7 +158,7 @@ void BacteriaData::die(Board* board, coord x, coord y)
 
 void BacteriaData::move(Board* board, float* data, coord x, coord y)
 {
-    lastAction = 5;
+    lastAction = 6;
     int movesCount = std::min(speed / 20, 4);
     Hexagon* oldHex = board->getHexagon(x, y);
     int32_t id = oldHex->getData().bacteriaIndex;
@@ -172,13 +172,15 @@ void BacteriaData::move(Board* board, float* data, coord x, coord y)
         hex->placeBacteria(board, id);
         oldHex->placeEmpty();
         oldHex = hex;
-        lastAction = 0;
+        std::cout << "I MOVED!!!" << std::endl;
+        lastAction = 1;
     }
+
 }
 
 void BacteriaData::attack(Board* board, float* data, coord x, coord y)
 {
-    lastAction = 6;
+    lastAction = 7;
     Hexagon* hex = directionToHex(board, *data, x, y);
     if(!hex || !bacteria(hex->getResident()))
     {
@@ -264,7 +266,7 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
     board->proteinShortage += proteinDrained;
     // ilość energii nie musi pozostawać stała więc nie ma niedoboru
 
-    lastAction = 1;
+    lastAction = 2;
 }
 
 void BacteriaData::cross(BacteriaData& dad, BacteriaData& mom,float energySent,float proteinSent, float acidSent)
@@ -279,7 +281,7 @@ void BacteriaData::cross(BacteriaData& dad, BacteriaData& mom,float energySent,f
 
 void BacteriaData::breed(Board* board, float* data, coord x, coord y)
 {
-    lastAction = 7;
+    lastAction = 8;
     Hexagon* oldHex = board->getHexagon(x, y);
     Hexagon *hex = directionToHex(board,*data,x,y);
     if (!hex || !bacteria(hex->getResident())) return;
@@ -316,12 +318,12 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
         board->getGame()->engine->reproduceNetwork(oldHex->getData().bacteriaIndex,hex->getData().bacteriaIndex, board->popVacant());
     }
 
-    lastAction = 2;
+    lastAction = 3;
 }
 
 void BacteriaData::eat(Board* board, float* data, coord x, coord y)
 {
-    lastAction = 8;
+    lastAction = 9;
     if(!consumeEnergy(2.f, board, x, y)) return;
     Hexagon* hex = directionToHex(board, *data, x, y);
     if(!hex || !resource(hex->getResident())) return;
@@ -357,14 +359,14 @@ void BacteriaData::eat(Board* board, float* data, coord x, coord y)
     }
     hex->getData().acid.amount -= toEat;
     if(hex->getData().acid.amount == 0) hex->placeEmpty();
-    lastAction = 3;
+    lastAction = 4;
 }
 
 void BacteriaData::sleep(Board* board, float* data, coord x, coord y)
 {
-    lastAction = 9;
+    lastAction = 10;
     if(!consumeEnergy(0.5f, board, x, y)) return;
-    lastAction = 4;
+    lastAction = 5;
 }
 
 static_assert(MEMORY_SIZE + 1 + 6 + TWO_NEIGHBOUR_LAYERS_SIZE * 3 == INPUT, "SEND_SIZE too small");

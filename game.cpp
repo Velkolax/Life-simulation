@@ -116,11 +116,11 @@ void Game::ProcessInput(float dt)
     }
     if(pressedKey==GLFW_KEY_ENTER)
     {
-        enterPressed = true;
+        board->tick();
     }
     if(pressedKey!=GLFW_KEY_ENTER && enterPressed)
     {
-        board->tick();
+
         enterPressed=false;
     }
 
