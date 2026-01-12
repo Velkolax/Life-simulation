@@ -41,9 +41,9 @@ void Game::Init()
 
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load(24);
-    int bacteriaCount = 20000;
-    int x = 300;
-    int y = 300;
+    int bacteriaCount = 200;
+    int x = 100;
+    int y = 100;
     board = new Board(x, y, this,bacteriaCount);
     int total = x*y;
     board->InitializeNeighbour(249, true);
@@ -60,7 +60,13 @@ void Game::Update(float dt)
     if (pressedKey==GLFW_KEY_SPACE)
     {
         board->tick();
+        for (int i=0;i<board->getAliveBacteriaCount();i++)
+        {
+            BacteriaData &bac = board->getBacteria(i);
+            bac.printBacteria();
+        }
     }
+
 
 }
 
