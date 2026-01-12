@@ -64,9 +64,12 @@ int main(int argc, char *argv[])
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         glfwPollEvents();
-
         sim->ProcessInput(deltaTime);
-        sim->Update(deltaTime);
+        for (int i=0;i<1;i++)
+        {
+            sim->Update(deltaTime);
+        }
+
 
 
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);

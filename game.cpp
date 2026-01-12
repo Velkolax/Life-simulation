@@ -41,9 +41,9 @@ void Game::Init()
 
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load(24);
-    int bacteriaCount = 200;
-    int x = 100;
-    int y = 100;
+    int bacteriaCount = 20000;
+    int x = 300;
+    int y = 300;
     board = new Board(x, y, this,bacteriaCount);
     int total = x*y;
     board->InitializeNeighbour(249, true);
@@ -60,11 +60,11 @@ void Game::Update(float dt)
     if (pressedKey==GLFW_KEY_SPACE)
     {
         board->tick();
-        for (int i=0;i<board->getAliveBacteriaCount();i++)
-        {
-            BacteriaData &bac = board->getBacteria(i);
-            bac.printBacteria();
-        }
+        // for (int i=0;i<board->getAliveBacteriaCount();i++)
+        // {
+        //     BacteriaData &bac = board->getBacteria(i);
+        //     bac.printBacteria();
+        // }
     }
 
 
@@ -110,19 +110,6 @@ void Game::ProcessInput(float dt)
     {
         Renderer -> addToDisplacementX(board,-10);
     }
-    if (pressedKey==GLFW_KEY_SPACE)
-    {
-        spacePressed = true;
-    }
-    if(pressedKey==GLFW_KEY_ENTER)
-    {
-        board->tick();
-    }
-    if(pressedKey!=GLFW_KEY_ENTER && enterPressed)
-    {
-
-        enterPressed=false;
-    }
 
 }
 
@@ -143,6 +130,8 @@ void Game::Render()
             Text->RenderText("AGE: "+ std::to_string(bac.age),10,10,1.0);
             Text->RenderText("ENERGY: "+ std::to_string(bac.energy),10,40,1.0);
             Text->RenderText("ACID: "+ std::to_string(bac.acid),10,70,1.0);
+            Text->RenderText("AGILITY: " + std::to_string(bac.speed),10,100,1.0);
+            bac.printBacteria();
         }
     }
 
