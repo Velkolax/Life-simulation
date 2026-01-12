@@ -131,7 +131,8 @@ void Game::Render()
             Text->RenderText("ENERGY: "+ std::to_string(bac.energy),10,40,1.0);
             Text->RenderText("ACID: "+ std::to_string(bac.acid),10,70,1.0);
             Text->RenderText("AGILITY: " + std::to_string(bac.speed),10,100,1.0);
-            bac.printBacteria();
+            Text->RenderText("LAST ACTION: "+stringActions[bac.lastAction],10,130,1.0);
+            //bac.printBacteria();
         }
     }
 
