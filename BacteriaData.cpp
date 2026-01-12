@@ -273,8 +273,8 @@ void BacteriaData::cross(BacteriaData& dad, BacteriaData& mom,float energySent,f
 {
     lifespan = (mom.lifespan+dad.lifespan) * 0.5f + (mom.protein + dad.protein) * 0.5f * proteinSent;
     speed = (mom.speed+dad.speed) * 0.5f + (mom.protein + dad.protein) * 0.5f * proteinSent;
-    acid =(mom.acid+dad.acid)*acidSent;
-    energy=(mom.energy+dad.energy)*energySent;
+    acid =(dad.acid)*acidSent;
+    energy=(dad.energy)*energySent;
     protein=0;
     age=0;
 }
@@ -289,10 +289,11 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
     BacteriaData& husband = board->getBacteria(hex->getData().bacteriaIndex);
     BacteriaData& wife = board->getBacteria(oldHex->getData().bacteriaIndex);
     float energySent = data[1];
+    //std::cout << "ENERGY SENT: " << energySent << std::endl;
     float proteinSent = data[2];
     float acidSent = data[3];
-    if (husband.protein+wife.protein<10) return;
-    if (!(wife.consumeEnergy(3.f, board, x, y) && husband.consumeEnergy(3.f, board, hex->getX(), hex->getY()))) return;
+    if (!husband.consumeEnergyValue(husband.energy * energySent, board, hex->getX(), hex->getY())) return;
+    if (!wife.consumeEnergyValue(wife.energy * energySent,board, oldHex->getX(),oldHex->getY())) return;
     std::vector<std::pair<coord,coord>> possibleDirections;
     auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
     for(auto& [dx,dy] : directions)

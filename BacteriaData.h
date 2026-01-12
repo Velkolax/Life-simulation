@@ -89,6 +89,13 @@ struct BacteriaData
         energy = e;
         return true;
     }
+    inline bool consumeEnergyValue(int value, Board* board, coord x, coord y)
+    {
+        int e = int(energy) - value;
+        if (e <= 0) { die(board, x, y); return false; }
+        energy = e;
+        return true;
+    }
     inline void getOlder(Board* board, coord x, coord y)
     {
         age += 1;
