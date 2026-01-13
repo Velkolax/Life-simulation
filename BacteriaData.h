@@ -73,7 +73,7 @@ struct BacteriaData
     uint8_t lastAction = 0;
 
     void randomize();
-    void cross(BacteriaData& dad, BacteriaData& mom,float energySent,float proteinSent, float acidSent);
+    void cross(BacteriaData& dad, BacteriaData& mom);
     void addToBuffer(Board* board, float* buffer, coord x, coord y);
 
     inline void printBacteria()

@@ -84,7 +84,7 @@ public:
     void placeProtein();
     void placeProtein(uint8_t amount);
     void placeBacteria(Board* board);
-    void placeChild(Board* board, BacteriaData& mom, BacteriaData& dad,float energySent,float proteinSent, float acidSent);
+    void placeChild(Board* board, BacteriaData& mom, BacteriaData& dad);
     void placeBacteria(Board* board, uint32_t id);
 
     //bool isNearWater(Board* board);

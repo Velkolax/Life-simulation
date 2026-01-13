@@ -168,4 +168,5 @@ void Game::Render()
         }
     }
     Text->RenderText("PROTEIN NUMBER: " + std::to_string(proteinCount),Width*0.5,70,1.0);
+    Text->RenderText("PROTEIN SHORTAGE: " + std::to_string(board->proteinShortage),Width*0.5,100,1.0);
 }

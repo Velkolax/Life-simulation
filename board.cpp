@@ -183,11 +183,11 @@ void Hexagon::placeBacteria(Board* board)
     board->addBacteria().randomize();
 }
 
-void Hexagon::placeChild(Board* board, BacteriaData& mom, BacteriaData& dad,float energySent,float proteinSent, float acidSent)
+void Hexagon::placeChild(Board* board, BacteriaData& mom, BacteriaData& dad)
 {
     resident = Resident::Bacteria;
     data.bacteriaIndex = board->getBacteriaCount();
-    board->addBacteria().cross(mom,dad,energySent,proteinSent,acidSent);
+    board->addBacteria().cross(mom,dad);
 }
 
 void Hexagon::placeBacteria(Board* board, uint32_t id)
