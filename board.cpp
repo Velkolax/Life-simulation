@@ -351,6 +351,38 @@ float Board::getBreedAttempt()
     return foodSum / (float)getAliveBacteriaCount() * 100.0f;
 }
 
+float Board::getMoveAttempt()
+{
+    float foodSum = 0;
+    for (int i=0;i<getHeight()*getWidth();i++)
+    {
+        Hexagon *hex = getHexagon(i);
+        if (hex != nullptr && bacteria(hex->getResident()))
+        {
+            ResidentData res = hex->getData();
+            BacteriaData bac = getBacteria(res.bacteriaIndex);
+            if (stringActions[bac.lastAction]=="Move" || stringActions[bac.lastAction]=="MoveFailure") foodSum++;
+        }
+    }
+    return foodSum / (float)getAliveBacteriaCount() * 100.0f;
+}
+
+float Board::getNoAction()
+{
+    float foodSum = 0;
+    for (int i=0;i<getHeight()*getWidth();i++)
+    {
+        Hexagon *hex = getHexagon(i);
+        if (hex != nullptr && bacteria(hex->getResident()))
+        {
+            ResidentData res = hex->getData();
+            BacteriaData bac = getBacteria(res.bacteriaIndex);
+            if (stringActions[bac.lastAction]=="Nothing") foodSum++;
+        }
+    }
+    return foodSum / (float)getAliveBacteriaCount() * 100.0f;
+}
+
 
 void Hexagon::placeWall()
 {

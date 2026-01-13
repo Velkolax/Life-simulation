@@ -126,6 +126,8 @@ public:
     int getNumberOfChildrenBorn();
     float getFoodEaten();
     float getBreedAttempt();
+    float getMoveAttempt();
+    float getNoAction();
     void spawnFood(double foodRatio);
     void spawnBacteria(int bacteriaCount);
     // gettery/settery
