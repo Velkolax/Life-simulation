@@ -285,9 +285,9 @@ int Board::getNumberOfChildrenBorn()
     return number;
 }
 
-int Board::getFoodEaten()
+float Board::getFoodEaten()
 {
-    int foodSum = 0;
+    float foodSum = 0;
     for (int i=0;i<getHeight()*getWidth();i++)
     {
         Hexagon *hex = getHexagon(i);
@@ -298,7 +298,23 @@ int Board::getFoodEaten()
             if (stringActions[bac.lastAction]=="Eat" || stringActions[bac.lastAction]=="EatFailure") foodSum++;
         }
     }
-    return foodSum;
+    return foodSum / (float)getAliveBacteriaCount() * 100.0f;
+}
+
+float Board::getBreedAttempt()
+{
+    float foodSum = 0;
+    for (int i=0;i<getHeight()*getWidth();i++)
+    {
+        Hexagon *hex = getHexagon(i);
+        if (hex != nullptr && bacteria(hex->getResident()))
+        {
+            ResidentData res = hex->getData();
+            BacteriaData bac = getBacteria(res.bacteriaIndex);
+            if (stringActions[bac.lastAction]=="Breed" || stringActions[bac.lastAction]=="BreedFailure") foodSum++;
+        }
+    }
+    return foodSum / (float)getAliveBacteriaCount() * 100.0f;
 }
 
 

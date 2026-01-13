@@ -123,7 +123,8 @@ public:
     int getLowestAge();
     double getAvgEnergy();
     int getNumberOfChildrenBorn();
-    int getFoodEaten();
+    float getFoodEaten();
+    float getBreedAttempt();
     void spawnFood(double foodRatio);
     void spawnBacteria(int bacteriaCount);
     // gettery/settery

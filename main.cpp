@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
         lastFrame = currentFrame;
         glfwPollEvents();
         sim->ProcessInput(deltaTime);
-        for (int i=0;i<50;i++)
+        for (int i=0;i<1;i++)
         {
             sim->Update(deltaTime);
         }
