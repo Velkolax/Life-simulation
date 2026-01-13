@@ -52,6 +52,8 @@ static inline std::string stringActions[] = {"Nothing",
 };
 
 
+
+
 struct BacteriaData
 {
     float memory[MEMORY_SIZE];
