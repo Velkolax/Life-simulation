@@ -129,6 +129,30 @@ void Board::tick()
     }
 }
 
+void Board::proteinMerge()
+{
+    for (int y=0;y<getHeight();y++)
+    {
+        for (int x=0;x<getWidth();x++)
+        {
+            Hexagon *hex = getHexagon(x,y);
+            if (protein(hex->getResident()))
+            {
+                auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
+                for(auto& [dx,dy] : directions)
+                {
+                    Hexagon* h = getHexagon(hex->getX() + dx, hex->getY() + dy);
+                    if (h!=nullptr && protein(h->getResident()))
+                    {
+                        hex->getData().protein.amount += h->getData().protein.amount;
+                        h->placeEmpty();
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 void Hexagon::placeWall()
 {
@@ -155,7 +179,7 @@ void Hexagon::placeAcid(uint8_t amount)
 void Hexagon::placeEnergy()
 {
     resident = Resident::Energy;
-    data.energy.amount = std::uniform_int_distribution<uint8_t>(1, 10)(gen);
+    data.energy.amount = std::uniform_int_distribution<uint8_t>(50, 100)(gen);
 }
 
 void Hexagon::placeEnergy(uint8_t amount)

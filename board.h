@@ -115,7 +115,7 @@ public:
     void InitializeNeighbour(int recursion, bool includeMiddle);
 
     void tick();
-
+    void proteinMerge();
     void spawnFood(double foodRatio);
     void spawnBacteria(int bacteriaCount);
     // gettery/settery

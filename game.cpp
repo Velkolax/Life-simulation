@@ -60,6 +60,7 @@ void Game::Update(float dt)
     if (pressedKey==GLFW_KEY_SPACE)
     {
         board->tick();
+        board->proteinMerge();
         counter++;
         // for (int i=0;i<board->getAliveBacteriaCount();i++)
         // {
@@ -113,8 +114,6 @@ void Game::ProcessInput(float dt)
     }
 
 }
-
-
 
 void Game::Render()
 {
