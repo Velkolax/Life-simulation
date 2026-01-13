@@ -61,7 +61,9 @@ void Game::Update(float dt)
     {
         board->tick();
         board->proteinMerge();
+        board->energyMerge();
         counter++;
+        if (counter % 100 == 0) board->spawnFood(0.05);
         // for (int i=0;i<board->getAliveBacteriaCount();i++)
         // {
         //     BacteriaData &bac = board->getBacteria(i);
@@ -151,21 +153,11 @@ void Game::Render()
 
     Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getAliveBacteriaCount()),Width*0.5,10,1.0);
     Text->RenderText("GENERATION: "+std::to_string(counter),Width*0.5,40,1.0);
-    size_t proteinCount = 0;
-    for (int i=0;i<board->getHeight()*board->getWidth();i++)
-    {
-        Hexagon *hex = board->getHexagon(i);
-        if (hex != nullptr && protein(hex->getResident()))
-        {
-            proteinCount += hex->getData().protein.amount;
-        }
-        if (hex != nullptr && bacteria(hex->getResident()))
-        {
-            ResidentData res = hex->getData();
-            BacteriaData bac = board->getBacteria(res.bacteriaIndex);
-            proteinCount += bac.protein;
-        }
-    }
-    Text->RenderText("PROTEIN NUMBER: " + std::to_string(proteinCount),Width*0.5,70,1.0);
+
+    Text->RenderText("PROTEIN NUMBER: " + std::to_string(board->getProteinCount()),Width*0.5,70,1.0);
     Text->RenderText("PROTEIN SHORTAGE: " + std::to_string(board->proteinShortage),Width*0.5,100,1.0);
+    Text->RenderText("HIGHEST AGE: " + std::to_string(board->getHighestAge()),Width*0.5,130,1.0);
+    Text->RenderText("LOWEST AGE: "+ std::to_string(board->getLowestAge()),Width*0.5,160,1.0);
+    Text->RenderText("AVG ENERGY: "+ std::to_string(board->getAvgEnergy()),Width*0.5,190,1.0);
+    Text->RenderText("NUMBER OF BORN: "+ std::to_string(board->getNumberOfChildrenBorn()),Width*0.5,220,1.0);
 }

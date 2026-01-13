@@ -153,6 +153,117 @@ void Board::proteinMerge()
     }
 }
 
+void Board::energyMerge()
+{
+    for (int y=0;y<getHeight();y++)
+    {
+        for (int x=0;x<getWidth();x++)
+        {
+            Hexagon *hex = getHexagon(x,y);
+            if (energy(hex->getResident()))
+            {
+                auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
+                for(auto& [dx,dy] : directions)
+                {
+                    Hexagon* h = getHexagon(hex->getX() + dx, hex->getY() + dy);
+                    if (h!=nullptr && energy(h->getResident()))
+                    {
+                        if (h->getData().energy.amount<10)
+                        {
+                            hex->getData().energy.amount += h->getData().energy.amount;
+                            h->placeEmpty();
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+size_t Board::getProteinCount()
+{
+    size_t proteinCount = 0;
+    for (int i=0;i<getHeight()*getWidth();i++)
+    {
+        Hexagon *hex = getHexagon(i);
+        if (hex != nullptr && protein(hex->getResident()))
+        {
+            proteinCount += hex->getData().protein.amount;
+        }
+        if (hex != nullptr && bacteria(hex->getResident()))
+        {
+            ResidentData res = hex->getData();
+            BacteriaData bac = getBacteria(res.bacteriaIndex);
+            proteinCount += bac.protein;
+        }
+    }
+    return proteinCount;
+}
+
+int Board::getHighestAge()
+{
+    int highestAge = 0;
+    for (int i=0;i<getHeight()*getWidth();i++)
+    {
+        Hexagon *hex = getHexagon(i);
+        if (hex != nullptr && bacteria(hex->getResident()))
+        {
+            ResidentData res = hex->getData();
+            BacteriaData bac = getBacteria(res.bacteriaIndex);
+            if (bac.age>highestAge) highestAge = bac.age;
+        }
+    }
+    return highestAge;
+}
+
+int Board::getLowestAge()
+{
+    int lowestAge = INT32_MAX;
+    for (int i=0;i<getHeight()*getWidth();i++)
+    {
+        Hexagon *hex = getHexagon(i);
+        if (hex != nullptr && bacteria(hex->getResident()))
+        {
+            ResidentData res = hex->getData();
+            BacteriaData bac = getBacteria(res.bacteriaIndex);
+            if (bac.age<lowestAge) lowestAge = bac.age;
+        }
+    }
+    return lowestAge;
+}
+
+double Board::getAvgEnergy()
+{
+    double energySum = 0.0;
+    for (int i=0;i<getHeight()*getWidth();i++)
+    {
+        Hexagon *hex = getHexagon(i);
+        if (hex != nullptr && bacteria(hex->getResident()))
+        {
+            ResidentData res = hex->getData();
+            BacteriaData bac = getBacteria(res.bacteriaIndex);
+            energySum += bac.energy;
+        }
+    }
+    return energySum / board.size();
+}
+
+int Board::getNumberOfChildrenBorn()
+{
+    int number = 0;
+    for (int i=0;i<getHeight()*getWidth();i++)
+    {
+        Hexagon *hex = getHexagon(i);
+        if (hex != nullptr && bacteria(hex->getResident()))
+        {
+            ResidentData res = hex->getData();
+            BacteriaData bac = getBacteria(res.bacteriaIndex);
+            if (bac.age==0) number++;
+        }
+    }
+    return number;
+}
+
 
 void Hexagon::placeWall()
 {

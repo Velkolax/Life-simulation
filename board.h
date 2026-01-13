@@ -116,6 +116,12 @@ public:
 
     void tick();
     void proteinMerge();
+    void energyMerge();
+    size_t getProteinCount();
+    int getHighestAge();
+    int getLowestAge();
+    double getAvgEnergy();
+    int getNumberOfChildrenBorn();
     void spawnFood(double foodRatio);
     void spawnBacteria(int bacteriaCount);
     // gettery/settery
