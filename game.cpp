@@ -162,6 +162,12 @@ void Game::Render()
             auto a = res.amount;
             Text->RenderText("ENERGY AMOUNT: "+ std::to_string(a),10,10,1.0 );
         }
+        if (hex!=nullptr && acid(hex->getResident()))
+        {
+            AcidData res = hex->getData().acid;
+            auto a = res.amount;
+            Text->RenderText("ACID AMOUNT: "+ std::to_string(a),10,10,1.0 );
+        }
     }
 
      Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getAliveBacteriaCount()),Width*0.5,10,1.0);
