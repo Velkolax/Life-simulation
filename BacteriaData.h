@@ -135,7 +135,7 @@ struct BacteriaData
 
     inline void execute(Board* board, float* data, coord x, coord y)
     {
-        std::cout << "WYJŚCIE 1: " << data[1] << std::endl;
+        //std::cout << "WYJŚCIE 1: " << data[1] << std::endl;
         int index = std::clamp(int(*data * BACTERIA_ACTIONS_NUMBER), 0, BACTERIA_ACTIONS_NUMBER - 1);
 
         (this->*actions[index])(board, data + 1, x, y);
