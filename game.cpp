@@ -114,6 +114,16 @@ void Game::ProcessInput(float dt)
     {
         Renderer -> addToDisplacementX(board,-10);
     }
+    if (pressedKey==GLFW_KEY_ENTER) enterPressed = true;
+    if (pressedKey!=GLFW_KEY_ENTER && enterPressed)
+    {
+        enterPressed=false;
+        board->tick();
+        board->proteinMerge();
+        board->energyMerge();
+        counter++;
+        if (counter % 100 == 0) board->spawnFood(0.05);
+    }
 
 }
 
