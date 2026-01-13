@@ -117,6 +117,7 @@ public:
     void tick();
     void proteinMerge();
     void energyMerge();
+    void acidMerge();
     size_t getProteinCount();
     int getHighestAge();
     int getLowestAge();
