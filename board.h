@@ -102,7 +102,7 @@ private:
     std::vector<BacteriaData> bacterias;
     std::vector<int32_t> vacantSlots;
 
-    unsigned int step = 0;
+    uint64_t step = 0;
 
     Game* game;
 
