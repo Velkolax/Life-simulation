@@ -164,15 +164,16 @@ void Game::Render()
         }
     }
 
-    Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getAliveBacteriaCount()),Width*0.5,10,1.0);
-    Text->RenderText("GENERATION: "+std::to_string(counter),Width*0.5,40,1.0);
-
-    Text->RenderText("PROTEIN NUMBER: " + std::to_string(board->getProteinCount()),Width*0.5,70,1.0);
-    Text->RenderText("PROTEIN SHORTAGE: " + std::to_string(board->proteinShortage),Width*0.5,100,1.0);
-    Text->RenderText("HIGHEST AGE: " + std::to_string(board->getHighestAge()),Width*0.5,130,1.0);
-    Text->RenderText("LOWEST AGE: "+ std::to_string(board->getLowestAge()),Width*0.5,160,1.0);
-    Text->RenderText("AVG ENERGY: "+ std::to_string(board->getAvgEnergy()),Width*0.5,190,1.0);
-    Text->RenderText("NUMBER OF BORN: "+ std::to_string(board->getNumberOfChildrenBorn()),Width*0.5,220,1.0);
-    Text->RenderText("FOOD EATEN: "+ std::to_string(board->getFoodEaten()) + " %",Width*0.5,250,1.0);
-    Text->RenderText("BREED ATTEMPT: "+std::to_string(board->getBreedAttempt()) + " %",Width*0.5,280,1.0);
+     Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getAliveBacteriaCount()),Width*0.5,10,1.0);
+    // Text->RenderText("GENERATION: "+std::to_string(counter),Width*0.5,40,1.0);
+    //
+    // Text->RenderText("PROTEIN NUMBER: " + std::to_string(board->getProteinCount()),Width*0.5,70,1.0);
+    // Text->RenderText("PROTEIN SHORTAGE: " + std::to_string(board->proteinShortage),Width*0.5,100,1.0);
+    // Text->RenderText("HIGHEST AGE: " + std::to_string(board->getHighestAge()),Width*0.5,130,1.0);
+    // Text->RenderText("LOWEST AGE: "+ std::to_string(board->getLowestAge()),Width*0.5,160,1.0);
+    // Text->RenderText("AVG ENERGY: "+ std::to_string(board->getAvgEnergy()),Width*0.5,190,1.0);
+    // Text->RenderText("NUMBER OF BORN: "+ std::to_string(board->getNumberOfChildrenBorn()),Width*0.5,220,1.0);
+    // Text->RenderText("FOOD EATEN: "+ std::to_string(board->getFoodEaten()) + " %",Width*0.5,250,1.0);
+     Text->RenderText("BREED ATTEMPT: "+std::to_string(board->getBreedAttempt()) + " %",Width*0.5,280,1.0);
+    Text->RenderText("FAILURE RATIO: "+ std::to_string(board->getFailureRatio()),Width*0.5,310,1.0);
 }

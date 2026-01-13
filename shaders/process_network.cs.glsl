@@ -35,9 +35,29 @@ float relu(float x){
     return max(0.0, x);
 }
 
+float erf(float x) {
+    float s = sign(x);
+    float a = abs(x);
+
+    float t = 1.0 / (1.0 + 0.3275911 * a);
+    float y = 1.0 - (((((1.061405429 * t + -1.453152027) * t) + 1.421413741) * t + -0.284496736) * t + 0.254829592) * t * exp(-a * a);
+
+    return s * y;
+}
+
+float hash(uint x) {
+    x += (x << 10u);
+    x ^= (x >> 6u);
+    x += (x << 3u);
+    x ^= (x >> 11u);
+    x += (x << 15u);
+    return float(x) * (1.0 / 4294967296.0);
+}
+
 uniform int activeBacteria;
 uniform int stride;
 uniform int indices;
+uniform float seed;
 
 void main() {
     uint index = gl_GlobalInvocationID.x;
@@ -47,7 +67,7 @@ void main() {
 
     float inputLayer[INPUT];
     for(int i=0; i<INPUT; i++) inputLayer[i] = inData[index][i];
-
+    float noise = (hash(id + uint(seed * 1000.0)) - 0.5) * 0.1;
     int bPtr = B1_START;
     int wPtr = W1_START;
 
@@ -58,7 +78,7 @@ void main() {
         bPtr++;
 
         for(int j=0; j<INPUT; j++) {
-            float weight = allWeights[wPtr * stride + id];
+            float weight = allWeights[wPtr * stride + id] + noise;
             sum += inputLayer[j] * weight;
             wPtr++;
         }
@@ -70,7 +90,7 @@ void main() {
         float sum = allWeights[bPtr * stride + id];
         bPtr++;
         for(int j=0; j<HIDDEN1; j++) {
-            float weight = allWeights[wPtr * stride + id];
+            float weight = allWeights[wPtr * stride + id] + noise;
             sum += h1[j] * weight;
             wPtr++;
         }
@@ -82,7 +102,7 @@ void main() {
         float sum = allWeights[bPtr * stride + id];
         bPtr++;
         for(int j=0; j<HIDDEN2; j++) {
-            float weight = allWeights[wPtr * stride + id];
+            float weight = allWeights[wPtr * stride + id] + noise;
             sum += h2[j] * weight;
             wPtr++;
         }
@@ -93,10 +113,10 @@ void main() {
         float sum = allWeights[bPtr * stride + id];
         bPtr++;
         for(int j=0; j<HIDDEN3; j++) {
-            float weight = allWeights[wPtr * stride + id];
+            float weight = allWeights[wPtr * stride + id] + noise;
             sum += h3[j] * weight;
             wPtr++;
         }
-        outData[index][i] = (tanh(sum/0.3)+1)/2;
+        outData[index][i] = (tanh(sum/0.79788456)+1)/2;
     }
 }
