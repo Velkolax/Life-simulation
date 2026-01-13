@@ -105,7 +105,7 @@ void SimulationEngine::InitNetworkData()
 
 
     int totalBiases = BIASES;
-    DispatchInit(0, totalBiases, 0.05f,0.1f);
+    DispatchInit(0, totalBiases, 0.0f,0.0f);
 
     int currentParamOffset = BIASES;
 
@@ -160,6 +160,7 @@ void SimulationEngine::Process(uint32_t id_size, uint32_t *ids, float* inputData
     shader.SetInteger("activeBacteria",bSize);
     shader.SetInteger("stride",bCapacity);
     shader.SetInteger("indices",id_size);
+    shader.SetFloat("time", (float)glfwGetTime());
     glDispatchCompute((id_size + 63) / 64, 1, 1);
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 

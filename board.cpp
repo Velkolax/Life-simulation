@@ -163,78 +163,6 @@ void Board::resourcesMerge()
     }
 }
 
-void Board::proteinMerge()
-{
-    for (int y=0;y<getHeight();y++)
-    {
-        for (int x=0;x<getWidth();x++)
-        {
-            Hexagon *hex = getHexagon(x,y);
-            if (protein(hex->getResident()))
-            {
-                auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
-                for(auto& [dx,dy] : directions)
-                {
-                    Hexagon* h = getHexagon(hex->getX() + dx, hex->getY() + dy);
-                    if (h!=nullptr && protein(h->getResident()))
-                    {
-                        hex->getData().protein.amount += h->getData().protein.amount;
-                        h->placeEmpty();
-                    }
-                }
-            }
-        }
-    }
-}
-
-void Board::energyMerge()
-{
-    for (int y=0;y<getHeight();y++)
-    {
-        for (int x=0;x<getWidth();x++)
-        {
-            Hexagon *hex = getHexagon(x,y);
-            if (energy(hex->getResident()))
-            {
-                auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
-                for(auto& [dx,dy] : directions)
-                {
-                    Hexagon* h = getHexagon(hex->getX() + dx, hex->getY() + dy);
-                    if (h!=nullptr && energy(h->getResident()))
-                    {
-                        hex->getData().energy.amount += h->getData().energy.amount;
-                        h->placeEmpty();
-                    }
-                }
-            }
-        }
-    }
-}
-
-void Board::acidMerge()
-{
-    for (int y=0;y<getHeight();y++)
-    {
-        for (int x=0;x<getWidth();x++)
-        {
-            Hexagon *hex = getHexagon(x,y);
-            if (acid(hex->getResident()))
-            {
-                auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
-                for(auto& [dx,dy] : directions)
-                {
-                    Hexagon* h = getHexagon(hex->getX() + dx, hex->getY() + dy);
-                    if (h!=nullptr && acid(h->getResident()))
-                    {
-                        hex->getData().acid.amount += h->getData().acid.amount;
-                        h->placeEmpty();
-                    }
-                }
-            }
-        }
-    }
-}
-
 size_t Board::getProteinCount()
 {
     size_t proteinCount = 0;
@@ -303,9 +231,11 @@ double Board::getAvgEnergy()
     return energySum / getAliveBacteriaCount();
 }
 
-int Board::getNumberOfChildrenBorn()
+
+
+float Board::getFailureRatio()
 {
-    int number = 0;
+    float failureSum = 0;
     for (int i=0;i<getHeight()*getWidth();i++)
     {
         Hexagon *hex = getHexagon(i);
@@ -313,15 +243,15 @@ int Board::getNumberOfChildrenBorn()
         {
             ResidentData res = hex->getData();
             BacteriaData bac = getBacteria(res.bacteriaIndex);
-            if (bac.age==0) number++;
+            if (bac.lastAction==Action::MoveFailure || bac.lastAction==Action::AttackFailure || bac.lastAction==Action::BreedFailure || bac.lastAction==Action::EatFailure) failureSum++;
         }
     }
-    return number;
+    return failureSum / (float)getAliveBacteriaCount() * 100.0f;
 }
 
-float Board::getFoodEaten()
+float Board::getActionPercentage(Action a)
 {
-    float foodSum = 0;
+    float actionSum = 0;
     for (int i=0;i<getHeight()*getWidth();i++)
     {
         Hexagon *hex = getHexagon(i);
@@ -329,58 +259,10 @@ float Board::getFoodEaten()
         {
             ResidentData res = hex->getData();
             BacteriaData bac = getBacteria(res.bacteriaIndex);
-            if (bac.lastAction == Action::Eat || bac.lastAction == Action::EatFailure) foodSum++;
+            if (bac.lastAction==a) actionSum++;
         }
     }
-    return foodSum / (float)getAliveBacteriaCount() * 100.0f;
-}
-
-float Board::getBreedAttempt()
-{
-    float foodSum = 0;
-    for (int i=0;i<getHeight()*getWidth();i++)
-    {
-        Hexagon *hex = getHexagon(i);
-        if (hex != nullptr && bacteria(hex->getResident()))
-        {
-            ResidentData res = hex->getData();
-            BacteriaData bac = getBacteria(res.bacteriaIndex);
-            if (bac.lastAction == Action::Breed || bac.lastAction == Action::BreedFailure) foodSum++;
-        }
-    }
-    return foodSum / (float)getAliveBacteriaCount() * 100.0f;
-}
-
-float Board::getMoveAttempt()
-{
-    float foodSum = 0;
-    for (int i=0;i<getHeight()*getWidth();i++)
-    {
-        Hexagon *hex = getHexagon(i);
-        if (hex != nullptr && bacteria(hex->getResident()))
-        {
-            ResidentData res = hex->getData();
-            BacteriaData bac = getBacteria(res.bacteriaIndex);
-            if (bac.lastAction == Action::Move || bac.lastAction == Action::MoveFailure) foodSum++;
-        }
-    }
-    return foodSum / (float)getAliveBacteriaCount() * 100.0f;
-}
-
-float Board::getNoAction()
-{
-    float foodSum = 0;
-    for (int i=0;i<getHeight()*getWidth();i++)
-    {
-        Hexagon *hex = getHexagon(i);
-        if (hex != nullptr && bacteria(hex->getResident()))
-        {
-            ResidentData res = hex->getData();
-            BacteriaData bac = getBacteria(res.bacteriaIndex);
-            if (bac.lastAction == Action::Nothing) foodSum++;
-        }
-    }
-    return foodSum / (float)getAliveBacteriaCount() * 100.0f;
+    return actionSum / (float)getAliveBacteriaCount() * 100.0f;
 }
 
 
