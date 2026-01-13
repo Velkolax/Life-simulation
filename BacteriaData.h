@@ -61,6 +61,8 @@ enum class Action char
 };
 
 
+
+
 struct BacteriaData
 {
     float memory[MEMORY_SIZE];
