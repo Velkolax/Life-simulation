@@ -49,15 +49,15 @@ static_assert(oddDirections2l.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
 static inline std::string stringActions[] =
 {
     "Nothing",
-    "Move", "Attack", "Breed", "Eat", "Sleep",
-    "MoveFailure", "AttackFailure", "BreedFailure", "EatFailure", "SleepFailure"
+    "Move", "Attack", "Sleep", "Eat", "Breed",
+    "MoveFailure", "AttackFailure", "SleepFailure", "EatFailure", "BreedFailure"
 };
 
 enum class Action
 {
     Nothing,
-    Move, Attack, Breed, Eat, Sleep,
-    MoveFailure, AttackFailure, BreedFailure, EatFailure, SleepFailure
+    Move, Attack, Sleep, Eat, Breed,
+    MoveFailure, AttackFailure, SleepFailure, EatFailure, BreedFailure
 };
 
 struct BacteriaData
@@ -127,16 +127,17 @@ struct BacteriaData
     {
         &BacteriaData::move,
         &BacteriaData::attack,
-        &BacteriaData::breed,
+        &BacteriaData::sleep,
         &BacteriaData::eat,
-        &BacteriaData::sleep
+        &BacteriaData::breed
     };
 
 
     inline void execute(Board* board, float* data, coord x, coord y)
     {
+        std::cout << "WYJŚCIE 1: " << data[1] << std::endl;
         int index = std::clamp(int(*data * BACTERIA_ACTIONS_NUMBER), 0, BACTERIA_ACTIONS_NUMBER - 1);
-        //std::cout << "INDEX: " << index << std::endl;
+
         (this->*actions[index])(board, data + 1, x, y);
     }
 };

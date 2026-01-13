@@ -9,7 +9,8 @@ const int OUTPUT = 16;
 
 const int ACTIONS=5;
 const int DIRECTIONS=6;
-const int PARAMETERS=OUTPUT-ACTIONS-DIRECTIONS;
+const int MEMORY=3;
+const int PARAMETERS=OUTPUT-ACTIONS-DIRECTIONS-MEMORY;
 
 
 const int SIZE = INPUT * HIDDEN1 + HIDDEN1 + HIDDEN1 * HIDDEN2 + HIDDEN2 + HIDDEN2 * HIDDEN3 + HIDDEN3 + HIDDEN3 * OUTPUT + OUTPUT;
@@ -148,7 +149,7 @@ void main() {
             break;
         }
     }
-    outData[index][0] = float(chosenAction) / float(ACTIONS-1);
+    outData[index][MEMORY] = float(chosenAction) / float(ACTIONS-1);
 
     float maxLogit2 = rawOutputs[ACTIONS];
     for(int i=1;i<DIRECTIONS;i++) maxLogit2 = max(maxLogit2,rawOutputs[ACTIONS+i]);
@@ -171,9 +172,13 @@ void main() {
         }
     }
 
-    outData[index][1] = float(chosenDirection) / float(DIRECTIONS-1);
+    outData[index][MEMORY+1] = float(chosenDirection) / float(DIRECTIONS-1);
+
+    for(int i=0;i<MEMORY;i++){
+        outData[index][i] = (tanh(rawOutputs[i+ACTIONS+DIRECTIONS])+1)*0.5;
+    }
 
     for(int i=0;i<PARAMETERS;i++){
-        outData[index][2+i] = (tanh(rawOutputs[i+ACTIONS+DIRECTIONS])+1)*0.5;
+        outData[index][i+MEMORY+2] = (tanh(rawOutputs[i+ACTIONS+DIRECTIONS+MEMORY])+1)*0.5;
     }
 }
