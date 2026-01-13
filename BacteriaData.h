@@ -46,7 +46,9 @@ constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> oddDire
 }};
 static_assert(oddDirections2l.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
 
-static inline std::string stringActions[] = {"Nothing",
+static inline std::string stringActions[] =
+{
+    "Nothing",
     "Move", "Attack", "Breed", "Eat", "Sleep",
     "MoveFailure", "AttackFailure", "BreedFailure", "EatFailure", "SleepFailure"
 };
@@ -69,7 +71,7 @@ struct BacteriaData
     uint8_t kills = 0;
     uint8_t mothered = 0;
     uint8_t fathered = 0;
-    uint8_t lastAction = 0;
+    Action lastAction = Action::Nothing;
 
     void randomize();
     void cross(BacteriaData& dad, BacteriaData& mom);
@@ -77,7 +79,7 @@ struct BacteriaData
 
     inline void printBacteria()
     {
-        std::cout << "Baceria:\n- age: " << (int)age << "\n- last action: " << stringActions[lastAction] << "\n- kills: " << (int)kills << "\n- mothered: " << (int)mothered << ", fathered: " << (int)fathered << '\n'; 
+        std::cout << "Baceria:\n- age: " << (int)age << "\n- last action: " << stringActions[(int)lastAction] << "\n- kills: " << (int)kills << "\n- mothered: " << (int)mothered << ", fathered: " << (int)fathered << '\n'; 
     }
 
 
