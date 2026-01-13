@@ -41,9 +41,9 @@ void Game::Init()
 
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load(24);
-    int bacteriaCount = 5000;
-    int x = 100;
-    int y = 100;
+    int bacteriaCount = 20000;
+    int x = 300;
+    int y = 300;
     board = new Board(x, y, this,bacteriaCount);
     int total = x*y;
     board->InitializeNeighbour(249, true);
@@ -60,7 +60,7 @@ void Game::Update(float dt)
     if (pressedKey==GLFW_KEY_SPACE)
     {
         board->tick();
-        if (counter % 100 == 0) board->spawnFood(0.05);
+        if (counter % 100 == 0 && counter>0) board->spawnFood(0.05);
         board->proteinMerge();
         board->energyMerge();
         board->acidMerge();
@@ -174,4 +174,6 @@ void Game::Render()
     Text->RenderText("NUMBER OF BORN: "+ std::to_string(board->getNumberOfChildrenBorn()),Width*0.5,220,1.0);
     Text->RenderText("FOOD EATEN: "+ std::to_string(board->getFoodEaten()) + " %",Width*0.5,250,1.0);
     Text->RenderText("BREED ATTEMPT: "+std::to_string(board->getBreedAttempt()) + " %",Width*0.5,280,1.0);
+    Text->RenderText("MOVE ATTEMPT: "+std::to_string(board->getMoveAttempt()) + " %",Width*0.5,310,1.0);
+    Text->RenderText("NO ACTION: "+std::to_string(board->getNoAction()) + " %",Width*0.5,340,1.0);
 }

@@ -115,6 +115,7 @@ public:
     void InitializeNeighbour(int recursion, bool includeMiddle);
 
     void tick();
+    void resourcesMerge();
     void proteinMerge();
     void energyMerge();
     void acidMerge();
@@ -125,6 +126,8 @@ public:
     int getNumberOfChildrenBorn();
     float getFoodEaten();
     float getBreedAttempt();
+    float getMoveAttempt();
+    float getNoAction();
     void spawnFood(double foodRatio);
     void spawnBacteria(int bacteriaCount);
     // gettery/settery
