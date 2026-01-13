@@ -173,5 +173,6 @@ void Game::Render()
     Text->RenderText("LOWEST AGE: "+ std::to_string(board->getLowestAge()),Width*0.5,160,1.0);
     Text->RenderText("AVG ENERGY: "+ std::to_string(board->getAvgEnergy()),Width*0.5,190,1.0);
     Text->RenderText("NUMBER OF BORN: "+ std::to_string(board->getNumberOfChildrenBorn()),Width*0.5,220,1.0);
-    Text->RenderText("FOOD EATEN: "+ std::to_string(board->getFoodEaten()),Width*0.5,250,1.0);
+    Text->RenderText("FOOD EATEN: "+ std::to_string(board->getFoodEaten()) + " %",Width*0.5,250,1.0);
+    Text->RenderText("BREED ATTEMPT: "+std::to_string(board->getBreedAttempt()) + " %",Width*0.5,280,1.0);
 }
