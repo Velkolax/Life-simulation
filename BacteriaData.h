@@ -51,6 +51,13 @@ static inline std::string stringActions[] = {"Nothing",
     "MoveFailure", "AttackFailure", "BreedFailure", "EatFailure", "SleepFailure"
 };
 
+enum class Action char
+{
+    Nothing,
+    Move, Attack, Breed, Eat, Sleep,
+    MoveFailure, AttackFailure, BreedFailure, EatFailure, SleepFailure
+};
+
 
 struct BacteriaData
 {
