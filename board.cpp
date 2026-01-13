@@ -129,6 +129,35 @@ void Board::tick()
     }
 }
 
+void Board::resourcesMerge()
+{
+    for (int y = 0; y < getHeight(); y++)
+    {
+        for (int x = 0; x < getWidth(); x++)
+        {
+            Hexagon* hex = getHexagon(x, y);
+            if (resource(hex->getResident()))
+            {
+                uint8_t hexR = hex->getData().acid.amount; // struktura wewnętrzna wszystkich zasobów jest taka sama więc pobierzmy ilość jako z kwasu 
+                auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
+                for(auto& [dx,dy] : directions)
+                {
+                    Hexagon* h = getHexagon(hex->getX() + dx, hex->getY() + dy);
+                    if (h != nullptr && h->getResident() == hex->getResident())
+                    {
+                        uint8_t hR = h->getData().acid.amount; // tak samo jak wyżej
+                        if(hexR + hR <= MAX_STORED_VALUE)
+                        {
+                            h->getData().acid.amount += hR;
+                            h->placeEmpty();
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 void Board::proteinMerge()
 {
     for (int y=0;y<getHeight();y++)
