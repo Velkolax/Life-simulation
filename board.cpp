@@ -329,7 +329,7 @@ float Board::getFoodEaten()
         {
             ResidentData res = hex->getData();
             BacteriaData bac = getBacteria(res.bacteriaIndex);
-            if (stringActions[bac.lastAction]=="Eat" || stringActions[bac.lastAction]=="EatFailure") foodSum++;
+            if (bac.lastAction == Action::Eat || bac.lastAction == Action::EatFailure) foodSum++;
         }
     }
     return foodSum / (float)getAliveBacteriaCount() * 100.0f;
@@ -345,7 +345,7 @@ float Board::getBreedAttempt()
         {
             ResidentData res = hex->getData();
             BacteriaData bac = getBacteria(res.bacteriaIndex);
-            if (stringActions[bac.lastAction]=="Breed" || stringActions[bac.lastAction]=="BreedFailure") foodSum++;
+            if (bac.lastAction == Action::Breed || bac.lastAction == Action::BreedFailure) foodSum++;
         }
     }
     return foodSum / (float)getAliveBacteriaCount() * 100.0f;
@@ -361,7 +361,7 @@ float Board::getMoveAttempt()
         {
             ResidentData res = hex->getData();
             BacteriaData bac = getBacteria(res.bacteriaIndex);
-            if (stringActions[bac.lastAction]=="Move" || stringActions[bac.lastAction]=="MoveFailure") foodSum++;
+            if (bac.lastAction == Action::Move || bac.lastAction == Action::MoveFailure) foodSum++;
         }
     }
     return foodSum / (float)getAliveBacteriaCount() * 100.0f;
@@ -377,7 +377,7 @@ float Board::getNoAction()
         {
             ResidentData res = hex->getData();
             BacteriaData bac = getBacteria(res.bacteriaIndex);
-            if (stringActions[bac.lastAction]=="Nothing") foodSum++;
+            if (bac.lastAction == Action::Nothing) foodSum++;
         }
     }
     return foodSum / (float)getAliveBacteriaCount() * 100.0f;
