@@ -157,7 +157,6 @@ static_assert(std::is_trivially_copyable_v<EnergyData>);
 struct ProteinData
 {
     uint8_t amount;
-    float* sendToNetwork(Board* board, coord x, coord y);
 };
 static_assert(std::is_trivially_constructible_v<ProteinData>);
 static_assert(std::is_trivially_copyable_v<ProteinData>);
