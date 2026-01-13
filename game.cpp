@@ -60,6 +60,7 @@ void Game::Update(float dt)
     if (pressedKey==GLFW_KEY_SPACE)
     {
         board->tick();
+        counter++;
         // for (int i=0;i<board->getAliveBacteriaCount();i++)
         // {
         //     BacteriaData &bac = board->getBacteria(i);
@@ -132,10 +133,39 @@ void Game::Render()
             Text->RenderText("ACID: "+ std::to_string(bac.acid),10,70,1.0);
             Text->RenderText("AGILITY: " + std::to_string(bac.speed),10,100,1.0);
             Text->RenderText("LAST ACTION: "+stringActions[bac.lastAction],10,130,1.0);
+            Text->RenderText("PROTEIN: "+std::to_string(bac.protein),10,160,1.0);
             //bac.printBacteria();
+        }
+        if (hex!=nullptr && protein(hex->getResident()))
+        {
+            ProteinData res = hex->getData().protein;
+            auto a = res.amount;
+            Text->RenderText("PROTEIN AMOUNT: "+ std::to_string(a),10,10,1.0 );
+        }
+        if (hex!=nullptr && energy(hex->getResident()))
+        {
+            EnergyData res = hex->getData().energy;
+            auto a = res.amount;
+            Text->RenderText("ENERGY AMOUNT: "+ std::to_string(a),10,10,1.0 );
         }
     }
 
     Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getAliveBacteriaCount()),Width*0.5,10,1.0);
     Text->RenderText("GENERATION: "+std::to_string(counter),Width*0.5,40,1.0);
+    size_t proteinCount = 0;
+    for (int i=0;i<board->getHeight()*board->getWidth();i++)
+    {
+        Hexagon *hex = board->getHexagon(i);
+        if (hex != nullptr && protein(hex->getResident()))
+        {
+            proteinCount += hex->getData().protein.amount;
+        }
+        if (hex != nullptr && bacteria(hex->getResident()))
+        {
+            ResidentData res = hex->getData();
+            BacteriaData bac = board->getBacteria(res.bacteriaIndex);
+            proteinCount += bac.protein;
+        }
+    }
+    Text->RenderText("PROTEIN NUMBER: " + std::to_string(proteinCount),Width*0.5,70,1.0);
 }

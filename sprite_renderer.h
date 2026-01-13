@@ -25,8 +25,8 @@ inline std::string textures[] = {
     "nic",
     "nic",
     "bacteria",
-    "apple",
     "acid",
+    "apple",
     "protein",
 };
 

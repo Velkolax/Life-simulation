@@ -172,7 +172,7 @@ void BacteriaData::move(Board* board, float* data, coord x, coord y)
         hex->placeBacteria(board, id);
         oldHex->placeEmpty();
         oldHex = hex;
-        std::cout << "I MOVED!!!" << std::endl;
+        //std::cout << "I MOVED!!!" << std::endl;
         lastAction = 1;
     }
 
