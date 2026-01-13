@@ -274,7 +274,7 @@ void BacteriaData::cross(BacteriaData& dad, BacteriaData& mom)
     lifespan = mom.lifespan;
     speed = mom.speed;
     acid = 10;
-    energy=10;
+    energy=5;
     protein=5;
     age=0;
 }
@@ -289,7 +289,7 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
     BacteriaData& husband = board->getBacteria(hex->getData().bacteriaIndex);
     BacteriaData& wife = board->getBacteria(oldHex->getData().bacteriaIndex);
     if (wife.protein < 5) return;
-    if (!wife.consumeEnergyValue(10,board, oldHex->getX(),oldHex->getY())) return;
+    if (!wife.consumeEnergyValue(5,board, oldHex->getX(),oldHex->getY())) return;
     wife.protein -= 5;
 
 

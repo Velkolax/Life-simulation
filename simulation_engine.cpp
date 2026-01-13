@@ -204,8 +204,8 @@ void SimulationEngine::reproduceNetwork(int parentA, int parentB, int childIdx)
     reproShader.SetInteger("parentBIdx", parentB);
     reproShader.SetInteger("childIdx", childIdx);
 
-    reproShader.SetFloat("mutationRate", 0.1f);
-    reproShader.SetFloat("mutationChance", 0.05f);
+    reproShader.SetFloat("mutationRate", 0.2f);
+    reproShader.SetFloat("mutationChance", 0.2f);
     reproShader.SetFloat("seed", (float)glfwGetTime());
 
     glDispatchCompute((SIZE + 63) / 64, 1, 1);
