@@ -60,11 +60,12 @@ void Game::Update(float dt)
     if (pressedKey==GLFW_KEY_SPACE)
     {
         board->tick();
-        if (counter % 100 == 0) board->spawnFood(0.05);
-        board->proteinMerge();
-        board->energyMerge();
-        board->acidMerge();
-        counter++;
+        //if (counter % 100 == 0) board->spawnFood(0.05);
+        //board->resourcesMerge();
+        //board->proteinMerge();
+        //board->energyMerge();
+        //board->acidMerge();
+        //counter++;
 
         // for (int i=0;i<board->getAliveBacteriaCount();i++)
         // {
@@ -121,10 +122,10 @@ void Game::ProcessInput(float dt)
     {
         enterPressed=false;
         board->tick();
-        board->proteinMerge();
-        board->energyMerge();
-        counter++;
-        if (counter % 100 == 0) board->spawnFood(0.05);
+        //board->proteinMerge();
+        //board->energyMerge();
+        //counter++;
+        //if (counter % 100 == 0) board->spawnFood(0.05);
     }
 
 }

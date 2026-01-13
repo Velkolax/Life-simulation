@@ -115,6 +115,7 @@ public:
     void InitializeNeighbour(int recursion, bool includeMiddle);
 
     void tick();
+    void resourcesMerge();
     void proteinMerge();
     void energyMerge();
     void acidMerge();
