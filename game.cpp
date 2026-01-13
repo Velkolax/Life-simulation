@@ -60,11 +60,12 @@ void Game::Update(float dt)
     if (pressedKey==GLFW_KEY_SPACE)
     {
         board->tick();
-        if (counter % 100 == 0 && counter>0) board->spawnFood(0.05);
-        board->proteinMerge();
-        board->energyMerge();
-        board->acidMerge();
-        counter++;
+        //if (counter % 100 == 0) board->spawnFood(0.05);
+        //board->resourcesMerge();
+        //board->proteinMerge();
+        //board->energyMerge();
+        //board->acidMerge();
+        //counter++;
 
         // for (int i=0;i<board->getAliveBacteriaCount();i++)
         // {
@@ -121,10 +122,10 @@ void Game::ProcessInput(float dt)
     {
         enterPressed=false;
         board->tick();
-        board->proteinMerge();
-        board->energyMerge();
-        counter++;
-        if (counter % 100 == 0) board->spawnFood(0.05);
+        //board->proteinMerge();
+        //board->energyMerge();
+        //counter++;
+        //if (counter % 100 == 0) board->spawnFood(0.05);
     }
 
 }
@@ -174,6 +175,4 @@ void Game::Render()
     Text->RenderText("NUMBER OF BORN: "+ std::to_string(board->getNumberOfChildrenBorn()),Width*0.5,220,1.0);
     Text->RenderText("FOOD EATEN: "+ std::to_string(board->getFoodEaten()) + " %",Width*0.5,250,1.0);
     Text->RenderText("BREED ATTEMPT: "+std::to_string(board->getBreedAttempt()) + " %",Width*0.5,280,1.0);
-    Text->RenderText("MOVE ATTEMPT: "+std::to_string(board->getMoveAttempt()) + " %",Width*0.5,310,1.0);
-    Text->RenderText("NO ACTION: "+std::to_string(board->getNoAction()) + " %",Width*0.5,340,1.0);
 }

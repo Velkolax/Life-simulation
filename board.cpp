@@ -127,6 +127,11 @@ void Board::tick()
         memcpy(b.memory, currentOutput, MEMORY_SIZE * sizeof(float));
         b.execute(this, currentOutput + MEMORY_SIZE, points[i].x, points[i].y);
     }
+
+
+    counter++;
+    if (counter % 100 == 0) spawnFood(0.05);
+    resourcesMerge();
 }
 
 void Board::resourcesMerge()
