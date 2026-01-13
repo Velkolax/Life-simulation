@@ -5,7 +5,11 @@ const int INPUT = 64;
 const int HIDDEN1 = 80;
 const int HIDDEN2 = 32;
 const int HIDDEN3 = 16;
-const int OUTPUT = 8;
+const int OUTPUT = 16;
+
+const int ACTIONS=5;
+const int DIRECTIONS=6;
+const int PARAMETERS=OUTPUT-ACTIONS-DIRECTIONS;
 
 
 const int SIZE = INPUT * HIDDEN1 + HIDDEN1 + HIDDEN1 * HIDDEN2 + HIDDEN2 + HIDDEN2 * HIDDEN3 + HIDDEN3 + HIDDEN3 * OUTPUT + OUTPUT;
@@ -45,19 +49,17 @@ float erf(float x) {
     return s * y;
 }
 
-float hash(uint x) {
-    x += (x << 10u);
-    x ^= (x >> 6u);
-    x += (x << 3u);
-    x ^= (x >> 11u);
-    x += (x << 15u);
-    return float(x) * (1.0 / 4294967296.0);
+uint hash(uint x) {
+    x = ((x >> 16) ^ x) * 0x45d9f3bu;
+    x = ((x >> 16) ^ x) * 0x45d9f3bu;
+    x = (x >> 16) ^ x;
+    return x;
 }
 
 uniform int activeBacteria;
 uniform int stride;
 uniform int indices;
-uniform float seed;
+uniform float time;
 
 void main() {
     uint index = gl_GlobalInvocationID.x;
@@ -65,9 +67,13 @@ void main() {
     uint id = ids[index];
     if(id >= stride) return;
 
+    uint timeBits = floatBitsToUint(time);
+    uint seed = hash(index ^ timeBits);
+    float r1 = float(hash(seed)) * (1.0 / 4294967296.0);
+    float r2 = float(hash(seed + 12345u)) * (1.0 / 4294967296.0);
+
     float inputLayer[INPUT];
     for(int i=0; i<INPUT; i++) inputLayer[i] = inData[index][i];
-    float noise = (hash(id + uint(seed * 1000.0)) - 0.5) * 0.1;
     int bPtr = B1_START;
     int wPtr = W1_START;
 
@@ -78,7 +84,7 @@ void main() {
         bPtr++;
 
         for(int j=0; j<INPUT; j++) {
-            float weight = allWeights[wPtr * stride + id] + noise;
+            float weight = allWeights[wPtr * stride + id];
             sum += inputLayer[j] * weight;
             wPtr++;
         }
@@ -90,7 +96,7 @@ void main() {
         float sum = allWeights[bPtr * stride + id];
         bPtr++;
         for(int j=0; j<HIDDEN1; j++) {
-            float weight = allWeights[wPtr * stride + id] + noise;
+            float weight = allWeights[wPtr * stride + id];
             sum += h1[j] * weight;
             wPtr++;
         }
@@ -102,21 +108,72 @@ void main() {
         float sum = allWeights[bPtr * stride + id];
         bPtr++;
         for(int j=0; j<HIDDEN2; j++) {
-            float weight = allWeights[wPtr * stride + id] + noise;
+            float weight = allWeights[wPtr * stride + id];
             sum += h2[j] * weight;
             wPtr++;
         }
         h3[i] = relu(sum);
     }
 
+    float rawOutputs[OUTPUT];
+
     for(int i=0; i<OUTPUT; i++) {
         float sum = allWeights[bPtr * stride + id];
         bPtr++;
         for(int j=0; j<HIDDEN3; j++) {
-            float weight = allWeights[wPtr * stride + id] + noise;
+            float weight = allWeights[wPtr * stride + id];
             sum += h3[j] * weight;
             wPtr++;
         }
-        outData[index][i] = (tanh(sum/0.79788456)+1)/2;
+        rawOutputs[i] = sum;
+    }
+
+    float maxLogit = rawOutputs[0];
+    for(int i=1;i<ACTIONS;i++) maxLogit = max(maxLogit,rawOutputs[i]);
+
+    float sumExp = 0.0;
+    float probs[ACTIONS];
+    for(int i=0;i<ACTIONS;i++) {
+        probs[i] = exp(rawOutputs[i] - maxLogit);
+        sumExp += probs[i];
+    }
+    for(int i=0;i<ACTIONS;i++) probs[i] /= sumExp;
+
+    int chosenAction = 0;
+    float cumulativeProb = 0.0;
+    for(int i=0;i<ACTIONS;i++){
+        cumulativeProb += probs[i];
+        if(r1 <= cumulativeProb){
+            chosenAction = i;
+            break;
+        }
+    }
+    outData[index][0] = float(chosenAction) / float(ACTIONS-1);
+
+    float maxLogit2 = rawOutputs[ACTIONS];
+    for(int i=1;i<DIRECTIONS;i++) maxLogit2 = max(maxLogit2,rawOutputs[ACTIONS+i]);
+
+    float sumExp2 = 0.0;
+    float probs2[DIRECTIONS];
+    for(int i=0; i<DIRECTIONS; i++) {
+        probs2[i] = exp(rawOutputs[ACTIONS+i] - maxLogit2);
+        sumExp2 += probs2[i];
+    }
+    for(int i=0; i<DIRECTIONS; i++) probs2[i] /= sumExp2;
+
+    int chosenDirection = 0;
+    float cumulativeProb2 = 0.0;
+    for(int i=0; i<DIRECTIONS; i++) {
+        cumulativeProb2 += probs2[i];
+        if(r2 <= cumulativeProb2) {
+            chosenDirection = i;
+            break;
+        }
+    }
+
+    outData[index][1] = float(chosenDirection) / float(DIRECTIONS-1);
+
+    for(int i=0;i<PARAMETERS;i++){
+        outData[index][2+i] = (tanh(rawOutputs[i+ACTIONS+DIRECTIONS])+1)*0.5;
     }
 }

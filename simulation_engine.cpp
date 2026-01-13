@@ -160,7 +160,7 @@ void SimulationEngine::Process(uint32_t id_size, uint32_t *ids, float* inputData
     shader.SetInteger("activeBacteria",bSize);
     shader.SetInteger("stride",bCapacity);
     shader.SetInteger("indices",id_size);
-    shader.SetFloat("seed", (float)glfwGetTime());
+    shader.SetFloat("time", (float)glfwGetTime());
     glDispatchCompute((id_size + 63) / 64, 1, 1);
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
