@@ -53,6 +53,13 @@ static inline std::string stringActions[] =
     "MoveFailure", "AttackFailure", "BreedFailure", "EatFailure", "SleepFailure"
 };
 
+enum class Action
+{
+    Nothing,
+    Move, Attack, Breed, Eat, Sleep,
+    MoveFailure, AttackFailure, BreedFailure, EatFailure, SleepFailure
+};
+
 struct BacteriaData
 {
     float memory[MEMORY_SIZE];

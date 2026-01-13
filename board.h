@@ -29,19 +29,6 @@ enum class Resident : uint8_t
     Protein
 };
 
-enum BacteriaNames {
-    NOTHING = 0,
-    MOVE,
-    ATTACK,
-    BREED,
-    EAT,
-    SLEEP,
-    MOVE_FAILURE,
-    ATTACK_FAILURE,
-    BREED_FAILURE,
-    EAT_FAILURE
-};
-
 inline bool plain(Resident resident) noexcept { return resident == Resident::Wall || resident == Resident::Empty; };
 inline bool wall(Resident resident) noexcept { return resident == Resident::Wall; };
 inline bool empty(Resident resident) noexcept { return resident == Resident::Empty; };
@@ -129,20 +116,12 @@ public:
 
     void tick();
     void resourcesMerge();
-    void proteinMerge();
-    void energyMerge();
-    void acidMerge();
     size_t getProteinCount();
     int getHighestAge();
     int getLowestAge();
     double getAvgEnergy();
-    int getNumberOfChildrenBorn();
-    float getFoodEaten();
-    float getBreedAttempt();
-    float getMoveAttempt();
-    float getNoAction();
-    float getSleep();
     float getFailureRatio();
+    float getActionPercentage(Action a);
     void spawnFood(double foodRatio);
     void spawnBacteria(int bacteriaCount);
     // gettery/settery

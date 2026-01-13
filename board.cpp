@@ -231,105 +231,11 @@ double Board::getAvgEnergy()
     return energySum / getAliveBacteriaCount();
 }
 
-int Board::getNumberOfChildrenBorn()
-{
-    int number = 0;
-    for (int i=0;i<getHeight()*getWidth();i++)
-    {
-        Hexagon *hex = getHexagon(i);
-        if (hex != nullptr && bacteria(hex->getResident()))
-        {
-            ResidentData res = hex->getData();
-            BacteriaData bac = getBacteria(res.bacteriaIndex);
-            if (bac.age==0) number++;
-        }
-    }
-    return number;
-}
 
-float Board::getFoodEaten()
-{
-    float foodSum = 0;
-    for (int i=0;i<getHeight()*getWidth();i++)
-    {
-        Hexagon *hex = getHexagon(i);
-        if (hex != nullptr && bacteria(hex->getResident()))
-        {
-            ResidentData res = hex->getData();
-            BacteriaData bac = getBacteria(res.bacteriaIndex);
-            if (bac.lastAction==EAT || bac.lastAction==EAT_FAILURE) foodSum++;
-        }
-    }
-    return foodSum / (float)getAliveBacteriaCount() * 100.0f;
-}
-
-float Board::getBreedAttempt()
-{
-    float foodSum = 0;
-    for (int i=0;i<getHeight()*getWidth();i++)
-    {
-        Hexagon *hex = getHexagon(i);
-        if (hex != nullptr && bacteria(hex->getResident()))
-        {
-            ResidentData res = hex->getData();
-            BacteriaData bac = getBacteria(res.bacteriaIndex);
-            if (bac.lastAction==BREED || bac.lastAction==BREED_FAILURE) foodSum++;
-        }
-    }
-    return foodSum / (float)getAliveBacteriaCount() * 100.0f;
-}
-
-float Board::getMoveAttempt()
-{
-    float foodSum = 0;
-    for (int i=0;i<getHeight()*getWidth();i++)
-    {
-        Hexagon *hex = getHexagon(i);
-        if (hex != nullptr && bacteria(hex->getResident()))
-        {
-            ResidentData res = hex->getData();
-            BacteriaData bac = getBacteria(res.bacteriaIndex);
-            if (bac.lastAction==MOVE || bac.lastAction==MOVE_FAILURE) foodSum++;
-        }
-    }
-    return foodSum / (float)getAliveBacteriaCount() * 100.0f;
-}
-
-float Board::getNoAction()
-{
-    float foodSum = 0;
-    for (int i=0;i<getHeight()*getWidth();i++)
-    {
-        Hexagon *hex = getHexagon(i);
-        if (hex != nullptr && bacteria(hex->getResident()))
-        {
-            ResidentData res = hex->getData();
-            BacteriaData bac = getBacteria(res.bacteriaIndex);
-            if (bac.lastAction==NOTHING) foodSum++;
-        }
-    }
-    return foodSum / (float)getAliveBacteriaCount() * 100.0f;
-}
-
-float Board::getSleep()
-{
-    float foodSum = 0;
-    for (int i=0;i<getHeight()*getWidth();i++)
-    {
-        Hexagon *hex = getHexagon(i);
-        if (hex != nullptr && bacteria(hex->getResident()))
-        {
-            ResidentData res = hex->getData();
-            BacteriaData bac = getBacteria(res.bacteriaIndex);
-            if (bac.lastAction==NOTHING) foodSum++;
-        }
-    }
-    return foodSum / (float)getAliveBacteriaCount() * 100.0f;
-}
 
 float Board::getFailureRatio()
 {
-    float foodSum = 0;
+    float failureSum = 0;
     for (int i=0;i<getHeight()*getWidth();i++)
     {
         Hexagon *hex = getHexagon(i);
@@ -337,10 +243,26 @@ float Board::getFailureRatio()
         {
             ResidentData res = hex->getData();
             BacteriaData bac = getBacteria(res.bacteriaIndex);
-            if (bac.lastAction==MOVE_FAILURE || bac.lastAction==ATTACK_FAILURE || bac.lastAction==BREED_FAILURE || bac.lastAction==EAT_FAILURE) foodSum++;
+            if (bac.lastAction==Action::MoveFailure || bac.lastAction==Action::AttackFailure || bac.lastAction==Action::BreedFailure || bac.lastAction==Action::EatFailure) failureSum++;
         }
     }
-    return foodSum / (float)getAliveBacteriaCount() * 100.0f;
+    return failureSum / (float)getAliveBacteriaCount() * 100.0f;
+}
+
+float Board::getActionPercentage(Action a)
+{
+    float actionSum = 0;
+    for (int i=0;i<getHeight()*getWidth();i++)
+    {
+        Hexagon *hex = getHexagon(i);
+        if (hex != nullptr && bacteria(hex->getResident()))
+        {
+            ResidentData res = hex->getData();
+            BacteriaData bac = getBacteria(res.bacteriaIndex);
+            if (bac.lastAction==a) actionSum++;
+        }
+    }
+    return actionSum / (float)getAliveBacteriaCount() * 100.0f;
 }
 
 
