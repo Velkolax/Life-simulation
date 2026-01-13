@@ -97,6 +97,6 @@ void main() {
             sum += h3[j] * weight;
             wPtr++;
         }
-        outData[index][i] = (tanh(sum) + 1)/2;
+        outData[index][i] = clamp(sum, 0, 1);
     }
 }
