@@ -269,13 +269,13 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
     lastAction = Action::Attack;
 }
 
-void BacteriaData::cross(BacteriaData& mom)
+void BacteriaData::cross(BacteriaData& mom,int energySent,int lifespanSent,int speedSent)
 {
-    lifespan = mom.lifespan;
-    speed = mom.speed;
-    acid = 10;
-    energy=50;
-    protein=5;
+    lifespan = 1+lifespanSent;
+    speed = 1+speedSent;
+    acid = 0;
+    energy=energySent;
+    protein=0;
     age=0;
 }
 
@@ -285,12 +285,20 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
     Hexagon* oldHex = board->getHexagon(x, y);
     Hexagon *hex = directionToHex(board,*data,x,y);
     if (!this->consumeEnergy(3.f,board, x,y)) return;
-    if (this->protein < 12) return;
+    if (this->protein < BACTERIA_BODY_SIZE + 1 + 1) return;
+    this->protein -= (BACTERIA_BODY_SIZE + 1 + 1);
 
-    this->protein -= 12;
+    int energySent = data[1] * this->energy;
+    if (this->energy<energySent) return;
+
+    int lifespanSent = data[2] * this->protein;
+    if (lifespanSent>=MAX_ACCUSTOMABLE_VALUE) lifespanSent=MAX_ACCUSTOMABLE_VALUE-1;
+    int speedSent = (1-data[2]) * this->protein;
+    if (speedSent>=MAX_ACCUSTOMABLE_VALUE) speedSent=MAX_ACCUSTOMABLE_VALUE-1;
+
     if (!hex || !bacteria(hex->getResident())) return;
 
-
+    float lifespanIncrease = data[1];
 
     std::vector<std::pair<coord,coord>> possibleDirections;
     auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
@@ -310,7 +318,7 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
     Hexagon* childHex = board->getHexagon(hex->getX()+dir.first,hex->getY()+dir.second);
     if (!childHex || !empty(childHex->getResident())) return;
 
-    childHex->placeChild(board,*this);
+    childHex->placeChild(board,*this,energySent,lifespanSent,speedSent);
 
     if (!board->emptyVacant())
     {
