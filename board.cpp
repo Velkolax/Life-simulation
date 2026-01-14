@@ -291,7 +291,7 @@ void Hexagon::placeAcid(uint8_t amount)
 void Hexagon::placeEnergy()
 {
     resident = Resident::Energy;
-    data.energy.amount = std::uniform_int_distribution<uint8_t>(150, 170)(gen);
+    data.energy.amount = std::uniform_int_distribution<uint8_t>(30, 70)(gen);
 }
 
 void Hexagon::placeEnergy(uint8_t amount)

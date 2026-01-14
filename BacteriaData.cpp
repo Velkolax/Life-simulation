@@ -184,10 +184,10 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
     Hexagon* hex = directionToHex(board, *data, x, y);
     if(!hex || !bacteria(hex->getResident()))
     {
-        if(!consumeEnergy(4.f, board, x, y)) return;
+        if(!consumeEnergy(3.f, board, x, y)) return;
         return;
     }
-    if(!consumeEnergy(8.f, board, x, y)) return;
+    if(!consumeEnergy(4.f, board, x, y)) return;
     BacteriaData& attacked = board->getBacteria(hex->getData().bacteriaIndex);
     int acidUsed = std::clamp(int(data[1] * acid), 0, (int)acid);
     acid -= acidUsed;
@@ -284,10 +284,12 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
     lastAction = Action::BreedFailure;
     Hexagon* oldHex = board->getHexagon(x, y);
     Hexagon *hex = directionToHex(board,*data,x,y);
+    if (!this->consumeEnergy(3.f,board, x,y)) return;
+    if (this->protein < 12) return;
+
+    this->protein -= 12;
     if (!hex || !bacteria(hex->getResident())) return;
-    if (this->protein < 5) return;
-    if (!this->consumeEnergyValue(50,board, x,y)) return;
-    this->protein -= 5;
+
 
 
     std::vector<std::pair<coord,coord>> possibleDirections;
@@ -321,7 +323,7 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
 void BacteriaData::eat(Board* board, float* data, coord x, coord y)
 {
     lastAction = Action::EatFailure;
-    //if(!consumeEnergy(02.f, board, x, y)) return;
+    if(!consumeEnergy(2.f, board, x, y)) return;
     Hexagon* hex = directionToHex(board, *data, x, y);
     if(!hex || !resource(hex->getResident())) return;
     int toEat = data[1] * hex->getData().acid.amount; // wszystkie zasoby mają tylko parametr amount więc pobranie go z byle którego nic nie zmienia
@@ -362,7 +364,7 @@ void BacteriaData::eat(Board* board, float* data, coord x, coord y)
 void BacteriaData::sleep(Board* board, float* data, coord x, coord y)
 {
     lastAction = Action::SleepFailure;
-    if(!consumeEnergy(5.f, board, x, y)) return;
+    if(!consumeEnergy(3.f, board, x, y)) return;
     lastAction = Action::Sleep;
 }
 
