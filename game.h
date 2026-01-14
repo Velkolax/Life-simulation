@@ -46,6 +46,7 @@ class Game
         ~Game();
         void Run();
         void ProcessInput();
+        void restart();
         void tick();
         void Resize(int width, int height);
         void Render();

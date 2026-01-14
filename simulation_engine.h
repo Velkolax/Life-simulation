@@ -8,6 +8,7 @@ class SimulationEngine
 public:
     SimulationEngine(Board *board);
     ~SimulationEngine();
+    void Restart();
     void InitSsbos(Board *board);
     void InitNetworkData();
     void ssbo_barrier();

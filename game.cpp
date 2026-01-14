@@ -61,6 +61,26 @@ Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
 
 }
 
+void Game::restart()
+{
+    delete board;
+    delete Renderer;
+    delete Text;
+
+    Text = new TextRenderer(this->Width, this->Height);
+    Text->Load(24);
+    int bacteriaCount = GameConfigData::getInt("bacteriaCount");
+    int x = GameConfigData::getInt("width");
+    int y = GameConfigData::getInt("height");
+    board = new Board(x, y, this,bacteriaCount);
+    board->InitializeNeighbour(x/2-1, true);
+    board->spawnBacteria(bacteriaCount);
+    board->spawnFood(0.1);
+    engine->Restart();
+    Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height);
+
+}
+
 Game::~Game()
 {
     delete Renderer;
@@ -123,7 +143,11 @@ void Game::ProcessInput()
         if (fullscreen) glfwSetWindowMonitor(window,glfwGetPrimaryMonitor(),0,0,glfwGetVideoMode(glfwGetPrimaryMonitor())->width,glfwGetVideoMode(glfwGetPrimaryMonitor())->height,GLFW_DONT_CARE);
         else glfwSetWindowMonitor(window,NULL,0,0,SCREEN_WIDTH,SCREEN_HEIGHT,GLFW_DONT_CARE);
     }
+
+    if (input.isReleased(GLFW_KEY_R)) this->restart();
 }
+
+
 
 void Game::Render()
 {

@@ -19,6 +19,24 @@ SimulationEngine::SimulationEngine(Board* board)
     InitNetworkData();
 }
 
+SimulationEngine::~SimulationEngine()
+{
+    if (stagingPtr) glUnmapNamedBuffer(ssboStaging);
+    if (InPtr) glUnmapNamedBuffer(ssboIn);
+    if (OutPtr) glUnmapNamedBuffer(ssboOut);
+    if (idPtr) glUnmapNamedBuffer(ssboIds);
+
+    glDeleteBuffers(1,&ssboNetworks);
+    glDeleteBuffers(1,&ssboStaging);
+    glDeleteBuffers(1,&ssboIn);
+    glDeleteBuffers(1,&ssboOut);
+    glDeleteBuffers(1,&ssboIds);
+}
+
+void SimulationEngine::Restart()
+{
+    InitNetworkData();
+}
 
 
 void SimulationEngine::InitSsbos(Board *board)
