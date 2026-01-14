@@ -1,13 +1,9 @@
 #include "game.h"
 #include "game_configdata.h"
 #include <set>
-
 #include <ft2build.h>
-
 #include "BacteriaData.h"
-
 #include FT_FREETYPE_H
-
 #include "resource_manager.h"
 #include "simulation_engine.h"
 
@@ -16,9 +12,6 @@ unsigned int SCREEN_WIDTH = 800;
 unsigned int SCREEN_HEIGHT = 600;
 bool fullScreen = false;
 bool fPressed = false;
-
-
-
 
 Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
 {
@@ -31,10 +24,7 @@ Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
     glfwSetWindowUserPointer(window, this);
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-    }
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) std::cout << "Failed to initialize GLAD" << std::endl;
     glfwSetKeyCallback(window, key_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -63,12 +53,9 @@ Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
     int x = GameConfigData::getInt("width");
     int y = GameConfigData::getInt("height");
     board = new Board(x, y, this,bacteriaCount);
-    int total = x*y;
     board->InitializeNeighbour(x/2-1, true);
     board->spawnBacteria(bacteriaCount);
     board->spawnFood(0.1);
-
-
     engine = new SimulationEngine(board);
     Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height);
 
@@ -88,7 +75,6 @@ void Game::Run()
         glfwPollEvents();
         input.update(window);
         this->ProcessInput();
-        this->Update();
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         this->Render();
@@ -96,9 +82,9 @@ void Game::Run()
     }
 }
 
-void Game::Update()
+void Game::tick()
 {
-
+    for (int i=0;i<GameConfigData::getInt("substeps");i++) board->tick();
 }
 
 void Game::Resize(int width, int height)
@@ -127,9 +113,9 @@ void Game::ProcessInput()
     if (input.isDown(GLFW_KEY_S)) Renderer -> addToDisplacementY(board,-10);
     if (input.isDown(GLFW_KEY_D)) Renderer -> addToDisplacementX(board,-10);
 
-    if (input.isReleased(GLFW_KEY_ENTER)) board->tick();
-    else if (input.isDown(GLFW_KEY_SPACE)) board->tick();
-    else if (input.isToggled(GLFW_KEY_P)) board->tick();
+    if (input.isReleased(GLFW_KEY_ENTER)) this->tick();
+    else if (input.isDown(GLFW_KEY_SPACE)) this->tick();
+    else if (input.isToggled(GLFW_KEY_P)) this->tick();
 
 }
 
@@ -152,7 +138,6 @@ void Game::Render()
             Text->RenderText("SPEED: " + std::to_string(bac.speed),10,130,1.0);
             Text->RenderText("LIFESPAN: " + std::to_string(bac.lifespan),10,160,1.0);
             Text->RenderText("LAST ACTION: "+stringActions[(int)bac.lastAction],10,190,1.0);
-            //bac.printBacteria();
         }
         if (hex!=nullptr && protein(hex->getResident()))
         {
@@ -174,7 +159,7 @@ void Game::Render()
         }
     }
 
-     Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getAliveBacteriaCount()),Width*0.5,10,1.0);
+    Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getAliveBacteriaCount()),Width*0.5,10,1.0);
     Text->RenderText("EAT PERCENTAGE: " + std::to_string(board->getActionPercentage(Action::Eat)),Width*0.5,40,1.0);
     Text->RenderText("EAT_FAILURE PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::EatFailure)),Width*0.5,70,1.0);
     Text->RenderText("BREED PERCENTAGE: " + std::to_string(board->getActionPercentage(Action::Breed)),Width*0.5,100,1.0);

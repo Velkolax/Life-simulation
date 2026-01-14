@@ -46,7 +46,7 @@ class Game
         ~Game();
         void Run();
         void ProcessInput();
-        void Update();
+        void tick();
         void Resize(int width, int height);
         void Render();
         static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
