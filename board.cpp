@@ -129,8 +129,7 @@ void Board::tick()
     }
 
 
-    counter++;
-    if (counter % 10 == 0) spawnFood(0.1);
+    if (step % 10 == 0) spawnFood(0.1);
     resourcesMerge();
 }
 
@@ -154,6 +153,7 @@ void Board::resourcesMerge()
                         if(hexR + hR <= MAX_STORED_VALUE)
                         {
                             h->getData().acid.amount += hR;
+                            hexR += hR;
                             h->placeEmpty();
                         }
                     }

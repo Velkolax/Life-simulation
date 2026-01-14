@@ -11,7 +11,6 @@
 #include "glm/vec2.hpp"
 #include "BacteriaData.h"
 
-static int counter = 0;
 #define BIG_NUMBER 10000000
 
 enum class Resident : uint8_t
@@ -140,7 +139,8 @@ public:
     }
     inline void addVacant(int32_t i) noexcept { vacantSlots.push_back(i); }
     inline int32_t popVacant() noexcept { int32_t r = vacantSlots.back(); vacantSlots.pop_back(); return r; }
-    inline bool emptyVacant() noexcept {return vacantSlots.empty();}
+    inline bool emptyVacant() noexcept { return vacantSlots.empty(); }
+    inline uint64_t getStep() const noexcept { return step; }
     inline const Game* getGame() const noexcept { return game; }
 
 };
