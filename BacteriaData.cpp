@@ -163,7 +163,16 @@ void BacteriaData::move(Board* board, float* data, coord x, coord y)
     int movesCount = std::min(speed / 20, 4);
     Hexagon* oldHex = board->getHexagon(x, y);
     int32_t id = oldHex->getData().bacteriaIndex;
-    for(int i = 0; i < movesCount; i++)
+
+    if(!consumeEnergy(GameConfigData::getFloat("moveCost"), board, oldHex->getX(), oldHex->getY())) return;
+    Hexagon* hex = directionToHex(board, data[0], oldHex->getX(), oldHex->getY());
+    if(!hex || !empty(hex->getResident())) return;
+    hex->placeBacteria(board, id);
+    oldHex->placeEmpty();
+    oldHex = hex;
+    lastAction = Action::Move;
+
+    for(int i = 1; i < movesCount; i++)
     {
         if(!consumeEnergy(GameConfigData::getFloat("moveCost"), board, oldHex->getX(), oldHex->getY())) return;
         Hexagon* hex = directionToHex(board, data[i], oldHex->getX(), oldHex->getY());
