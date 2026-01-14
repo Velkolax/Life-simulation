@@ -3,6 +3,7 @@
 #include "board.h"
 #include "game.h"
 #include "simulation_engine.h"
+#include "game_configdata.h"
 
 
 void BacteriaData::randomize()
@@ -164,15 +165,12 @@ void BacteriaData::move(Board* board, float* data, coord x, coord y)
     int32_t id = oldHex->getData().bacteriaIndex;
     for(int i = 0; i < movesCount; i++)
     {
-        if(!consumeEnergy(3.f, board, oldHex->getX(), oldHex->getY())) return;
+        if(!consumeEnergy(GameConfigData::getFloat("moveCost"), board, oldHex->getX(), oldHex->getY())) return;
         Hexagon* hex = directionToHex(board, data[i], oldHex->getX(), oldHex->getY());
-        // if (!hex) {std::cout << "BRAK HEXA!" << std::endl; return;}
-        // if (!empty(hex->getResident())) {std::cout << "HEX NIE JEST PUSTY" << std::endl; return;}
         if(!hex || !empty(hex->getResident())) return;
         hex->placeBacteria(board, id);
         oldHex->placeEmpty();
         oldHex = hex;
-        //std::cout << "I MOVED!!!" << std::endl;
         lastAction = Action::Move;
     }
 
@@ -184,10 +182,10 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
     Hexagon* hex = directionToHex(board, *data, x, y);
     if(!hex || !bacteria(hex->getResident()))
     {
-        if(!consumeEnergy(3.f, board, x, y)) return;
+        if(!consumeEnergy(GameConfigData::getFloat("attackCost"), board, x, y)) return;
         return;
     }
-    if(!consumeEnergy(4.f, board, x, y)) return;
+    if(!consumeEnergy(GameConfigData::getFloat("attackCostNext"), board, x, y)) return;
     BacteriaData& attacked = board->getBacteria(hex->getData().bacteriaIndex);
     int acidUsed = std::clamp(int(data[1] * acid), 0, (int)acid);
     acid -= acidUsed;
@@ -284,7 +282,7 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
     lastAction = Action::BreedFailure;
     Hexagon* oldHex = board->getHexagon(x, y);
     Hexagon *hex = directionToHex(board,*data,x,y);
-    if (!this->consumeEnergy(3.f,board, x,y)) return;
+    if (!this->consumeEnergy(GameConfigData::getFloat("breedCost"),board, x,y)) return;
     if (this->protein < BACTERIA_BODY_SIZE + 1 + 1) return;
     this->protein -= (BACTERIA_BODY_SIZE + 1 + 1);
 
@@ -331,7 +329,7 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
 void BacteriaData::eat(Board* board, float* data, coord x, coord y)
 {
     lastAction = Action::EatFailure;
-    if(!consumeEnergy(2.f, board, x, y)) return;
+    if(!consumeEnergy(GameConfigData::getFloat("eatCost"), board, x, y)) return;
     Hexagon* hex = directionToHex(board, *data, x, y);
     if(!hex || !resource(hex->getResident())) return;
     int toEat = data[1] * hex->getData().acid.amount; // wszystkie zasoby mają tylko parametr amount więc pobranie go z byle którego nic nie zmienia
@@ -372,7 +370,7 @@ void BacteriaData::eat(Board* board, float* data, coord x, coord y)
 void BacteriaData::sleep(Board* board, float* data, coord x, coord y)
 {
     lastAction = Action::SleepFailure;
-    if(!consumeEnergy(3.f, board, x, y)) return;
+    if(!consumeEnergy(GameConfigData::getFloat("sleepCost"), board, x, y)) return;
     lastAction = Action::Sleep;
 }
 

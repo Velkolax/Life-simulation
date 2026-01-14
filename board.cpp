@@ -6,6 +6,7 @@
 
 #include "game.h"
 #include "simulation_engine.h"
+#include "game_configdata.h"
 
 
 Hexagon::Hexagon() : x(0), y(0), resident(Resident::Wall){}
@@ -129,7 +130,7 @@ void Board::tick()
     }
 
 
-    if (step % 10 == 0 && !isResourceOverLimit()) spawnFood(0.1);
+    if (step % GameConfigData::getInt("energyPlacementInterval") == 0 && !isResourceOverLimit()) spawnFood(0.1);
     resourcesMerge();
 }
 
@@ -291,7 +292,7 @@ void Hexagon::placeAcid(uint8_t amount)
 void Hexagon::placeEnergy()
 {
     resident = Resident::Energy;
-    data.energy.amount = std::uniform_int_distribution<uint8_t>(70, 130)(gen);
+    data.energy.amount = std::uniform_int_distribution<uint8_t>(GameConfigData::getInt("energyPlacementMin"), GameConfigData::getInt("energyPlacementMax"))(gen);
 }
 
 void Hexagon::placeEnergy(uint8_t amount)
@@ -389,7 +390,7 @@ bool Board::isResourceOverLimit()
         Hexagon *hex = getHexagon(i);
         if (resource(hex->getResident())) resourceCounter++;
     }
-    if (resourceCounter > board.size()/5) return true;
+    if (resourceCounter > (int)(board.size() * GameConfigData::getFloat("energyThreshold"))) return true;
     return false;
 }
 
