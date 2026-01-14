@@ -117,7 +117,7 @@ struct BacteriaData
 
     inline int repeats(float f)
     {
-        return std::min(std::min(int(f * 4), speed / 25), 3) + 1;
+        return std::clamp(std::min(int(f * 4), speed / 25), 0, 3) + 1;
     }
 
     void die(Board* board, coord x, coord y);
