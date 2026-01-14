@@ -115,7 +115,7 @@ struct BacteriaData
         if (dist(gen) < diseaseChance) die(board, x, y); // Choroba (prawdopodobieństwo wzrasta z lifespan)
     }
 
-    int repeats(float f)
+    inline int repeats(float f)
     {
         return std::min(std::min(int(f * 4), speed / 25), 3) + 1;
     }
