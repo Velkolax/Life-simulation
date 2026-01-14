@@ -148,6 +148,7 @@ void SimulationEngine::InitNetworkData()
 
 void SimulationEngine::Process(uint32_t id_size, uint32_t *ids, float* inputData, float* outputData)
 {
+    //for (int i=0;i<100;i++) std::cout << "WEJŚCIE: " << inputData[i] << std::endl;
     memcpy(idPtr,ids,id_size*sizeof(uint32_t));
     memcpy(InPtr, inputData, id_size * INPUT * sizeof(float));
 

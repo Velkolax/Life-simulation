@@ -89,7 +89,7 @@ void main() {
             sum += inputLayer[j] * weight;
             wPtr++;
         }
-        h1[i] = relu(sum);
+        h1[i] = tanh(sum);
     }
 
     float h2[HIDDEN2];
@@ -101,7 +101,7 @@ void main() {
             sum += h1[j] * weight;
             wPtr++;
         }
-        h2[i] = relu(sum);
+        h2[i] = tanh(sum);
     }
 
     float h3[HIDDEN3];
@@ -113,7 +113,7 @@ void main() {
             sum += h2[j] * weight;
             wPtr++;
         }
-        h3[i] = relu(sum);
+        h3[i] = tanh(sum);
     }
 
     float rawOutputs[OUTPUT];
@@ -141,13 +141,16 @@ void main() {
     for(int i=0;i<ACTIONS;i++) probs[i] /= sumExp;
 
     int chosenAction = 0;
-    float cumulativeProb = 0.0;
-    for(int i=0;i<ACTIONS;i++){
-        cumulativeProb += probs[i];
-        if(r1 <= cumulativeProb){
-            chosenAction = i;
-            break;
-        }
+//    float cumulativeProb = 0.0;
+//    for(int i=0;i<ACTIONS;i++){
+//        cumulativeProb += probs[i];
+//        if(r1 <= cumulativeProb){
+//            chosenAction = i;
+//            break;
+//        }
+//    }
+    for(int i=1;i<ACTIONS;i++){
+        if(probs[i]>probs[chosenAction]) chosenAction=i;
     }
     outData[index][MEMORY] = float(chosenAction) / float(ACTIONS-1);
 
@@ -163,13 +166,16 @@ void main() {
     for(int i=0; i<DIRECTIONS; i++) probs2[i] /= sumExp2;
 
     int chosenDirection = 0;
-    float cumulativeProb2 = 0.0;
-    for(int i=0; i<DIRECTIONS; i++) {
-        cumulativeProb2 += probs2[i];
-        if(r2 <= cumulativeProb2) {
-            chosenDirection = i;
-            break;
-        }
+//    float cumulativeProb2 = 0.0;
+//    for(int i=0; i<DIRECTIONS; i++) {
+//        cumulativeProb2 += probs2[i];
+//        if(r2 <= cumulativeProb2) {
+//            chosenDirection = i;
+//            break;
+//        }
+//    }
+    for(int i=1;i<DIRECTIONS;i++){
+        if(probs2[i]>probs2[chosenDirection]) chosenDirection=i;
     }
 
     outData[index][MEMORY+1] = float(chosenDirection) / float(DIRECTIONS-1);

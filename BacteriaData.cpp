@@ -164,7 +164,7 @@ void BacteriaData::move(Board* board, float* data, coord x, coord y)
     int32_t id = oldHex->getData().bacteriaIndex;
     for(int i = 0; i < movesCount; i++)
     {
-        if(!consumeEnergy(0.1f, board, oldHex->getX(), oldHex->getY())) return;
+        if(!consumeEnergy(3.f, board, oldHex->getX(), oldHex->getY())) return;
         Hexagon* hex = directionToHex(board, data[i], oldHex->getX(), oldHex->getY());
         // if (!hex) {std::cout << "BRAK HEXA!" << std::endl; return;}
         // if (!empty(hex->getResident())) {std::cout << "HEX NIE JEST PUSTY" << std::endl; return;}
@@ -184,10 +184,10 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
     Hexagon* hex = directionToHex(board, *data, x, y);
     if(!hex || !bacteria(hex->getResident()))
     {
-        if(!consumeEnergy(2.f, board, x, y)) return;
+        if(!consumeEnergy(4.f, board, x, y)) return;
         return;
     }
-    if(!consumeEnergy(4.f, board, x, y)) return;
+    if(!consumeEnergy(8.f, board, x, y)) return;
     BacteriaData& attacked = board->getBacteria(hex->getData().bacteriaIndex);
     int acidUsed = std::clamp(int(data[1] * acid), 0, (int)acid);
     acid -= acidUsed;
@@ -274,7 +274,7 @@ void BacteriaData::cross(BacteriaData& mom)
     lifespan = mom.lifespan;
     speed = mom.speed;
     acid = 10;
-    energy=5;
+    energy=50;
     protein=5;
     age=0;
 }
@@ -286,7 +286,7 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
     Hexagon *hex = directionToHex(board,*data,x,y);
     if (!hex || !bacteria(hex->getResident())) return;
     if (this->protein < 5) return;
-    if (!this->consumeEnergyValue(5,board, x,y)) return;
+    if (!this->consumeEnergyValue(50,board, x,y)) return;
     this->protein -= 5;
 
 
@@ -362,7 +362,7 @@ void BacteriaData::eat(Board* board, float* data, coord x, coord y)
 void BacteriaData::sleep(Board* board, float* data, coord x, coord y)
 {
     lastAction = Action::SleepFailure;
-    if(!consumeEnergy(0.5f, board, x, y)) return;
+    if(!consumeEnergy(5.f, board, x, y)) return;
     lastAction = Action::Sleep;
 }
 

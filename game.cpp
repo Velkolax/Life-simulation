@@ -41,7 +41,7 @@ void Game::Init()
 
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load(24);
-    int bacteriaCount = 100000;
+    int bacteriaCount = 10000;
     int x = 400;
     int y = 400;
     board = new Board(x, y, this,bacteriaCount);
