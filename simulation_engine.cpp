@@ -1,10 +1,7 @@
-//
-// Created by tk2 on 12/14/25.
-//
-
 #include "simulation_engine.h"
 #include <glm/gtc/type_precision.hpp>
 #include "BacteriaData.h"
+#include "game_configdata.h"
 #include "GLFW/glfw3.h"
 
 SimulationEngine::SimulationEngine(Board* board)
@@ -19,6 +16,24 @@ SimulationEngine::SimulationEngine(Board* board)
     InitNetworkData();
 }
 
+SimulationEngine::~SimulationEngine()
+{
+    if (stagingPtr) glUnmapNamedBuffer(ssboStaging);
+    if (InPtr) glUnmapNamedBuffer(ssboIn);
+    if (OutPtr) glUnmapNamedBuffer(ssboOut);
+    if (idPtr) glUnmapNamedBuffer(ssboIds);
+
+    glDeleteBuffers(1,&ssboNetworks);
+    glDeleteBuffers(1,&ssboStaging);
+    glDeleteBuffers(1,&ssboIn);
+    glDeleteBuffers(1,&ssboOut);
+    glDeleteBuffers(1,&ssboIds);
+}
+
+void SimulationEngine::Restart()
+{
+    InitNetworkData();
+}
 
 
 void SimulationEngine::InitSsbos(Board *board)
@@ -76,7 +91,7 @@ void SimulationEngine::InitNetworkData()
     initShader.Use();
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssboNetworks);
     initShader.SetInteger("stride", bCapacity);
-    initShader.SetFloat("seed", glfwGetTime());
+    initShader.SetInteger("globalSeed", GameConfigData::getInt("seed"));
 
     auto DispatchInit = [&](int startParam, int count, float minVal,float maxVal) {
         initShader.SetInteger("paramOffset", startParam);
@@ -151,7 +166,6 @@ void SimulationEngine::Process(uint32_t id_size, uint32_t *ids, float* inputData
     //for (int i=0;i<100;i++) std::cout << "WEJŚCIE: " << inputData[i] << std::endl;
     memcpy(idPtr,ids,id_size*sizeof(uint32_t));
     memcpy(InPtr, inputData, id_size * INPUT * sizeof(float));
-
     glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
     shader.Use();
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER,0,ssboNetworks);
@@ -161,7 +175,8 @@ void SimulationEngine::Process(uint32_t id_size, uint32_t *ids, float* inputData
     shader.SetInteger("activeBacteria",bSize);
     shader.SetInteger("stride",bCapacity);
     shader.SetInteger("indices",id_size);
-    shader.SetFloat("time", (float)glfwGetTime());
+    shader.SetInteger("simStep", counter);
+    shader.SetInteger("globalSeed",GameConfigData::getInt("seed"));
     glDispatchCompute((id_size + 63) / 64, 1, 1);
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
@@ -208,7 +223,8 @@ void SimulationEngine::reproduceNetwork(int parentA, int parentB, int childIdx)
 
     reproShader.SetFloat("mutationRate", 0.01f);
     reproShader.SetFloat("mutationChance", 0.05f);
-    reproShader.SetFloat("seed", (float)glfwGetTime());
+    reproShader.SetInteger("simStep", counter);
+    reproShader.SetInteger("globalSeed",GameConfigData::getInt("seed"));
 
     glDispatchCompute((SIZE + 63) / 64, 1, 1);
 

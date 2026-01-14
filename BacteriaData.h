@@ -20,7 +20,6 @@ class Sight;
 class Game;
 
 inline std::mt19937 gen;
-inline unsigned int Seed;
 
 #define MEMORY_SIZE 3
 #define MAX_ACCUSTOMABLE_VALUE 100

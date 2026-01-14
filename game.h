@@ -6,53 +6,56 @@
 #include "sprite_renderer.h"
 #include <iostream>
 #include <ranges>
-
-
 #include "board.h"
 #include "text_renderer.h"
 
+struct Input
+{
+    bool keys[1024] = {false};
+    bool keysLast[1024] = {false};
+    bool toggles[1024] = {false};
 
-
-
-
-
+    void update(GLFWwindow* window)
+    {
+        for (int i=0;i<1024;i++)
+        {
+            keysLast[i] = keys[i];
+            keys[i] = glfwGetKey(window,i) == GLFW_PRESS;
+            if (keys[i] && !keysLast[i]) toggles[i] = !toggles[i];
+        }
+    }
+    bool isDown(int key){return keys[key];}
+    bool isPressed(int key){return keys[key] && !keysLast[key];}
+    bool isReleased(int key){return !keys[key] && keysLast[key];}
+    bool isToggled(int key){return toggles[key];}
+    void setToggle(int key, bool state){toggles[key]=state;}
+};
 
 class Game
 {
-public:
-    int                     pressedKey = -1;
-    bool                    mousePressed = false;
-    float                   cursorPosX;
-    float                   cursorPosY;
-    int                     scroll = 0;
-    unsigned int            Width, Height;
-    bool                    enterPressed = false;
-    bool isPaused = true;
-    bool isBacteriaSelected = false;
-    bool spacePressed = false;
-    Board* board;
-    SimulationEngine* engine;
-    TextRenderer  *Text;
-    // constructor/destructor
-    Game(unsigned int width, unsigned int height);
-    ~Game();
-    // initialize game state (load all shaders/textures/levels)
-    void Init();
-
-    // game loop
-    void ProcessInput(float dt);
-    void RefreshSprites();
-    void RefreshOutline();
-    void Update(float dt);
-    void Resize(int width, int height);
-    //void Tick();
-    void Render();
-    std::map<int,bool> clickedMovingKeys{
-        {GLFW_KEY_W,false},
-        {GLFW_KEY_A,false},
-        {GLFW_KEY_S,false},
-        {GLFW_KEY_D,false}
-    };
+    public:
+        bool mousePressed = false, fullscreen=false;
+        float cursorPosX,cursorPosY;
+        int scroll = 0;
+        unsigned int Width, Height;
+        Board* board;
+        SimulationEngine* engine;
+        TextRenderer  *Text;
+        GLFWwindow* window;
+        Game();
+        ~Game();
+        void Run();
+        void ProcessInput();
+        void restart();
+        void tick();
+        void Resize(int width, int height);
+        void Render();
+        static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+        static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+        static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+        static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+    private:
+        Input input;
 };
 
 
