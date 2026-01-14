@@ -129,8 +129,7 @@ void Board::tick()
     }
 
 
-    counter++;
-    if (counter % 10 == 0) spawnFood(0.1);
+    if (step % 10 == 0) spawnFood(0.1);
     resourcesMerge();
 }
 
