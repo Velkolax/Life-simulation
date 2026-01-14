@@ -81,7 +81,7 @@ struct BacteriaData
     Action lastAction = Action::Nothing;
 
     void randomize();
-    void cross(BacteriaData& dad, BacteriaData& mom);
+    void cross(BacteriaData& mom);
     void addToBuffer(Board* board, float* buffer, coord x, coord y);
 
     inline void printBacteria()

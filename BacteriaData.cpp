@@ -269,7 +269,7 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
     lastAction = Action::Attack;
 }
 
-void BacteriaData::cross(BacteriaData& dad, BacteriaData& mom)
+void BacteriaData::cross(BacteriaData& mom)
 {
     lifespan = mom.lifespan;
     speed = mom.speed;
@@ -285,12 +285,9 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
     Hexagon* oldHex = board->getHexagon(x, y);
     Hexagon *hex = directionToHex(board,*data,x,y);
     if (!hex || !bacteria(hex->getResident())) return;
-
-    BacteriaData& husband = board->getBacteria(hex->getData().bacteriaIndex);
-    BacteriaData& wife = board->getBacteria(oldHex->getData().bacteriaIndex);
-    if (wife.protein < 5) return;
-    if (!wife.consumeEnergyValue(5,board, oldHex->getX(),oldHex->getY())) return;
-    wife.protein -= 5;
+    if (this->protein < 5) return;
+    if (!this->consumeEnergyValue(5,board, x,y)) return;
+    this->protein -= 5;
 
 
     std::vector<std::pair<coord,coord>> possibleDirections;
@@ -311,14 +308,14 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
     Hexagon* childHex = board->getHexagon(hex->getX()+dir.first,hex->getY()+dir.second);
     if (!childHex || !empty(childHex->getResident())) return;
 
-    childHex->placeChild(board,wife,husband);
+    childHex->placeChild(board,*this);
 
     if (!board->emptyVacant())
     {
         board->getGame()->engine->reproduceNetwork(oldHex->getData().bacteriaIndex,hex->getData().bacteriaIndex, board->popVacant());
     }
 
-    lastAction = Action::Breed;
+    this->lastAction = Action::Breed;
 }
 
 void BacteriaData::eat(Board* board, float* data, coord x, coord y)
