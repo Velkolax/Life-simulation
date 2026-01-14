@@ -81,22 +81,14 @@ Game::~Game()
     glfwTerminate();
 }
 
-void Game::Init()
-{
-
-}
-
 void Game::Run()
 {
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
+        input.update(window);
         this->ProcessInput();
-        for (int i=0;i<1;i++)
-        {
-            this->Update();
-        }
-
+        this->Update();
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         this->Render();
@@ -106,7 +98,7 @@ void Game::Run()
 
 void Game::Update()
 {
-    if (pressedKey==GLFW_KEY_SPACE) board->tick();
+
 }
 
 void Game::Resize(int width, int height)
@@ -116,7 +108,6 @@ void Game::Resize(int width, int height)
     Text->TextShader.SetMatrix4("projection", glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f), true);
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->Width),
         static_cast<float>(this->Height), 0.0f, -1.0f, 1.0f);
-
     ResourceManager::GetShader("sprite").Use().SetMatrix4("projection", projection);
 }
 
@@ -131,14 +122,15 @@ void Game::ProcessInput()
         Renderer->Zoom(zoomFactor, centerX, centerY,board);
         scroll = 0;
     }
-    if (clickedMovingKeys[GLFW_KEY_W]) Renderer -> addToDisplacementY(board,10);
-    if (clickedMovingKeys[GLFW_KEY_A]) Renderer ->addToDisplacementX(board,10);
-    if (clickedMovingKeys[GLFW_KEY_S]) Renderer -> addToDisplacementY(board,-10);
-    if (clickedMovingKeys[GLFW_KEY_D]) Renderer -> addToDisplacementX(board,-10);
-    if (pressedKey==GLFW_KEY_ENTER) enterPressed = true;
-    if (pressedKey!=GLFW_KEY_ENTER && enterPressed){ enterPressed=false; board->tick(); }
-    if (pressedKey==GLFW_KEY_S) sPressed=true;
-    if (pressedKey!=GLFW_KEY_S && sPressed){sPressed=false; sToggled=true;};
+    if (input.isDown(GLFW_KEY_W)) Renderer -> addToDisplacementY(board,10);
+    if (input.isDown(GLFW_KEY_A)) Renderer ->addToDisplacementX(board,10);
+    if (input.isDown(GLFW_KEY_S)) Renderer -> addToDisplacementY(board,-10);
+    if (input.isDown(GLFW_KEY_D)) Renderer -> addToDisplacementX(board,-10);
+
+    if (input.isReleased(GLFW_KEY_ENTER)) board->tick();
+    else if (input.isDown(GLFW_KEY_SPACE)) board->tick();
+    else if (input.isToggled(GLFW_KEY_P)) board->tick();
+
 }
 
 void Game::Render()
@@ -214,27 +206,6 @@ void Game::key_callback(GLFWwindow* window, int key, int scancode, int action, i
         fPressed = true;
     }
     else if (key == GLFW_KEY_F && action == GLFW_RELEASE && fullScreen && fPressed){fullScreen=false;fPressed=false;}
-    if (key > 0 && key < 1024)
-    {
-        if (action == GLFW_PRESS)
-        {
-            if (game->pressedKey==-1)
-                game->pressedKey = key;
-            if (game->clickedMovingKeys.contains(key))
-            {
-                game->clickedMovingKeys[key]=true;
-            }
-        }
-        else if (action == GLFW_RELEASE)
-        {
-            game->pressedKey = -1;
-            if (game->clickedMovingKeys.contains(key))
-            {
-                game->clickedMovingKeys[key]=false;
-            }
-        }
-
-    }
 }
 
 void Game::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -247,9 +218,7 @@ void Game::mouse_button_callback(GLFWwindow* window, int button, int action, int
         game -> cursorPosX = xpos;
         game -> cursorPosY = ypos;
     }
-    else if(action == GLFW_RELEASE){
-        game -> mousePressed = false;
-    }
+    else if(action == GLFW_RELEASE) game -> mousePressed = false;
 
 }
 
@@ -267,12 +236,6 @@ void Game::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 void Game::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
-    if(yoffset==-1)
-    {
-        game->scroll = -1;
-    }
-    else if(yoffset==1)
-    {
-        game->scroll = 1;
-    }
+    if(yoffset==-1) game->scroll = -1;
+    else if(yoffset==1) game->scroll = 1;
 }
