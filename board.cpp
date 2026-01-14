@@ -26,7 +26,7 @@ Board::Board(coord width, coord height, Game* game, int bacteriaCount) : width(w
         }
     }
     bacterias.reserve(width*height);
-    vacantSlots.reserve(bacteriaCount);
+    vacantSlots.reserve(width*height);
 }
 
 
@@ -315,15 +315,17 @@ void Hexagon::placeProtein(uint8_t amount)
 void Hexagon::placeBacteria(Board* board)
 {
     resident = Resident::Bacteria;
-    data.bacteriaIndex = board->getBacteriaCount();
-    board->addBacteria().randomize();
+    int32_t newId = board->addBacteria();
+    data.bacteriaIndex = newId;
+    board->getBacteria(newId).randomize();
 }
 
 void Hexagon::placeChild(Board* board, BacteriaData& mom)
 {
     resident = Resident::Bacteria;
-    data.bacteriaIndex = board->getBacteriaCount();
-    board->addBacteria().cross(mom);
+    int32_t newId = board->addBacteria();
+    data.bacteriaIndex = newId;
+    board->getBacteria(newId).cross(mom);
 }
 
 void Hexagon::placeBacteria(Board* board, uint32_t id)

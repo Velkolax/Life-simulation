@@ -132,7 +132,12 @@ public:
     inline int getBacteriaCount() const noexcept { return bacterias.size(); }
     int getAliveBacteriaCount();
     inline BacteriaData& getBacteria(int i) noexcept { return bacterias[i]; }
-    inline BacteriaData& addBacteria() noexcept { return bacterias.emplace_back(); }
+    inline int32_t addBacteria() noexcept
+    {
+        if (!vacantSlots.empty()) return popVacant();
+        bacterias.emplace_back();
+        return (int32_t)bacterias.size() -1;
+    }
     inline void addVacant(int32_t i) noexcept { vacantSlots.push_back(i); }
     inline int32_t popVacant() noexcept { int32_t r = vacantSlots.back(); vacantSlots.pop_back(); return r; }
     inline bool emptyVacant() noexcept {return vacantSlots.empty();}
