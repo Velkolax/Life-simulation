@@ -479,7 +479,11 @@ void BacteriaData::breed(Board* board, Hexagon* dadHex, float* data, coord x, co
     for (int i = 0; i < reps; i++)
     {
         int energySent = data[1] * this->energy;
-        if (this->energy <= energySent) return;
+        if (this->energy <= energySent)
+        {
+            if(lastAction == Action::BreedFailure) lastAction = Action::BreedFailureNoEnergy;
+            return;
+        }
 
         int lifespanSent = std::min(int(data[2] * this->protein), MAX_ACCUSTOMABLE_VALUE);
         if (!lifespanSent) lifespanSent = 1;
@@ -487,7 +491,11 @@ void BacteriaData::breed(Board* board, Hexagon* dadHex, float* data, coord x, co
         int speedSent = std::min(int(data[3] * this->protein), MAX_ACCUSTOMABLE_VALUE);
         if (!speedSent) speedSent = 1;
 
-        if (BACTERIA_BODY_SIZE + lifespanSent + speedSent > this->protein) return;
+        if (BACTERIA_BODY_SIZE + lifespanSent + speedSent > this->protein)
+        {
+            if(lastAction == Action::BreedFailure) lastAction = Action::BreedFailureNoProtein;
+            return;
+        }
 
         std::vector<Hexagon*> possiblePlacements;
         possiblePlacements.reserve(8);
@@ -500,7 +508,11 @@ void BacteriaData::breed(Board* board, Hexagon* dadHex, float* data, coord x, co
                 possiblePlacements.push_back(h);
             }
         }
-        if (possiblePlacements.empty()) return;
+        if (possiblePlacements.empty())
+        {
+            if(lastAction == Action::BreedFailure) lastAction = Action::BreedFailureNoSpace;
+            return;
+        }
 
         this->protein -= BACTERIA_BODY_SIZE + lifespanSent + speedSent;
         this->energy -= energySent;
