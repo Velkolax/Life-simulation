@@ -41,7 +41,7 @@ Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
     ResourceManager::LoadComputeShader({"shaders/reproduce.cs.glsl"},"reproduce");
     ResourceManager::LoadTexture("textures/square-16.png", true, "hexagon");
     ResourceManager::LoadTexture("textures/bacteria.png",true,"bacteria");
-    ResourceManager::LoadTexture("textures/apple.png",true,"apple");
+    ResourceManager::LoadTexture("textures/energy.png",true,"apple");
     ResourceManager::LoadTexture("textures/explosion.png",true,"explosion");
     ResourceManager::LoadTexture("textures/acid.png",true,"acid");
     ResourceManager::LoadTexture("textures/protein.png",true,"protein");
