@@ -6,6 +6,7 @@
 
 #include "game.h"
 #include "simulation_engine.h"
+#include "game_configdata.h"
 
 
 Hexagon::Hexagon() : x(0), y(0), resident(Resident::Wall){}
@@ -129,7 +130,7 @@ void Board::tick()
     }
 
 
-    if (step % 10 == 0) spawnFood(0.1);
+    if (step % GameConfigData::getInt("energyPlacementInterval") == 0 && !isResourceOverLimit()) spawnFood(0.1);
     resourcesMerge();
 }
 
@@ -291,7 +292,7 @@ void Hexagon::placeAcid(uint8_t amount)
 void Hexagon::placeEnergy()
 {
     resident = Resident::Energy;
-    data.energy.amount = std::uniform_int_distribution<uint8_t>(150, 170)(gen);
+    data.energy.amount = std::uniform_int_distribution<uint8_t>(GameConfigData::getInt("energyPlacementMin"), GameConfigData::getInt("energyPlacementMax"))(gen);
 }
 
 void Hexagon::placeEnergy(uint8_t amount)
@@ -320,12 +321,12 @@ void Hexagon::placeBacteria(Board* board)
     board->getBacteria(newId).randomize();
 }
 
-void Hexagon::placeChild(Board* board, BacteriaData& mom)
+void Hexagon::placeChild(Board* board, BacteriaData& mom,int energySent,int lifespanSent,int speedSent)
 {
     resident = Resident::Bacteria;
     int32_t newId = board->addBacteria();
     data.bacteriaIndex = newId;
-    board->getBacteria(newId).cross(mom);
+    board->getBacteria(newId).cross(mom,energySent,lifespanSent,speedSent);
 }
 
 void Hexagon::placeBacteria(Board* board, uint32_t id)
@@ -353,9 +354,9 @@ void Board::spawnFood(double foodRatio)
         int index = dist(gen);
         if (empty(board[range[i]].getResident()))
         {
-            // if (index<60) board[range[i]].placeEnergy();
-            // else if (index<95) board[range[i]].placeProtein();
-            // else board[range[i]].placeAcid();
+            if (index<60) board[range[i]].placeEnergy();
+            else if (index<95) board[range[i]].placeProtein();
+            else board[range[i]].placeAcid();
             board[range[i]].placeEnergy();
         }
 
@@ -379,6 +380,18 @@ void Board::spawnBacteria(int bacteriaCount)
             board[range[i]].placeBacteria(this);
         }
     }
+}
+
+bool Board::isResourceOverLimit()
+{
+    int resourceCounter = 0;
+    for (int i=0;i<board.size();i++)
+    {
+        Hexagon *hex = getHexagon(i);
+        if (resource(hex->getResident())) resourceCounter++;
+    }
+    if (resourceCounter > (int)(board.size() * GameConfigData::getFloat("energyThreshold"))) return true;
+    return false;
 }
 
 int Board::getAliveBacteriaCount()

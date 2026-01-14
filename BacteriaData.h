@@ -47,15 +47,15 @@ static_assert(oddDirections2l.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
 static inline std::string stringActions[] =
 {
     "Nothing",
-    "Move", "Attack", "Sleep", "Eat", "Breed",
-    "MoveFailure", "AttackFailure", "SleepFailure", "EatFailure", "BreedFailure"
+    "Attack", "Sleep", "Eat", "Breed", "Move",
+    "AttackFailure", "SleepFailure", "EatFailure", "BreedFailure", "MoveFailure"
 };
 
 enum class Action
 {
     Nothing,
-    Move, Attack, Sleep, Eat, Breed,
-    MoveFailure, AttackFailure, SleepFailure, EatFailure, BreedFailure
+    Attack, Sleep, Eat, Breed, Move,
+    AttackFailure, SleepFailure, EatFailure, BreedFailure, MoveFailure
 };
 
 struct BacteriaData
@@ -79,7 +79,7 @@ struct BacteriaData
     Action lastAction = Action::Nothing;
 
     void randomize();
-    void cross(BacteriaData& mom);
+    void cross(BacteriaData& mom,int energySent,int lifespanSent,int speedSent);
     void addToBuffer(Board* board, float* buffer, coord x, coord y);
 
     inline void printBacteria()
@@ -123,17 +123,17 @@ struct BacteriaData
 
     inline static constexpr void (BacteriaData::*actions[BACTERIA_ACTIONS_NUMBER])(Board*, float*, coord, coord) =
     {
-        &BacteriaData::move,
         &BacteriaData::attack,
         &BacteriaData::sleep,
         &BacteriaData::eat,
-        &BacteriaData::breed
+        &BacteriaData::breed,
+        &BacteriaData::move,
     };
 
 
     inline void execute(Board* board, float* data, coord x, coord y)
     {
-        //std::cout << "WYJŚCIE 1: " << data[1] << std::endl;
+        //std::cout << "WYJŚCIE 1: " << data[0] << std::endl;
         int index = std::clamp(int(*data * BACTERIA_ACTIONS_NUMBER), 0, BACTERIA_ACTIONS_NUMBER - 1);
 
         (this->*actions[index])(board, data + 1, x, y);

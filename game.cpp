@@ -1,5 +1,5 @@
 #include "game.h"
-
+#include "game_configdata.h"
 #include <set>
 
 #include <ft2build.h>
@@ -39,14 +39,15 @@ void Game::Init()
     ResourceManager::LoadTexture("textures/acid.png",true,"acid");
     ResourceManager::LoadTexture("textures/protein.png",true,"protein");
 
+    GameConfigData::setConfigDataFromFile("config.txt");
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load(24);
-    int bacteriaCount = 10000;
-    int x = 400;
-    int y = 400;
+    int bacteriaCount = GameConfigData::getInt("bacteriaCount");
+    int x = GameConfigData::getInt("width");
+    int y = GameConfigData::getInt("height");
     board = new Board(x, y, this,bacteriaCount);
     int total = x*y;
-    board->InitializeNeighbour(249, true);
+    board->InitializeNeighbour(x/2-1, true);
     board->spawnBacteria(bacteriaCount);
     board->spawnFood(0.1);
 
@@ -171,18 +172,17 @@ void Game::Render()
         }
     }
 
-    Text->RenderText("STEP: "+std::to_string(board->getStep()),Width*0.5,10,1.0);
-    Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getAliveBacteriaCount()),Width*0.5,40,1.0);
-    Text->RenderText("EAT PERCENTAGE: " + std::to_string(board->getActionPercentage(Action::Eat)),Width*0.5,70,1.0);
-    Text->RenderText("EAT_FAILURE PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::EatFailure)),Width*0.5,100,1.0);
-    // Text->RenderText("GENERATION: "+std::to_string(counter),Width*0.5,40,1.0);
-    //
-    // Text->RenderText("PROTEIN NUMBER: " + std::to_string(board->getProteinCount()),Width*0.5,70,1.0);
-    // Text->RenderText("PROTEIN SHORTAGE: " + std::to_string(board->proteinShortage),Width*0.5,100,1.0);
-    // Text->RenderText("HIGHEST AGE: " + std::to_string(board->getHighestAge()),Width*0.5,130,1.0);
-    // Text->RenderText("LOWEST AGE: "+ std::to_string(board->getLowestAge()),Width*0.5,160,1.0);
+     Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getAliveBacteriaCount()),Width*0.5,10,1.0);
+    Text->RenderText("EAT PERCENTAGE: " + std::to_string(board->getActionPercentage(Action::Eat)),Width*0.5,40,1.0);
+    Text->RenderText("EAT_FAILURE PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::EatFailure)),Width*0.5,70,1.0);
+    Text->RenderText("BREED PERCENTAGE: " + std::to_string(board->getActionPercentage(Action::Breed)),Width*0.5,100,1.0);
+    Text->RenderText("BREED_FAILURE PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::BreedFailure)),Width*0.5,130,1.0);
+    Text->RenderText("MOVE PERCENTAGE: " + std::to_string(board->getActionPercentage(Action::Move)),Width*0.5,160,1.0);
+    Text->RenderText("MOVE_FAILURE PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::MoveFailure)),Width*0.5,190,1.0);
+    Text->RenderText("ATTACK PERCENTAGE: " + std::to_string(board->getActionPercentage(Action::Attack)),Width*0.5,220,1.0);
+    Text->RenderText("ATTACK_FAILURE PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::AttackFailure)),Width*0.5,250,1.0);
+    Text->RenderText("SLEEP PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::Sleep)),Width*0.5,280,1.0);
     Text->RenderText("FAILURE RATIO: "+ std::to_string(board->getFailureRatio()),Width*0.5,310,1.0);
-    //Text->RenderText("SLEEP PERCENTAGE: " + std::to_string(board->getActionPercentage(Action::Sleep)),Width*0.5,340,1.0);
-    //Text->RenderText("BREED_FAILURE PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::BreedFailure)),Width*0.5,370,1.0);
-    //Text->RenderText("BREED PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::Breed)),Width*0.5,400,1.0);
+    Text->RenderText("STEP: "+std::to_string(board->getStep()),Width*0.5,340,1.0);
+
 }
