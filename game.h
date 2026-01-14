@@ -10,13 +10,6 @@
 
 #include "board.h"
 #include "text_renderer.h"
-
-
-
-
-
-
-
 class Game
 {
 public:
@@ -27,26 +20,26 @@ public:
     int                     scroll = 0;
     unsigned int            Width, Height;
     bool                    enterPressed = false;
+    bool sPressed=false,sToggled=false;
     bool isPaused = true;
     bool isBacteriaSelected = false;
     bool spacePressed = false;
     Board* board;
     SimulationEngine* engine;
     TextRenderer  *Text;
-    // constructor/destructor
-    Game(unsigned int width, unsigned int height);
+    GLFWwindow* window;
+    Game();
     ~Game();
-    // initialize game state (load all shaders/textures/levels)
     void Init();
-
-    // game loop
-    void ProcessInput(float dt);
-    void RefreshSprites();
-    void RefreshOutline();
-    void Update(float dt);
+    void Run();
+    void ProcessInput();
+    void Update();
     void Resize(int width, int height);
-    //void Tick();
     void Render();
+    static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+    static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+    static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+    static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
     std::map<int,bool> clickedMovingKeys{
         {GLFW_KEY_W,false},
         {GLFW_KEY_A,false},

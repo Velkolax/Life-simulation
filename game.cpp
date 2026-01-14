@@ -11,22 +11,39 @@
 #include "resource_manager.h"
 #include "simulation_engine.h"
 
-
-// Game-related State data
 SpriteRenderer* Renderer;
+unsigned int SCREEN_WIDTH = 800;
+unsigned int SCREEN_HEIGHT = 600;
+bool fullScreen = false;
+bool fPressed = false;
 
 
-Game::Game(unsigned int width, unsigned int height) : Width(width), Height(height), board()
+
+
+Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
 {
-}
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_RESIZABLE, false);
+    window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Simulation", nullptr, nullptr);
+    glfwSetWindowUserPointer(window, this);
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+    }
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-Game::~Game()
-{
-    delete Renderer;
-}
 
-void Game::Init()
-{
     ResourceManager::LoadShader({"shaders/instance.vs.glsl"},{"shaders/instance.fs.glsl"},"instance");
     ResourceManager::LoadComputeShader({"shaders/process_network.cs.glsl"},"network");
     ResourceManager::LoadComputeShader({"shaders/init_weights.cs.glsl"},"init");
@@ -54,28 +71,42 @@ void Game::Init()
 
     engine = new SimulationEngine(board);
     Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height);
+
 }
 
-void Game::Update(float dt)
+Game::~Game()
 {
-    if (pressedKey==GLFW_KEY_SPACE)
+    delete Renderer;
+    ResourceManager::Clear();
+    glfwTerminate();
+}
+
+void Game::Init()
+{
+
+}
+
+void Game::Run()
+{
+    while (!glfwWindowShouldClose(window))
     {
-        board->tick();
-        //if (counter % 100 == 0) board->spawnFood(0.05);
-        //board->resourcesMerge();
-        //board->proteinMerge();
-        //board->energyMerge();
-        //board->acidMerge();
-        //counter++;
+        glfwPollEvents();
+        this->ProcessInput();
+        for (int i=0;i<1;i++)
+        {
+            this->Update();
+        }
 
-        // for (int i=0;i<board->getAliveBacteriaCount();i++)
-        // {
-        //     BacteriaData &bac = board->getBacteria(i);
-        //     bac.printBacteria();
-        // }
+        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        this->Render();
+        glfwSwapBuffers(window);
     }
+}
 
-
+void Game::Update()
+{
+    if (pressedKey==GLFW_KEY_SPACE) board->tick();
 }
 
 void Game::Resize(int width, int height)
@@ -90,45 +121,24 @@ void Game::Resize(int width, int height)
 }
 
 
-void Game::ProcessInput(float dt)
+void Game::ProcessInput()
 {
     if (this->scroll != 0)
     {
         float zoomFactor = (this->scroll == 1) ? 1.1f : 0.9f;
         float centerX = this->Width / 2.0f;
         float centerY = this->Height / 2.0f;
-
         Renderer->Zoom(zoomFactor, centerX, centerY,board);
-
         scroll = 0;
     }
-    if (clickedMovingKeys[GLFW_KEY_W])
-    {
-        Renderer -> addToDisplacementY(board,10);
-    }
-    if (clickedMovingKeys[GLFW_KEY_A])
-    {
-        Renderer ->addToDisplacementX(board,10);
-    }
-    if (clickedMovingKeys[GLFW_KEY_S])
-    {
-        Renderer -> addToDisplacementY(board,-10);
-    }
-    if (clickedMovingKeys[GLFW_KEY_D])
-    {
-        Renderer -> addToDisplacementX(board,-10);
-    }
+    if (clickedMovingKeys[GLFW_KEY_W]) Renderer -> addToDisplacementY(board,10);
+    if (clickedMovingKeys[GLFW_KEY_A]) Renderer ->addToDisplacementX(board,10);
+    if (clickedMovingKeys[GLFW_KEY_S]) Renderer -> addToDisplacementY(board,-10);
+    if (clickedMovingKeys[GLFW_KEY_D]) Renderer -> addToDisplacementX(board,-10);
     if (pressedKey==GLFW_KEY_ENTER) enterPressed = true;
-    if (pressedKey!=GLFW_KEY_ENTER && enterPressed)
-    {
-        enterPressed=false;
-        board->tick();
-        //board->proteinMerge();
-        //board->energyMerge();
-        //counter++;
-        //if (counter % 100 == 0) board->spawnFood(0.05);
-    }
-
+    if (pressedKey!=GLFW_KEY_ENTER && enterPressed){ enterPressed=false; board->tick(); }
+    if (pressedKey==GLFW_KEY_S) sPressed=true;
+    if (pressedKey!=GLFW_KEY_S && sPressed){sPressed=false; sToggled=true;};
 }
 
 void Game::Render()
@@ -185,4 +195,84 @@ void Game::Render()
     Text->RenderText("FAILURE RATIO: "+ std::to_string(board->getFailureRatio()),Width*0.5,310,1.0);
     Text->RenderText("STEP: "+std::to_string(board->getStep()),Width*0.5,340,1.0);
 
+}
+
+void Game::key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
+    Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+    if (key == GLFW_KEY_F && action == GLFW_PRESS && !fullScreen && !fPressed)
+    {
+        glfwSetWindowMonitor(window,glfwGetPrimaryMonitor(),0,0,glfwGetVideoMode(glfwGetPrimaryMonitor())->width,glfwGetVideoMode(glfwGetPrimaryMonitor())->height,GLFW_DONT_CARE);
+        fPressed = true;
+    }
+    else if (key == GLFW_KEY_F && action == GLFW_RELEASE && !fullScreen && fPressed){fPressed=false;fullScreen=true;}
+    else if (key == GLFW_KEY_F && action == GLFW_PRESS && fullScreen && !fPressed)
+    {
+        glfwSetWindowMonitor(window,NULL,0,0,SCREEN_WIDTH,SCREEN_HEIGHT,GLFW_DONT_CARE);
+        fPressed = true;
+    }
+    else if (key == GLFW_KEY_F && action == GLFW_RELEASE && fullScreen && fPressed){fullScreen=false;fPressed=false;}
+    if (key > 0 && key < 1024)
+    {
+        if (action == GLFW_PRESS)
+        {
+            if (game->pressedKey==-1)
+                game->pressedKey = key;
+            if (game->clickedMovingKeys.contains(key))
+            {
+                game->clickedMovingKeys[key]=true;
+            }
+        }
+        else if (action == GLFW_RELEASE)
+        {
+            game->pressedKey = -1;
+            if (game->clickedMovingKeys.contains(key))
+            {
+                game->clickedMovingKeys[key]=false;
+            }
+        }
+
+    }
+}
+
+void Game::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+        game-> mousePressed = true;
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        game -> cursorPosX = xpos;
+        game -> cursorPosY = ypos;
+    }
+    else if(action == GLFW_RELEASE){
+        game -> mousePressed = false;
+    }
+
+}
+
+void Game::framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
+    if (width!=game->Width || height!=game->Height)
+    {
+        glViewport(0, 0, width, height);
+        game->Resize(width, height);
+    }
+
+}
+
+void Game::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
+    if(yoffset==-1)
+    {
+        game->scroll = -1;
+    }
+    else if(yoffset==1)
+    {
+        game->scroll = 1;
+    }
 }
