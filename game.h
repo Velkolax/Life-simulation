@@ -34,7 +34,7 @@ struct Input
 class Game
 {
     public:
-        bool mousePressed = false;
+        bool mousePressed = false, fullscreen=false;
         float cursorPosX,cursorPosY;
         int scroll = 0;
         unsigned int Width, Height;

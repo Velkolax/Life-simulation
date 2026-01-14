@@ -116,7 +116,13 @@ void Game::ProcessInput()
     if (input.isReleased(GLFW_KEY_ENTER)) this->tick();
     else if (input.isDown(GLFW_KEY_SPACE)) this->tick();
     else if (input.isToggled(GLFW_KEY_P)) this->tick();
-
+    
+    if (input.isPressed(GLFW_KEY_F))
+    {
+        fullscreen = !fullscreen;
+        if (fullscreen) glfwSetWindowMonitor(window,glfwGetPrimaryMonitor(),0,0,glfwGetVideoMode(glfwGetPrimaryMonitor())->width,glfwGetVideoMode(glfwGetPrimaryMonitor())->height,GLFW_DONT_CARE);
+        else glfwSetWindowMonitor(window,NULL,0,0,SCREEN_WIDTH,SCREEN_HEIGHT,GLFW_DONT_CARE);
+    }
 }
 
 void Game::Render()
@@ -176,21 +182,7 @@ void Game::Render()
 
 void Game::key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-    Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-    if (key == GLFW_KEY_F && action == GLFW_PRESS && !fullScreen && !fPressed)
-    {
-        glfwSetWindowMonitor(window,glfwGetPrimaryMonitor(),0,0,glfwGetVideoMode(glfwGetPrimaryMonitor())->width,glfwGetVideoMode(glfwGetPrimaryMonitor())->height,GLFW_DONT_CARE);
-        fPressed = true;
-    }
-    else if (key == GLFW_KEY_F && action == GLFW_RELEASE && !fullScreen && fPressed){fPressed=false;fullScreen=true;}
-    else if (key == GLFW_KEY_F && action == GLFW_PRESS && fullScreen && !fPressed)
-    {
-        glfwSetWindowMonitor(window,NULL,0,0,SCREEN_WIDTH,SCREEN_HEIGHT,GLFW_DONT_CARE);
-        fPressed = true;
-    }
-    else if (key == GLFW_KEY_F && action == GLFW_RELEASE && fullScreen && fPressed){fullScreen=false;fPressed=false;}
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
 }
 
 void Game::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
