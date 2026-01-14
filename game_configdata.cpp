@@ -29,6 +29,16 @@ int GameConfigData::getInt(const std::string& key, int defaultValue)
     exit(1);
 }
 
+void GameConfigData::setInt(const std::string& key, const std::string& value)
+{
+    if (configMap.contains(key)) configMap[key]=value;
+    else
+    {
+        std::cerr << "Nie ma takiego klucza w configu!!!" << std::endl;
+        exit(1);
+    }
+}
+
 float GameConfigData::getFloat(const std::string& key, float defaultValue)
 {
     if (configMap.contains(key)) return std::stof(configMap[key]);

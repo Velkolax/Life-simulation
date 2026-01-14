@@ -3,6 +3,7 @@
 #include <set>
 #include <ft2build.h>
 #include "BacteriaData.h"
+#include  <random>
 #include FT_FREETYPE_H
 #include "resource_manager.h"
 #include "simulation_engine.h"
@@ -47,6 +48,12 @@ Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
     ResourceManager::LoadTexture("textures/protein.png",true,"protein");
 
     GameConfigData::setConfigDataFromFile("config.txt");
+    int seed = GameConfigData::getInt("seed");
+    std::cout << "Seed: " << seed << std::endl;
+    std::mt19937 g{std::random_device{}()};
+    if (seed==0) GameConfigData::setInt("seed",std::to_string(std::uniform_int_distribution<int>{0,1000}(g)));
+    std::cout << "Seed: " << seed << std::endl;
+
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load(24);
     int bacteriaCount = GameConfigData::getInt("bacteriaCount");
@@ -55,7 +62,7 @@ Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
     board = new Board(x, y, this,bacteriaCount);
     board->InitializeNeighbour(x/2-1, true);
     board->spawnBacteria(bacteriaCount);
-    //board->spawnFood(0.1);
+    board->spawnFood(0.1);
     engine = new SimulationEngine(board);
     Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height);
 
@@ -67,6 +74,11 @@ void Game::restart()
     delete Renderer;
     delete Text;
 
+    GameConfigData::setConfigDataFromFile("config.txt");
+    int seed = GameConfigData::getInt("seed");
+    std::mt19937 g{std::random_device{}()};
+    if (seed==0) GameConfigData::setInt("seed",std::to_string(std::uniform_int_distribution<int>{0,1000}(g)));
+
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load(24);
     int bacteriaCount = GameConfigData::getInt("bacteriaCount");
@@ -75,7 +87,7 @@ void Game::restart()
     board = new Board(x, y, this,bacteriaCount);
     board->InitializeNeighbour(x/2-1, true);
     board->spawnBacteria(bacteriaCount);
-    //board->spawnFood(0.1);
+    board->spawnFood(0.1);
     engine->Restart();
     Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height);
 

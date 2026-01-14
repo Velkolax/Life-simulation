@@ -18,6 +18,8 @@ Hexagon::Hexagon(coord x, coord y, Resident resident) : x(x), y(y), resident(res
 
 Board::Board(coord width, coord height, Game* game, int bacteriaCount) : width(width), height(height), game(game)
 {
+    uint32_t seed = static_cast<uint32_t>(GameConfigData::getInt("seed"));
+    gen.seed(seed);
     board.reserve(width * height);
     for (coord y = 0; y < height; y++)
     {
@@ -130,7 +132,7 @@ void Board::tick()
     }
 
 
-    //if (step % GameConfigData::getInt("energyPlacementInterval") == 0 && !isResourceOverLimit()) spawnFood(0.1);
+    if (step % GameConfigData::getInt("energyPlacementInterval") == 0 && !isResourceOverLimit()) spawnFood(0.1);
     resourcesMerge();
 }
 
