@@ -481,10 +481,10 @@ void BacteriaData::breed(Board* board, Hexagon* dadHex, float* data, coord x, co
         int energySent = data[1] * this->energy;
         if (this->energy <= energySent) return;
 
-        int lifespanSent = std::min(data[2] * this->protein, MAX_ACCUSTOMABLE_VALUE);
-        if (!lifespanSent) lifespanSent = 1; 
+        int lifespanSent = std::min(int(data[2] * this->protein), MAX_ACCUSTOMABLE_VALUE);
+        if (!lifespanSent) lifespanSent = 1;
 
-        int speedSent = std::min(data[3] * this->protein, MAX_ACCUSTOMABLE_VALUE);
+        int speedSent = std::min(int(data[3] * this->protein), MAX_ACCUSTOMABLE_VALUE);
         if (!speedSent) speedSent = 1;
 
         if (BACTERIA_BODY_SIZE + lifespanSent + speedSent > this->protein) return;
@@ -507,8 +507,8 @@ void BacteriaData::breed(Board* board, Hexagon* dadHex, float* data, coord x, co
 
         Hexagon* childHex = possiblePlacements[std::uniform_int_distribution<int>(0, possiblePlacements.size() - 1)(gen)];
 
-        if(acid(childHex->getResident())) board->acidShortage += childHex->getData().acid.amount;
-        if(protein(childHex->getResident())) board->proteinShortage += childHex->getData().protein.amount;
+        if(::acid(childHex->getResident())) board->acidShortage += childHex->getData().acid.amount;
+        if(::protein(childHex->getResident())) board->proteinShortage += childHex->getData().protein.amount;
 
         childHex->placeChild(board, *this, energySent, lifespanSent, speedSent);
 
