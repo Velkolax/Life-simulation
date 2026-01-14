@@ -10,10 +10,13 @@ uniform int paramOffset;
 uniform int paramCount;
 uniform float minVal;
 uniform float maxVal;
-uniform float seed;
+uniform int globalSeed;
 
-float random(vec2 st) {
-    return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
+uint hash(uint x) {
+    x = ((x >> 16) ^ x) * 0x45d9f3bu;
+    x = ((x >> 16) ^ x) * 0x45d9f3bu;
+    x = (x >> 16) ^ x;
+    return x;
 }
 
 void main() {
@@ -23,11 +26,9 @@ void main() {
     if (bacteriaID >= stride || paramLocalID >= paramCount) return;
 
     uint globalParamIdx = paramOffset + paramLocalID;
-
     uint memoryIndex = globalParamIdx * stride + bacteriaID;
 
-    vec2 noiseSeed = vec2(float(bacteriaID) * 0.123 + seed, float(globalParamIdx) * 0.456);
-    float rnd = random(noiseSeed);
-
+    uint seed = hash(uint(globalSeed) + bacteriaID + hash(paramLocalID + paramOffset));
+    float rnd = float(hash(seed)) * (1.0 / 4294967296.0);
     allWeights[memoryIndex] = minVal + rnd * (maxVal - minVal);
 }

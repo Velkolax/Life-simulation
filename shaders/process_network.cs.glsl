@@ -58,7 +58,8 @@ uint hash(uint x) {
 uniform int activeBacteria;
 uniform int stride;
 uniform int indices;
-uniform float time;
+uniform int globalSeed;
+uniform int simStep;
 
 void main() {
     uint index = gl_GlobalInvocationID.x;
@@ -66,9 +67,7 @@ void main() {
     uint id = ids[index];
     if(id >= stride) return;
 
-    uint timeBits = floatBitsToUint(time);
-    uint seed = hash(index ^ timeBits);
-    float r1 = float(hash(seed)) * (1.0 / 4294967296.0);
+    uint seed = hash(uint(globalSeed) + index + hash(uint(simStep)));
     float r2 = float(hash(seed + 12345u)) * (1.0 / 4294967296.0);
 
     float inputLayer[INPUT];

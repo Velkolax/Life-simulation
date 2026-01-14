@@ -14,11 +14,15 @@ uniform int childIdx;
 
 uniform float mutationRate;
 uniform float mutationChance;
-uniform float seed;
+uniform int globalSeed;
+uniform int simStep;
 
 
-float random(vec2 st) {
-    return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+uint hash(uint x) {
+    x = ((x >> 16) ^ x) * 0x45d9f3bu;
+    x = ((x >> 16) ^ x) * 0x45d9f3bu;
+    x = (x >> 16) ^ x;
+    return x;
 }
 
 void main() {
@@ -33,14 +37,16 @@ void main() {
 
     float weightA = allWeights[addrA];
     float weightB = allWeights[addrB];
-    float rndCrossover = random(vec2(paramID, seed + 1.0));
+
+
+    uint seed = hash(uint(globalSeed) + childIdx + hash(uint(simStep)));
+    float rndProb = float(hash(seed)) * (1.0 / 4294967296.0);
+
+    float rndCrossover = float(hash(seed+37)) * (1.0 / 4294967296.0);
     float newWeight = (rndCrossover < 0.5) ? weightA : weightB;
 
-
-    float rndProb = random(vec2(paramID, seed + 123.464));
-
     if (rndProb < mutationChance) {
-        float rndVal = random(vec2(seed, paramID));
+        float rndVal = float(hash(seed+2137)) * (1.0 / 4294967296.0);
         float noise = (rndVal - 0.5) * 2.0 * mutationRate;
         newWeight += noise;
     }

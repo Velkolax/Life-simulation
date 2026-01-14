@@ -79,7 +79,7 @@ void Board::InitializeRandom(int min, int max)
 void Board::tick()
 {
     step++;
-
+    game->engine->Increment();
     struct Point
     {
         coord x;
@@ -130,7 +130,7 @@ void Board::tick()
     }
 
 
-    if (step % GameConfigData::getInt("energyPlacementInterval") == 0 && !isResourceOverLimit()) spawnFood(0.1);
+    //if (step % GameConfigData::getInt("energyPlacementInterval") == 0 && !isResourceOverLimit()) spawnFood(0.1);
     resourcesMerge();
 }
 
