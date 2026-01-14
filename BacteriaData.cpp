@@ -157,22 +157,36 @@ void BacteriaData::die(Board* board, coord x, coord y)
     board->proteinShortage += proteinDrained;
 }
 
-void BacteriaData::move(Board* board, float* data, coord x, coord y)
+
+void BacteriaData::execute(Board* board, float* data, coord x, coord y)
+{
+    //std::cout << "WYJŚCIE 1: " << data[0] << std::endl;
+    //int index = std::clamp(int(*data * BACTERIA_ACTIONS_NUMBER), 0, BACTERIA_ACTIONS_NUMBER - 1);
+    int pos = std::clamp(int(*data * 7), 0, 6);
+    if(pos)
+    {
+        auto& directions = (x & 1) ? oddDirections2lws : evenDirections2lws;
+        auto& [dx, dy] = directions[pos];
+        Hexagon* hex = board->getHexagon(x + dx, y + dy);
+        (this->*interactionsInEnumOrder[(int)hex->getResident()])(board, hex, data + 1, x, y);
+    }
+    else
+    {
+        sleep(board, NULL, data + 1, x, y);
+    }
+
+    //(this->*actions[index])(board, data + 1, x, y);
+}
+
+
+/*void BacteriaData::move(Board* board, float* data, coord x, coord y)
 {
     lastAction = Action::MoveFailure;
-    int movesCount = std::min(speed / 20, 4);
+    int movesCount = std::min(speed / 25, 3) + 1;
     Hexagon* oldHex = board->getHexagon(x, y);
     int32_t id = oldHex->getData().bacteriaIndex;
 
-    if(!consumeEnergy(GameConfigData::getFloat("moveCost"), board, oldHex->getX(), oldHex->getY())) return;
-    Hexagon* hex = directionToHex(board, data[0], oldHex->getX(), oldHex->getY());
-    if(!hex || !empty(hex->getResident())) return;
-    hex->placeBacteria(board, id);
-    oldHex->placeEmpty();
-    oldHex = hex;
-    lastAction = Action::Move;
-
-    for(int i = 1; i < movesCount; i++)
+    for(int i = 0; i < movesCount; i++)
     {
         if(!consumeEnergy(GameConfigData::getFloat("moveCost"), board, oldHex->getX(), oldHex->getY())) return;
         Hexagon* hex = directionToHex(board, data[i], oldHex->getX(), oldHex->getY());
@@ -183,9 +197,29 @@ void BacteriaData::move(Board* board, float* data, coord x, coord y)
         lastAction = Action::Move;
     }
 
+}*/
+
+void BacteriaData::move(Board* board, Hexagon* hex, float* data, coord x, coord y)
+{
+    lastAction = Action::MoveFailure;
+    int reps = repeats(*data);
+    Hexagon* oldHex = board->getHexagon(x, y);
+    int32_t id = oldHex->getData().bacteriaIndex;
+
+    for(int i = 0; i < reps; i++)
+    {
+        if(!hex || !empty(hex->getResident())) return;
+        if(!consumeEnergy(GameConfigData::getFloat("moveCost"), board, oldHex->getX(), oldHex->getY())) return;
+        hex->placeBacteria(board, id);
+        oldHex->placeEmpty();
+        oldHex = hex;
+        hex = directionToHex(board, data[i], oldHex->getX(), oldHex->getY());
+        lastAction = Action::Move;
+    }
 }
 
-void BacteriaData::attack(Board* board, float* data, coord x, coord y)
+
+/*void BacteriaData::attack(Board* board, float* data, coord x, coord y)
 {
     lastAction = Action::AttackFailure;
     Hexagon* hex = directionToHex(board, *data, x, y);
@@ -274,19 +308,112 @@ void BacteriaData::attack(Board* board, float* data, coord x, coord y)
     // ilość energii nie musi pozostawać stała więc nie ma niedoboru
 
     lastAction = Action::Attack;
+}*/
+
+void BacteriaData::attack(Board* board, Hexagon* attackedHex, float* data, coord x, coord y)
+{
+    lastAction = Action::AttackFailure;
+    int reps = repeats(*data);
+
+    for (int i = 0; i < reps; i++)
+    {
+        if(!consumeEnergy(GameConfigData::getFloat("attackCostNext"), board, x, y)) return;
+        if(!attackedHex || !bacteria(attackedHex->getResident())) return;
+        int acidUsed = std::clamp(int(*data * acid), 0, (int)acid);
+        if(!acidUsed) return;
+        BacteriaData& attacked = board->getBacteria(attackedHex->getData().bacteriaIndex);
+        acid -= acidUsed;
+        int sum = attacked.acid + attacked.energy + attacked.protein;
+        int total = acidUsed * sum / MAX_STORED_VALUE;
+
+        std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+
+        int r1 = dist(gen) * total;
+        int r2 = dist(gen) * total;
+
+        if (r1 > r2) std::swap(r1, r2);
+        int acidDrained = r1;
+        int energyDrained = r2 - r1;
+        int proteinDrained = total - r2;
+
+        acidDrained = std::min(acidDrained, (int)attacked.acid);
+        energyDrained = std::min(energyDrained, (int)attacked.energy);
+        proteinDrained = std::min(proteinDrained, (int)attacked.protein);
+
+        attacked.acid -= acidDrained;
+        attacked.energy -= energyDrained;
+        attacked.protein -= proteinDrained;
+
+        if(attacked.energy == 0) attacked.die(board, attackedHex->getX(), attackedHex->getY());
+
+        acidDrained += acidUsed;
+
+        auto& directions = (attackedHex->getX() & 1) ? oddDirections2l : evenDirections2l;
+        for(auto& [dx, dy] : directions)
+        {
+            if(!acidDrained && !energyDrained && !proteinDrained) break;
+            Hexagon* h = board->getHexagon(attackedHex->getX() + dx, attackedHex->getY() + dy);
+            if(!h) continue;
+            if(::acid(h->getResident()))
+            {
+                int flow = std::min(acidDrained, MAX_STORED_VALUE - h->getData().acid.amount);
+                h->getData().acid.amount += flow;
+                acidDrained -= flow;
+            }
+            else if(::protein(h->getResident()))
+            {
+                int flow = std::min(proteinDrained, MAX_STORED_VALUE - h->getData().protein.amount);
+                h->getData().protein.amount += flow;
+                proteinDrained -= flow;
+            }
+            else if(::energy(h->getResident()))
+            {
+                int flow = std::min(energyDrained, MAX_STORED_VALUE - h->getData().energy.amount);
+                h->getData().energy.amount += flow;
+                energyDrained -= flow;
+            }
+            else if(empty(h->getResident()))
+            {
+                if(acidDrained)
+                {
+                    int flow = std::min(acidDrained, MAX_STORED_VALUE); // Połączenie wysączonego i użytego kwasu, jako jedyny ma szansę być więszky niż MAX_STORED_VALUE
+                    h->placeAcid(flow);
+                    acidDrained -= flow;
+                }
+                else if(proteinDrained)
+                {
+                    h->placeProtein(proteinDrained);
+                    proteinDrained = 0;
+                }
+                else if(energyDrained)
+                {
+                    h->placeEnergy(energyDrained);
+                    energyDrained = 0;
+                }
+                else break;
+            }
+        }
+
+        board->acidShortage += acidDrained;
+        board->proteinShortage += proteinDrained;
+        // ilość energii nie musi pozostawać stała więc nie ma niedoboru
+
+        lastAction = Action::Attack;
+    }
 }
+
 
 void BacteriaData::cross(BacteriaData& mom,int energySent,int lifespanSent,int speedSent)
 {
-    lifespan = 1+lifespanSent;
-    speed = 1+speedSent;
+    lifespan = lifespanSent;
+    speed = speedSent;
     acid = 0;
     energy=energySent;
     protein=0;
     age=0;
 }
 
-void BacteriaData::breed(Board* board, float* data, coord x, coord y)
+/*void BacteriaData::breed(Board* board, float* data, coord x, coord y)
 {
     lastAction = Action::BreedFailure;
     Hexagon* oldHex = board->getHexagon(x, y);
@@ -333,9 +460,64 @@ void BacteriaData::breed(Board* board, float* data, coord x, coord y)
     }
 
     this->lastAction = Action::Breed;
+}*/
+
+void BacteriaData::breed(Board* board, Hexagon* dadHex, float* data, coord x, coord y)
+{
+    lastAction = Action::BreedFailure;
+    if (!this->consumeEnergy(GameConfigData::getFloat("breedCost"), board, x, y)) return;
+    if (!dadHex || !bacteria(dadHex->getResident())) return;
+
+    Hexagon* momHex = board->getHexagon(x, y);
+
+    int reps = repeats(*data);
+
+    for (int i = 0; i < reps; i++)
+    {
+        int energySent = data[1] * this->energy;
+        if (this->energy <= energySent) return;
+
+        int lifespanSent = data[2] * this->protein;
+        if (lifespanSent >= MAX_ACCUSTOMABLE_VALUE) lifespanSent = MAX_ACCUSTOMABLE_VALUE;
+        if (!lifespanSent) lifespanSent = 1; 
+
+        int speedSent = data[3] * this->protein;
+        if (speedSent >= MAX_ACCUSTOMABLE_VALUE) speedSent = MAX_ACCUSTOMABLE_VALUE;
+        if (!speedSent) speedSent = 1;
+
+        if (BACTERIA_BODY_SIZE + lifespanSent + speedSent > this->protein) return;
+
+        std::vector<Hexagon*> possiblePlacements;
+        possiblePlacements.reserve(8);
+        auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
+        for(auto& [dx,dy] : directions)
+        {
+            Hexagon* h = board->getHexagon(x + dx, y + dy);
+            if (h && ::empty(h->getResident()))
+            {
+                possiblePlacements.push_back(h);
+            }
+        }
+        if (possiblePlacements.empty()) return;
+
+        this->protein -= BACTERIA_BODY_SIZE + lifespanSent + speedSent;
+        this->energy -= energySent;
+
+        Hexagon* childHex = possiblePlacements[std::uniform_int_distribution<int>(0, possiblePlacements.size() - 1)(gen)];
+
+        childHex->placeChild(board, *this, energySent, lifespanSent, speedSent);
+
+        if (!board->emptyVacant())
+        {
+            board->getGame()->engine->reproduceNetwork(momHex->getData().bacteriaIndex, dadHex->getData().bacteriaIndex, board->popVacant());
+        }
+
+        this->lastAction = Action::Breed;
+    }
 }
 
-void BacteriaData::eat(Board* board, float* data, coord x, coord y)
+
+/*void BacteriaData::eat(Board* board, float* data, coord x, coord y)
 {
     lastAction = Action::EatFailure;
     if(!consumeEnergy(GameConfigData::getFloat("eatCost"), board, x, y)) return;
@@ -374,28 +556,71 @@ void BacteriaData::eat(Board* board, float* data, coord x, coord y)
     hex->getData().acid.amount -= toEat;
     if(hex->getData().acid.amount == 0) hex->placeEmpty();
     lastAction = Action::Eat;
+}*/
+
+void BacteriaData::eat(Board* board, Hexagon* eatenHex, float* data, coord x, coord y)
+{
+    lastAction = Action::EatFailure;
+    int reps = repeats(*data);
+    for(int i = 0; i < reps; i++)
+    {
+        if(!consumeEnergy(GameConfigData::getFloat("eatCost"), board, x, y)) return;
+        if(!eatenHex || !resource(eatenHex->getResident())) return;
+        int toEat = data[1] * eatenHex->getData().acid.amount; // wszystkie zasoby mają tylko parametr amount więc pobranie go z byle którego nic nie zmienia
+        if(::acid(eatenHex->getResident()))
+        {
+            toEat = std::min(toEat, MAX_STORED_VALUE - acid);
+            acid += toEat;
+        }
+        else if(::energy(eatenHex->getResident()))
+        {
+            toEat = std::min(toEat, MAX_STORED_VALUE - energy);
+            energy += toEat;
+        }
+        else // białko
+        {
+            int proteinPlacement = std::clamp(int(data[2] * 3), 0, 2);
+            if(proteinPlacement == 0) // magazyn
+            {
+                toEat = std::min(toEat, MAX_STORED_VALUE - protein);
+                protein += toEat;
+            }
+            else if(proteinPlacement == 1) // żywotność
+            {
+                toEat = std::min(toEat, MAX_ACCUSTOMABLE_VALUE - lifespan);
+                lifespan += toEat;
+            }
+            else // prędkość
+            {
+                toEat = std::min(toEat, MAX_ACCUSTOMABLE_VALUE - speed);
+                speed += toEat;
+            }
+        }
+        eatenHex->getData().acid.amount -= toEat;
+        if(eatenHex->getData().acid.amount == 0) eatenHex->placeEmpty();
+        lastAction = Action::Eat;
+    }
 }
 
-void BacteriaData::sleep(Board* board, float* data, coord x, coord y)
+
+/*void BacteriaData::sleep(Board* board, float* data, coord x, coord y)
 {
     lastAction = Action::SleepFailure;
     if(!consumeEnergy(GameConfigData::getFloat("sleepCost"), board, x, y)) return;
+    lastAction = Action::Sleep;
+}*/
+
+
+float sleepEnergyUseMultiplier[] = { 0.5f, 0.2f, 0.05f, 0.01f };
+
+void BacteriaData::sleep(Board* board, Hexagon* hex, float* data, coord x, coord y)
+{
+    lastAction = Action::SleepFailure;
+    int reps = repeats(*data);
+    if(!consumeEnergy(GameConfigData::getFloat("sleepCost") * sleepEnergyUseMultiplier[reps-1], board, x, y)) return;
     lastAction = Action::Sleep;
 }
 
 static_assert(MEMORY_SIZE + 1 + 6 + TWO_NEIGHBOUR_LAYERS_SIZE * 3 == INPUT, "SEND_SIZE too small");
 
-/*AcidData::AcidData(uint8_t amount)
-{
-    this->amount = amount;
-}
 
-EnergyData::EnergyData(uint8_t amount)
-{
-    this->amount = amount;
-}
-
-ProteinData::ProteinData(uint8_t amount)
-{
-    this->amount = amount;
-}*/

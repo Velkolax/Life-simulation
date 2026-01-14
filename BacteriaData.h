@@ -26,7 +26,7 @@ inline unsigned int Seed;
 #define MAX_ACCUSTOMABLE_VALUE 100
 #define MAX_STORED_VALUE 200
 #define TWO_NEIGHBOUR_LAYERS_SIZE 18
-#define BACTERIA_ACTIONS_NUMBER 5
+//#define BACTERIA_ACTIONS_NUMBER 5
 
 #define BACTERIA_BODY_SIZE 10
 
@@ -95,6 +95,7 @@ struct BacteriaData
         energy = e;
         return true;
     }
+
     inline bool consumeEnergyValue(int value, Board* board, coord x, coord y)
     {
         int e = int(energy) - value;
@@ -102,6 +103,7 @@ struct BacteriaData
         energy = e;
         return true;
     }
+    
     inline void getOlder(Board* board, coord x, coord y)
     {
         age += 1;
@@ -113,31 +115,40 @@ struct BacteriaData
         std::uniform_real_distribution<float> dist(0.0f, 1.0f);
         if (dist(gen) < diseaseChance) die(board, x, y); // Choroba (prawdopodobieństwo wzrasta z lifespan)
     }
+
+    int repeats(float f)
+    {
+        return std::min(std::min(int(f * 4), speed / 25), 3) + 1;
+    }
+
     void die(Board* board, coord x, coord y);
 
-    void move(Board* board, float* data, coord x, coord y);
-    void attack(Board* board, float* data, coord x, coord y);
-    void breed(Board* board, float* data, coord x, coord y);
-    void eat(Board* board, float* data, coord x, coord y);
-    void sleep(Board* board, float* data, coord x, coord y);
+    void move(Board* board, Hexagon* hex, float* data, coord x, coord y);
+    void attack(Board* board, Hexagon* attackedHex, float* data, coord x, coord y);
+    void breed(Board* board, Hexagon* dadHex, float* data, coord x, coord y);
+    void eat(Board* board, Hexagon* eatenHex, float* data, coord x, coord y);
+    void sleep(Board* board, Hexagon* hex, float* data, coord x, coord y);
 
-    inline static constexpr void (BacteriaData::*actions[BACTERIA_ACTIONS_NUMBER])(Board*, float*, coord, coord) =
+    /*inline static constexpr void (BacteriaData::*actions[BACTERIA_ACTIONS_NUMBER])(Board*, float*, coord, coord) =
     {
         &BacteriaData::attack,
         &BacteriaData::sleep,
         &BacteriaData::eat,
         &BacteriaData::breed,
         &BacteriaData::move,
+    };*/
+
+    inline static constexpr void (BacteriaData::*interactionsInEnumOrder[])(Board*, Hexagon*, float*, coord, coord) =
+    {
+        &BacteriaData::sleep,   // Wall
+        &BacteriaData::move,    // Empty
+        &BacteriaData::breed,   // Bacteria
+        &BacteriaData::eat,     // Acid
+        &BacteriaData::eat,     // Energy
+        &BacteriaData::eat      // Protein
     };
 
-
-    inline void execute(Board* board, float* data, coord x, coord y)
-    {
-        //std::cout << "WYJŚCIE 1: " << data[0] << std::endl;
-        int index = std::clamp(int(*data * BACTERIA_ACTIONS_NUMBER), 0, BACTERIA_ACTIONS_NUMBER - 1);
-
-        (this->*actions[index])(board, data + 1, x, y);
-    }
+    void execute(Board* board, float* data, coord x, coord y);
 };
 
 
