@@ -116,7 +116,7 @@ void Game::ProcessInput()
     if (input.isReleased(GLFW_KEY_ENTER)) this->tick();
     else if (input.isDown(GLFW_KEY_SPACE)) this->tick();
     else if (input.isToggled(GLFW_KEY_P)) this->tick();
-    
+
     if (input.isPressed(GLFW_KEY_F))
     {
         fullscreen = !fullscreen;

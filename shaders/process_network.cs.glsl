@@ -7,10 +7,10 @@ const int HIDDEN2 = 32;
 const int HIDDEN3 = 16;
 const int OUTPUT = 16;
 
-const int ACTIONS=5;
-const int DIRECTIONS=6;
+const int DIRECTIONS=7;
 const int MEMORY=3;
-const int PARAMETERS=OUTPUT-ACTIONS-DIRECTIONS-MEMORY;
+const int PARAMETERS=4;
+const int PARAMETER_START = MEMORY + DIRECTIONS;
 
 
 const int SIZE = INPUT * HIDDEN1 + HIDDEN1 + HIDDEN1 * HIDDEN2 + HIDDEN2 + HIDDEN2 * HIDDEN3 + HIDDEN3 + HIDDEN3 * OUTPUT + OUTPUT;
@@ -43,10 +43,8 @@ float relu(float x){
 float erf(float x) {
     float s = sign(x);
     float a = abs(x);
-
     float t = 1.0 / (1.0 + 0.3275911 * a);
     float y = 1.0 - (((((1.061405429 * t + -1.453152027) * t) + 1.421413741) * t + -0.284496736) * t + 0.254829592) * t * exp(-a * a);
-
     return s * y;
 }
 
@@ -126,65 +124,36 @@ void main() {
             sum += h3[j] * weight;
             wPtr++;
         }
-        rawOutputs[i] = sum * 1.0;
+        rawOutputs[i] = sum;
     }
 
-    float maxLogit = rawOutputs[0];
-    for(int i=1;i<ACTIONS;i++) maxLogit = max(maxLogit,rawOutputs[i]);
+    float maxLogit = rawOutputs[MEMORY];
+    for(int i=1;i<DIRECTIONS;i++) maxLogit = max(maxLogit,rawOutputs[MEMORY+i]);
 
     float sumExp = 0.0;
-    float probs[ACTIONS];
-    for(int i=0;i<ACTIONS;i++) {
-        probs[i] = exp(rawOutputs[i] - maxLogit);
+    float probs[DIRECTIONS];
+    for(int i=0; i<DIRECTIONS; i++) {
+        probs[i] = exp(rawOutputs[MEMORY+i] - maxLogit);
         sumExp += probs[i];
     }
-    for(int i=0;i<ACTIONS;i++) probs[i] /= sumExp;
-
-    int chosenAction = 0;
-//    float cumulativeProb = 0.0;
-//    for(int i=0;i<ACTIONS;i++){
-//        cumulativeProb += probs[i];
-//        if(r1 <= cumulativeProb){
-//            chosenAction = i;
-//            break;
-//        }
-//    }
-    for(int i=1;i<ACTIONS;i++){
-        if(probs[i]>probs[chosenAction]) chosenAction=i;
-    }
-    outData[index][MEMORY] = float(chosenAction) / float(ACTIONS-1);
-
-    float maxLogit2 = rawOutputs[ACTIONS];
-    for(int i=1;i<DIRECTIONS;i++) maxLogit2 = max(maxLogit2,rawOutputs[ACTIONS+i]);
-
-    float sumExp2 = 0.0;
-    float probs2[DIRECTIONS];
-    for(int i=0; i<DIRECTIONS; i++) {
-        probs2[i] = exp(rawOutputs[ACTIONS+i] - maxLogit2);
-        sumExp2 += probs2[i];
-    }
-    for(int i=0; i<DIRECTIONS; i++) probs2[i] /= sumExp2;
+    for(int i=0; i<DIRECTIONS; i++) probs[i] /= sumExp;
 
     int chosenDirection = 0;
-//    float cumulativeProb2 = 0.0;
-//    for(int i=0; i<DIRECTIONS; i++) {
-//        cumulativeProb2 += probs2[i];
-//        if(r2 <= cumulativeProb2) {
-//            chosenDirection = i;
-//            break;
-//        }
-//    }
-    for(int i=1;i<DIRECTIONS;i++){
-        if(probs2[i]>probs2[chosenDirection]) chosenDirection=i;
+    float cumulativeProb = 0.0;
+    for(int i=0; i<DIRECTIONS; i++) {
+        cumulativeProb += probs[i];
+        if(r2 <= cumulativeProb) {
+            chosenDirection = i;
+            break;
+        }
     }
 
-    outData[index][MEMORY+1] = float(chosenDirection) / float(DIRECTIONS-1);
 
-    for(int i=0;i<MEMORY;i++){
-        outData[index][i] = (tanh(rawOutputs[i+ACTIONS+DIRECTIONS])+1)*0.5;
-    }
+    for(int i=0;i<MEMORY;i++)
+        outData[index][i] = (tanh(rawOutputs[i])+1)*0.5;
 
-    for(int i=0;i<PARAMETERS;i++){
-        outData[index][i+MEMORY+2] = (tanh(rawOutputs[i+ACTIONS+DIRECTIONS+MEMORY])+1)*0.5;
-    }
+    outData[index][MEMORY] = float(chosenDirection) / float(DIRECTIONS-1);
+
+    for(int i=0;i<PARAMETERS;i++)
+        outData[index][i+MEMORY+1] = (tanh(rawOutputs[i+PARAMETER_START])+1)*0.5;
 }
