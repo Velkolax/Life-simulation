@@ -11,14 +11,14 @@ void BacteriaData::randomize()
     std::uniform_real_distribution<float> memoryDist(0., 1.);
     for(int i = 0; i < MEMORY_SIZE; i++) memory[i] = memoryDist(gen);
 
-    std::uniform_int_distribution<uint8_t> accustomableDist(1, MAX_ACCUSTOMABLE_VALUE);
+    std::uniform_int_distribution<uint8_t> accustomableDist(1, MAX_ACCUSTOMABLE_VALUE/4);
     lifespan = accustomableDist(gen);
     speed = accustomableDist(gen);
 
-    std::uniform_int_distribution<uint8_t> storedDist(1, MAX_STORED_VALUE);
-    acid = storedDist(gen);
-    energy = storedDist(gen);
-    protein = storedDist(gen);
+    //std::uniform_int_distribution<uint8_t> storedDist(1, MAX_STORED_VALUE);
+    acid = std::uniform_int_distribution<uint8_t>(0, MAX_STORED_VALUE/10)(gen);
+    energy = std::uniform_int_distribution<uint8_t>(MAX_STORED_VALUE/4, MAX_STORED_VALUE)(gen);
+    protein = std::uniform_int_distribution<uint8_t>(MAX_STORED_VALUE/10, MAX_STORED_VALUE/4)(gen);
     //protein = 0;
     age = 0;
 }
@@ -98,13 +98,13 @@ void BacteriaData::die(Board* board, coord x, coord y)
 {
     Hexagon* hex = board->getHexagon(x, y);
     int32_t id = hex->getData().bacteriaIndex;
-    hex->placeEmpty();
-    *this = BacteriaData{};
-    board->addVacant(id);
-
     int acidDrained = acid;
     int energyDrained = energy;
     int proteinDrained = protein + lifespan + speed + BACTERIA_BODY_SIZE;
+
+    hex->placeEmpty();
+    *this = BacteriaData{};
+    board->addVacant(id);
     
     auto& directions = (x & 1) ? oddDirections2lws : evenDirections2lws;
     for(auto& [dx, dy] : directions)
