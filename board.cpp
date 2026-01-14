@@ -154,6 +154,7 @@ void Board::resourcesMerge()
                         if(hexR + hR <= MAX_STORED_VALUE)
                         {
                             h->getData().acid.amount += hR;
+                            hexR += hR;
                             h->placeEmpty();
                         }
                     }
