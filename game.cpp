@@ -116,6 +116,7 @@ void Game::Run()
 
 void Game::tick()
 {
+    if (board->getAliveBacteriaCount()<=0) this->restart();
     for (int i=0;i<GameConfigData::getInt("substeps");i++) board->tick();
 }
 
