@@ -33,17 +33,16 @@ void main() {
 
     float weightA = allWeights[addrA];
     float weightB = allWeights[addrB];
-    float newWeight = (weightA + weightB) * 0.5;
+    float rndCrossover = random(vec2(paramID, seed + 1.0));
+    float newWeight = (rndCrossover < 0.5) ? weightA : weightB;
 
 
-    float rndProb = random(vec2(paramID, seed));
+    float rndProb = random(vec2(paramID, seed + 123.464));
 
     if (rndProb < mutationChance) {
         float rndVal = random(vec2(seed, paramID));
         float noise = (rndVal - 0.5) * 2.0 * mutationRate;
         newWeight += noise;
     }
-
-    // Zapis do slotu dziecka
-    allWeights[addrChild] = newWeight;
+    allWeights[addrChild] = clamp(newWeight, -5.0, 5.0);;
 }

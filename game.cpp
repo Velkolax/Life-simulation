@@ -41,9 +41,9 @@ void Game::Init()
 
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load(24);
-    int bacteriaCount = 70000;
-    int x = 300;
-    int y = 300;
+    int bacteriaCount = 100000;
+    int x = 400;
+    int y = 400;
     board = new Board(x, y, this,bacteriaCount);
     int total = x*y;
     board->InitializeNeighbour(249, true);
@@ -171,6 +171,8 @@ void Game::Render()
     }
 
      Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getAliveBacteriaCount()),Width*0.5,10,1.0);
+    Text->RenderText("EAT PERCENTAGE: " + std::to_string(board->getActionPercentage(Action::Eat)),Width*0.5,40,1.0);
+    Text->RenderText("EAT_FAILURE PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::EatFailure)),Width*0.5,70,1.0);
     // Text->RenderText("GENERATION: "+std::to_string(counter),Width*0.5,40,1.0);
     //
     // Text->RenderText("PROTEIN NUMBER: " + std::to_string(board->getProteinCount()),Width*0.5,70,1.0);
@@ -178,7 +180,7 @@ void Game::Render()
     // Text->RenderText("HIGHEST AGE: " + std::to_string(board->getHighestAge()),Width*0.5,130,1.0);
     // Text->RenderText("LOWEST AGE: "+ std::to_string(board->getLowestAge()),Width*0.5,160,1.0);
     Text->RenderText("FAILURE RATIO: "+ std::to_string(board->getFailureRatio()),Width*0.5,310,1.0);
-    Text->RenderText("SLEEP PERCENTAGE: " + std::to_string(board->getActionPercentage(Action::Sleep)),Width*0.5,340,1.0);
-    Text->RenderText("BREED_FAILURE PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::BreedFailure)),Width*0.5,370,1.0);
-    Text->RenderText("BREED PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::Breed)),Width*0.5,400,1.0);
+    //Text->RenderText("SLEEP PERCENTAGE: " + std::to_string(board->getActionPercentage(Action::Sleep)),Width*0.5,340,1.0);
+    //Text->RenderText("BREED_FAILURE PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::BreedFailure)),Width*0.5,370,1.0);
+    //Text->RenderText("BREED PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::Breed)),Width*0.5,400,1.0);
 }

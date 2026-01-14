@@ -130,7 +130,7 @@ void Board::tick()
 
 
     counter++;
-    if (counter % 100 == 0) spawnFood(0.05);
+    if (counter % 10 == 0) spawnFood(0.1);
     resourcesMerge();
 }
 
@@ -141,7 +141,7 @@ void Board::resourcesMerge()
         for (int x = 0; x < getWidth(); x++)
         {
             Hexagon* hex = getHexagon(x, y);
-            if (resource(hex->getResident()))
+            if (protein(hex->getResident()) || acid(hex->getResident()))
             {
                 uint8_t hexR = hex->getData().acid.amount; // struktura wewnętrzna wszystkich zasobów jest taka sama więc pobierzmy ilość jako z kwasu 
                 auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
@@ -291,7 +291,7 @@ void Hexagon::placeAcid(uint8_t amount)
 void Hexagon::placeEnergy()
 {
     resident = Resident::Energy;
-    data.energy.amount = std::uniform_int_distribution<uint8_t>(50, 100)(gen);
+    data.energy.amount = std::uniform_int_distribution<uint8_t>(150, 170)(gen);
 }
 
 void Hexagon::placeEnergy(uint8_t amount)
@@ -353,9 +353,10 @@ void Board::spawnFood(double foodRatio)
         int index = dist(gen);
         if (empty(board[range[i]].getResident()))
         {
-            if (index<60) board[range[i]].placeEnergy();
-            else if (index<95) board[range[i]].placeProtein();
-            else board[range[i]].placeAcid();
+            // if (index<60) board[range[i]].placeEnergy();
+            // else if (index<95) board[range[i]].placeProtein();
+            // else board[range[i]].placeAcid();
+            board[range[i]].placeEnergy();
         }
 
     }

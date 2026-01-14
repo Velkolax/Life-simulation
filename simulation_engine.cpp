@@ -105,7 +105,7 @@ void SimulationEngine::InitNetworkData()
 
 
     int totalBiases = BIASES;
-    DispatchInit(0, totalBiases, 0.0f,0.0f);
+    DispatchInit(0, totalBiases, 0.05f,0.05f);
 
     int currentParamOffset = BIASES;
 
@@ -205,8 +205,8 @@ void SimulationEngine::reproduceNetwork(int parentA, int parentB, int childIdx)
     reproShader.SetInteger("parentBIdx", parentB);
     reproShader.SetInteger("childIdx", childIdx);
 
-    reproShader.SetFloat("mutationRate", 0.05f);
-    reproShader.SetFloat("mutationChance", 0.1f);
+    reproShader.SetFloat("mutationRate", 0.01f);
+    reproShader.SetFloat("mutationChance", 0.05f);
     reproShader.SetFloat("seed", (float)glfwGetTime());
 
     glDispatchCompute((SIZE + 63) / 64, 1, 1);
