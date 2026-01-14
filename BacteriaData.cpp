@@ -168,7 +168,11 @@ void BacteriaData::execute(Board* board, float* data, coord x, coord y)
         auto& directions = (x & 1) ? oddDirections2lws : evenDirections2lws;
         auto& [dx, dy] = directions[pos];
         Hexagon* hex = board->getHexagon(x + dx, y + dy);
-        (this->*interactionsInEnumOrder[(int)hex->getResident()])(board, hex, data + 1, x, y);
+        if (hex!=nullptr)
+        {
+            (this->*interactionsInEnumOrder[(int)hex->getResident()])(board, hex, data + 1, x, y);
+        }
+
     }
     else
     {
