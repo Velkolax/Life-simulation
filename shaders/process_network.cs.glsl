@@ -126,7 +126,7 @@ void main() {
             sum += h3[j] * weight;
             wPtr++;
         }
-        rawOutputs[i] = sum;
+        rawOutputs[i] = sum * 10.0;
     }
 
     float maxLogit = rawOutputs[0];
@@ -141,17 +141,17 @@ void main() {
     for(int i=0;i<ACTIONS;i++) probs[i] /= sumExp;
 
     int chosenAction = 0;
-//    float cumulativeProb = 0.0;
-//    for(int i=0;i<ACTIONS;i++){
-//        cumulativeProb += probs[i];
-//        if(r1 <= cumulativeProb){
-//            chosenAction = i;
-//            break;
-//        }
-//    }
-    for(int i=1;i<ACTIONS;i++){
-        if(probs[i]>probs[chosenAction]) chosenAction=i;
+    float cumulativeProb = 0.0;
+    for(int i=0;i<ACTIONS;i++){
+        cumulativeProb += probs[i];
+        if(r1 <= cumulativeProb){
+            chosenAction = i;
+            break;
+        }
     }
+//    for(int i=1;i<ACTIONS;i++){
+//        if(probs[i]>probs[chosenAction]) chosenAction=i;
+//    }
     outData[index][MEMORY] = float(chosenAction) / float(ACTIONS-1);
 
     float maxLogit2 = rawOutputs[ACTIONS];
@@ -166,17 +166,17 @@ void main() {
     for(int i=0; i<DIRECTIONS; i++) probs2[i] /= sumExp2;
 
     int chosenDirection = 0;
-//    float cumulativeProb2 = 0.0;
-//    for(int i=0; i<DIRECTIONS; i++) {
-//        cumulativeProb2 += probs2[i];
-//        if(r2 <= cumulativeProb2) {
-//            chosenDirection = i;
-//            break;
-//        }
-//    }
-    for(int i=1;i<DIRECTIONS;i++){
-        if(probs2[i]>probs2[chosenDirection]) chosenDirection=i;
+    float cumulativeProb2 = 0.0;
+    for(int i=0; i<DIRECTIONS; i++) {
+        cumulativeProb2 += probs2[i];
+        if(r2 <= cumulativeProb2) {
+            chosenDirection = i;
+            break;
+        }
     }
+//    for(int i=1;i<DIRECTIONS;i++){
+//        if(probs2[i]>probs2[chosenDirection]) chosenDirection=i;
+//    }
 
     outData[index][MEMORY+1] = float(chosenDirection) / float(DIRECTIONS-1);
 
