@@ -49,8 +49,8 @@ static_assert(oddDirections2l.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
 static inline std::string stringActions[] =
 {
     "Nothing",
-    "Move", "Attack", "Sleep", "Eat", "Breed",
-    "MoveFailure", "AttackFailure", "SleepFailure", "EatFailure", "BreedFailure"
+    "Attack", "Sleep", "Eat", "Breed", "Move"
+    "AttackFailure", "SleepFailure", "EatFailure", "BreedFailure", "MoveFailure"
 };
 
 enum class Action
@@ -125,11 +125,11 @@ struct BacteriaData
 
     inline static constexpr void (BacteriaData::*actions[BACTERIA_ACTIONS_NUMBER])(Board*, float*, coord, coord) =
     {
-        &BacteriaData::move,
         &BacteriaData::attack,
         &BacteriaData::sleep,
         &BacteriaData::eat,
-        &BacteriaData::breed
+        &BacteriaData::breed,
+        &BacteriaData::move,
     };
 
 

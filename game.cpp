@@ -1,5 +1,5 @@
 #include "game.h"
-
+#include "game_configdata.h"
 #include <set>
 
 #include <ft2build.h>
@@ -39,14 +39,15 @@ void Game::Init()
     ResourceManager::LoadTexture("textures/acid.png",true,"acid");
     ResourceManager::LoadTexture("textures/protein.png",true,"protein");
 
+    GameConfigData::setConfigDataFromFile("config.txt");
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load(24);
-    int bacteriaCount = 10000;
+    int bacteriaCount = GameConfigData::getInt("bacteriaCount");
     int x = 300;
     int y = 300;
     board = new Board(x, y, this,bacteriaCount);
     int total = x*y;
-    board->InitializeNeighbour(249, true);
+    board->InitializeNeighbour(x/2-1, true);
     board->spawnBacteria(bacteriaCount);
     board->spawnFood(0.1);
 
@@ -182,5 +183,6 @@ void Game::Render()
     Text->RenderText("ATTACK_FAILURE PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::AttackFailure)),Width*0.5,250,1.0);
     Text->RenderText("SLEEP PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::Sleep)),Width*0.5,280,1.0);
     Text->RenderText("FAILURE RATIO: "+ std::to_string(board->getFailureRatio()),Width*0.5,310,1.0);
+    Text->RenderText("STEP: "+std::to_string(board->getStep()),Width*0.5,340,1.0);
 
 }

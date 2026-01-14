@@ -123,6 +123,7 @@ public:
     float getActionPercentage(Action a);
     void spawnFood(double foodRatio);
     void spawnBacteria(int bacteriaCount);
+    bool isResourceOverLimit();
     // gettery/settery
     inline coord getWidth() const noexcept { return width; }
     inline coord getHeight() const noexcept { return height; }
