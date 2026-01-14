@@ -43,8 +43,8 @@ void Game::Init()
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load(24);
     int bacteriaCount = GameConfigData::getInt("bacteriaCount");
-    int x = 300;
-    int y = 300;
+    int x = GameConfigData::getInt("width");
+    int y = GameConfigData::getInt("height");
     board = new Board(x, y, this,bacteriaCount);
     int total = x*y;
     board->InitializeNeighbour(x/2-1, true);

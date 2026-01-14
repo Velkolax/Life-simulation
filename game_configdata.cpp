@@ -1,5 +1,5 @@
 #include "game_configdata.h"
-
+#include <iostream>
 #include <algorithm>
 
 std::unordered_map<std::string, std::string> GameConfigData::configMap;
@@ -25,12 +25,14 @@ void GameConfigData::setConfigDataFromFile(std::string filename)
 int GameConfigData::getInt(const std::string& key, int defaultValue)
 {
     if (configMap.contains(key)) return std::stoi(configMap[key]);
-    return defaultValue;
+    std::cerr << "Nie ma takiego klucza w configu!!!" << std::endl;
+    exit(1);
 }
 
 float GameConfigData::getFloat(const std::string& key, float defaultValue)
 {
     if (configMap.contains(key)) return std::stof(configMap[key]);
-    return defaultValue;
+    std::cerr << "Nie ma takiego klucza w configu!!!" << std::endl;
+    exit(1);
 }
 
