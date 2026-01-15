@@ -247,6 +247,7 @@ void SpriteRenderer::generateSprites(Board *board)
             else if (game->getInput().isToggled(GLFW_KEY_1)) color.y = 1.0f-((float)bac.protein/(float)MAX_STORED_VALUE);
             else if (game->getInput().isToggled(GLFW_KEY_2)) color.x = (bac.lastAction==Action::Eat ? 0.2f : 0.7f);
             else if (game->getInput().isToggled(GLFW_KEY_3)) color.y = 1.0f-((float)bac.age/(float)board->highestAge);
+            else if (game->getInput().isToggled(GLFW_KEY_4)) color.y = 1.0f-((float)bac.mothered/5.0f);
         }
 
         glm::vec2 hexPos = calculateHexPosition(hex->getX(), hex->getY(), size);

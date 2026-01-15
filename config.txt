@@ -2,6 +2,7 @@ seed=0
 bacteriaCount=1000
 width=100
 height=100
+onlyStorage=1
 
 moveCost=0.3
 attackCost=0.3

@@ -123,7 +123,7 @@ void main() {
             sum += h3[j] * weight;
             wPtr++;
         }
-        rawOutputs[i] = sum;
+        rawOutputs[i] = sum * 1.0;
     }
 
     float maxLogit = rawOutputs[MEMORY];

@@ -91,7 +91,7 @@ struct BacteriaData
 
     inline bool consumeEnergy(float multiplier, Board* board, coord x, coord y)
     {
-        int e = int(energy) - std::max(int(multiplier * (acid + protein + energy) * 0.05), 1);
+        int e = int(energy) - std::max(int(multiplier * (energy) * 0.05), 1);
         if (e <= 0) { die(board, x, y); return false; }
         energy = e;
         return true;
