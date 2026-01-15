@@ -134,6 +134,7 @@ void Board::tick()
 
     if (step % GameConfigData::getInt("energyPlacementInterval") == 0 && !isResourceOverLimit()) spawnFood(0.1);
     spawnProteinFromShortage();
+    pushResourcesToCenter();
     //resourcesMerge();
 }
 
@@ -421,6 +422,7 @@ void Board::spawnProteinFromShortage()
     }
 }
 
+
 bool Board::isResourceOverLimit()
 {
     int resourceCounter = 0;
@@ -431,6 +433,43 @@ bool Board::isResourceOverLimit()
     }
     if (resourceCounter > (int)(board.size() * GameConfigData::getFloat("energyThreshold"))) return true;
     return false;
+}
+
+void Board::pushResourcesToCenter()
+{
+    for (int i=0;i<board.size();i++)
+    {
+        Hexagon *hex = getHexagon(i);
+        int xCenter=getWidth()/2,yCenter=getHeight()/2;
+        int x=hex->getX(),y=hex->getY();
+        if (resource(hex->getResident()))
+        {
+            auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
+            auto chosenDir = std::pair<coord,coord>(0,0);
+            float minDistance = MAXFLOAT;
+            for(auto& [dx,dy] : directions)
+            {
+                Hexagon* h = getHexagon(hex->getX() + dx, hex->getY() + dy);
+                if (h!=nullptr && empty(h->getResident()))
+                {
+                    int xh=hex->getX(),yh=hex->getY();
+                    glm::vec2 rPosHex = game->Renderer->calculateHexPosition(xh,yh,10);
+                    glm::vec2 rPosCenter = game->Renderer->calculateHexPosition(xCenter,yCenter,10);
+                    float distance = glm::distance(rPosHex,rPosCenter);
+                    if (distance<minDistance)
+                    {
+                        minDistance=distance;
+                        chosenDir = std::pair(dx,dy);
+                    }
+                }
+            }
+            Hexagon* h = getHexagon(hex->getX() + chosenDir.first, hex->getY() + chosenDir.second);
+            if (energy(hex->getResident())) h->placeEnergy(hex->getData().energy.amount);
+            else if (protein(hex->getResident())) h->placeProtein(hex->getData().protein.amount);
+            else if (acid(hex->getResident())) h->placeAcid(hex->getData().acid.amount);
+            hex->placeEmpty();
+        }
+    }
 }
 
 int Board::getAliveBacteriaCount()

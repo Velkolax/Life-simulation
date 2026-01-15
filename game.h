@@ -41,6 +41,7 @@ class Game
         Board* board;
         SimulationEngine* engine;
         TextRenderer  *Text;
+    SpriteRenderer* Renderer;
         GLFWwindow* window;
         Game();
         ~Game();

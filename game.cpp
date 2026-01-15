@@ -8,7 +8,7 @@
 #include "resource_manager.h"
 #include "simulation_engine.h"
 
-SpriteRenderer* Renderer;
+
 unsigned int SCREEN_WIDTH = 800;
 unsigned int SCREEN_HEIGHT = 600;
 bool fullScreen = false;

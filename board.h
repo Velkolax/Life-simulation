@@ -126,6 +126,7 @@ public:
     void spawnBacteria(int bacteriaCount);
     void spawnProteinFromShortage();
     bool isResourceOverLimit();
+    void pushResourcesToCenter();
     // gettery/settery
     inline coord getWidth() const noexcept { return width; }
     inline coord getHeight() const noexcept { return height; }
