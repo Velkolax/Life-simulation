@@ -217,6 +217,7 @@ void Game::Render()
     Text->RenderText("BREED_FAILURE_PROTEIN PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::BreedFailureNoEnergy)),Width*0.5,370,1.0);
     Text->RenderText("BREED_FAILURE_PROTEIN PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::BreedFailureNoSpace)),Width*0.5,400,1.0);
     Text->RenderText("PROTEIN DEFICIT: "+ std::to_string(board->proteinShortage),Width*0.5,430,1.0);
+    Text->RenderText("PROTEIN SUM: " + std::to_string(board->getProteinCount()),Width*0.5,460,1.0);
 
 }
 

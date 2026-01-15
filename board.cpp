@@ -183,9 +183,12 @@ size_t Board::getProteinCount()
             ResidentData res = hex->getData();
             BacteriaData bac = getBacteria(res.bacteriaIndex);
             proteinCount += bac.protein;
+            proteinCount += bac.speed;
+            proteinCount += bac.lifespan;
+            proteinCount += 10;
         }
     }
-    return proteinCount;
+    return proteinCount+proteinShortage;
 }
 
 int Board::getHighestAge()
