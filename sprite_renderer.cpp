@@ -277,11 +277,11 @@ void SpriteRenderer::generateSprites(Board *board)
         {
             BacteriaData &bac = board->getBacteria(hex->getData().bacteriaIndex);
             color = palette[hex->getClan()-1];
-            if (game->getInput().isToggled(GLFW_KEY_0)) color.x = 1.0f-((float)bac.energy/(float)MAX_STORED_VALUE);
-            else if (game->getInput().isToggled(GLFW_KEY_1)) color.y = 1.0f-((float)bac.protein/(float)MAX_STORED_VALUE);
-            else if (game->getInput().isToggled(GLFW_KEY_2)) color.x = (bac.lastAction==Action::Eat ? 0.2f : 0.7f);
-            else if (game->getInput().isToggled(GLFW_KEY_3)) color.y = 1.0f-((float)bac.age/(float)board->highestAge);
-            else if (game->getInput().isToggled(GLFW_KEY_4)) color.y = 1.0f-((float)bac.mothered/5.0f);
+            if (game->getInput().isToggled(GLFW_KEY_0)) color ={1.0f, 1.0f-((float)bac.energy/(float)MAX_STORED_VALUE),1.0f};
+            else if (game->getInput().isToggled(GLFW_KEY_1)) color ={1.0f, 1.0f-((float)bac.protein/(float)MAX_STORED_VALUE),1.0f};
+            else if (game->getInput().isToggled(GLFW_KEY_2)) color = {1.0f, (bac.lastAction==Action::Eat ? 0.2f : 0.7f),1.0f};
+            else if (game->getInput().isToggled(GLFW_KEY_3)) color = {1.0f, 1.0f-((float)bac.age/(float)board->highestAge),1.0f};
+            else if (game->getInput().isToggled(GLFW_KEY_4)) color = {1.0f,1.0f-((float)bac.mothered/5.0f),1.0f};
         }
 
         glm::vec2 hexPos = calculateHexPosition(hex->getX(), hex->getY(), size);

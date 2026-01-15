@@ -183,6 +183,8 @@ void Game::Render()
             Text->RenderText("SPEED: " + std::to_string(bac.speed),10,130,1.0);
             Text->RenderText("LIFESPAN: " + std::to_string(bac.lifespan),10,160,1.0);
             Text->RenderText("LAST ACTION: "+stringActions[(int)bac.lastAction],10,190,1.0);
+            Text->RenderText("MOTHRED: "+std::to_string(bac.mothered),10,220,1.0);
+            Text->RenderText("FATHERED: "+std::to_string(bac.fathered),10,250,1.0);
         }
         if (hex!=nullptr && protein(hex->getResident()))
         {

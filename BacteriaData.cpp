@@ -551,7 +551,9 @@ void BacteriaData::breed(Board* board, Hexagon* dadHex, float* data, coord x, co
         {
             board->getGame()->engine->reproduceNetwork(momHex->getData().bacteriaIndex, dadHex->getData().bacteriaIndex, board->popVacant());
         }
-
+        this->mothered++;
+        BacteriaData &dad = board->getBacteria(dadHex->getData().bacteriaIndex);
+        dad.fathered++;
         this->lastAction = Action::Breed;
     }
 }
