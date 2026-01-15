@@ -134,7 +134,7 @@ void Board::tick()
 
     if (step % GameConfigData::getInt("energyPlacementInterval") == 0 && !isResourceOverLimit()) spawnFood(0.1);
     spawnProteinFromShortage();
-    pushResourcesToCenter();
+    if (step % GameConfigData::getInt("resourceCenteringInterval") == 0) pushResourcesToCenter();
     //resourcesMerge();
 }
 
