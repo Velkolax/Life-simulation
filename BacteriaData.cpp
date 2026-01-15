@@ -80,8 +80,7 @@ constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE+1> evenD
 {{
     { 0,  0},
     { 0, -1}, {-1, -1}, {-1,  0}, { 0,  1}, { 1,  0}, { 1, -1},
-    { 0, -2}, {-1, -2}, {-2, -1}, {-2,  0}, {-2,  1}, {-1,  1},
-    { 0,  2}, { 1,  1}, { 2,  1}, { 2,  0}, { 2, -1}, { 1, -2}
+    { 0, -2}, {-1, -2}, {-2, -1}, {-2,  0}, {-2,  1}, {-1,  1}, { 0,  2}, { 1,  1}, { 2,  1}, { 2,  0}, { 2, -1}, { 1, -2}
 }};
 static_assert(evenDirections2lws.size() == TWO_NEIGHBOUR_LAYERS_SIZE + 1);
 
@@ -89,8 +88,7 @@ constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE+1> oddDi
 {{
     { 0,  0},
     { 0, -1}, {-1,  0}, {-1,  1}, { 0,  1}, { 1,  1}, { 1,  0},
-    { 0, -2}, {-1, -1}, {-2, -1}, {-2,  0}, {-2,  1}, {-1,  2},
-    { 0,  2}, { 1,  2}, { 2,  1}, { 2,  0}, { 2, -1}, { 1, -1}
+    { 0, -2}, {-1, -1}, {-2, -1}, {-2,  0}, {-2,  1}, {-1,  2}, { 0,  2}, { 1,  2}, { 2,  1}, { 2,  0}, { 2, -1}, { 1, -1}
 }};
 static_assert(oddDirections2lws.size() == TWO_NEIGHBOUR_LAYERS_SIZE + 1);
 
