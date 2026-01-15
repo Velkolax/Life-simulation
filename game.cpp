@@ -36,6 +36,7 @@ Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
 
 
     ResourceManager::LoadShader({"shaders/instance.vs.glsl"},{"shaders/instance.fs.glsl"},"instance");
+    ResourceManager::LoadShader({"shaders/instance.vs.glsl"},{"shaders/instance_bac.fs.glsl"},"instance_bac");
     ResourceManager::LoadComputeShader({"shaders/process_network.cs.glsl"},"network");
     ResourceManager::LoadComputeShader({"shaders/init_weights.cs.glsl"},"init");
     ResourceManager::LoadComputeShader({"shaders/kill.cs.glsl"},"kill");

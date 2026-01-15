@@ -253,8 +253,8 @@ void SpriteRenderer::generateSprites(Board *board)
         glm::vec2 hexPos = calculateHexPosition(hex->getX(), hex->getY(), size);
         glm::vec2 unitPos = hexPos + glm::vec2((size-smallSize)/2,0);
 
-        if (!wall(hex->getResident())) hexData.push_back(HexInstanceData(hexPos,color,0.0f,hexSizeVec));
-        residentData[(int)hex->getResident()].push_back({unitPos,glm::vec3(1.0f),0.0f,smallSizeVec});
+        if (!wall(hex->getResident())) hexData.push_back(HexInstanceData(hexPos,glm::vec3(1.0f),0.0f,hexSizeVec));
+        residentData[(int)hex->getResident()].push_back({unitPos,color,0.0f,smallSizeVec});
     }
 }
 
@@ -266,14 +266,15 @@ void SpriteRenderer::DrawBoard(Board *board, int width, int height)
     glm::mat4 projection = glm::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);
     this->shader.SetMatrix4("projection", projection);
     RenderBatch("hexagon", hexData);
-    for (int i=0;i<=(int)Resident::Protein;i++)
+    for (int i=0;i<(int)Resident::Protein;i++)
     {
-        if (textures[i]!="nic" && !game->getInput().isToggled(GLFW_KEY_V))
-        {
-            if (bacteria((Resident)i) || !game->getInput().isToggled(GLFW_KEY_K)) RenderBatch(textures[i],residentData[i]);
-        }
+        if (textures[i]!="nic" && !game->getInput().isToggled(GLFW_KEY_V) && !bacteria((Resident)i))
+            RenderBatch(textures[i],residentData[i]);
     }
-
+    Shader &sh = ResourceManager::GetShader("instance_bac");
+    sh.Use();
+    sh.SetMatrix4("projection",projection);
+    RenderBatch(textures[(int)Resident::Bacteria],residentData[(int)Resident::Bacteria]);
 }
 
 

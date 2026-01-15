@@ -510,7 +510,7 @@ void BacteriaData::breed(Board* board, Hexagon* dadHex, float* data, coord x, co
                 lifespanSent = std::max(1, lifespanSent);
                 if(lifespanSent == tempProtein) lifespanSent--;
                 speedSent = tempProtein - lifespanSent;
-                std::cout << "Emergency resource split: " << lifespanSent << " / " << speedSent << " (" << (int)this->protein << ")\n";
+                //std::cout << "Emergency resource split: " << lifespanSent << " / " << speedSent << " (" << (int)this->protein << ")\n";
             }
         }
 
