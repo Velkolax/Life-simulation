@@ -296,15 +296,20 @@ void SpriteRenderer::generateSprites(Board *board)
 void SpriteRenderer::DrawBoard(Board *board, int width, int height)
 {
     generateSprites(board);
-    this->shader.Use();
     glm::mat4 projection = glm::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);
-    this->shader.SetMatrix4("projection", projection);
-    RenderBatch("hexagon", hexData);
-    for (int i=0;i<(int)Resident::Bacteria;i++)
+    if (game->getInput().isToggled(GLFW_KEY_K))
     {
-        if (textures[i]!="nic" && !game->getInput().isToggled(GLFW_KEY_V) && !bacteria((Resident)i))
-            RenderBatch(textures[i],residentData[i]);
+        this->shader.Use();
+
+        this->shader.SetMatrix4("projection", projection);
+        RenderBatch("hexagon", hexData);
+        for (int i=0;i<(int)Resident::Bacteria;i++)
+        {
+            if (textures[i]!="nic" && !game->getInput().isToggled(GLFW_KEY_V) && !bacteria((Resident)i))
+                RenderBatch(textures[i],residentData[i]);
+        }
     }
+
     Shader &sh = ResourceManager::GetShader("instance_bac");
     sh.Use();
     sh.SetMatrix4("projection",projection);
