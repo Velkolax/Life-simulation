@@ -8,6 +8,26 @@
 #include "simulation_engine.h"
 #include "game_configdata.h"
 
+std::vector<std::pair<coord, coord>> evenDirections =
+{
+    { 0, -1}, // górny
+    {-1, -1}, // lewy górny
+    {-1,  0}, // lewy dolny
+    { 0,  1}, // dolny
+    { 1,  0}, // prawy dolny
+    { 1, -1}  // prawy górny
+};
+
+std::vector<std::pair<coord, coord>> oddDirections =
+{
+    { 0, -1}, // górny
+    {-1,  0}, // lewy górny
+    {-1,  1}, // lewy dolny
+    { 0,  1}, // dolny
+    { 1,  1}, // prawy dolny
+    { 1,  0}  // prawy górny
+};
+
 
 Hexagon::Hexagon() : x(0), y(0), resident(Resident::Wall){}
 
@@ -132,7 +152,7 @@ void Board::tick()
     }
 
 
-    if (step % GameConfigData::getInt("energyPlacementInterval") == 0 && !isResourceOverLimit()) spawnFood(0.1);
+    if (step % GameConfigData::getInt("energyPlacementInterval") == 0 && !isResourceOverLimit()) spawnFood(0.01);
     spawnProteinFromShortage();
     if (step % GameConfigData::getInt("resourceCenteringInterval") == 0) pushResourcesToCenter();
     if (getHighestAge()>highestAge) highestAge = getHighestAge();
@@ -360,25 +380,16 @@ void Hexagon::importBacteria(Resident clannedBacteria, uint32_t id)
 
 void Board::spawnFood(double foodRatio)
 {
-    std::uniform_int_distribution<int> dist(0,100);
     int count = board.size();
     std::vector<int> range(count);
     std::iota(range.begin(), range.end(), 0);
-    std::erase_if(range,[this](int i){return this->board[i].getResident()!=Resident::Empty;});
-
+    //std::erase_if(range,[this](int i){return wall(this->board[i].getResident());});
     std::shuffle(range.begin(),range.end(),gen);
-    for (int i=0;i<range.size()*foodRatio;i++)
-    {
-        int index = dist(gen);
-        if (empty(board[range[i]].getResident()))
-        {
-            if (index<60) board[range[i]].placeEnergy();
-            else if (index<95) board[range[i]].placeProtein();
-            else board[range[i]].placeAcid();
-            board[range[i]].placeEnergy();
-        }
 
-    }
+    for (int i=0;i<range.size()*foodRatio;i++)
+        if (empty(board[range[i]].getResident()))
+            board[range[i]].placeEnergy();
+
 }
 
 void Board::spawnBacteria(int bacteriaCount, uint8_t clansCount)
@@ -466,43 +477,48 @@ bool Board::isResourceOverLimit()
 
 void Board::pushResourcesToCenter()
 {
-    for (int i=0;i<board.size();i++)
+    int xCenter = getWidth() / 2;
+    int yCenter = getHeight() / 2;
+    glm::vec2 rPosCenter = game->Renderer->calculateHexPosition(xCenter, yCenter, 10);
+    std::vector<std::pair<int, int>> moves;
+
+    for (int i = 0; i < board.size(); i++)
     {
-        Hexagon *hex = getHexagon(i);
-        int xCenter=getWidth()/2,yCenter=getHeight()/2;
-        int x=hex->getX(),y=hex->getY();
-        if (resource(hex->getResident()))
+        Hexagon *hex = &board[i];
+        if (!resource(hex->getResident())) continue;
+        glm::vec2 currentPos = game->Renderer->calculateHexPosition(hex->getX(), hex->getY(), 10);
+        float currentDist = glm::distance(currentPos, rPosCenter);
+        if (currentDist < 0.1f) continue;
+        float minDistance = currentDist;
+        int targetIdx = -1;
+        auto& directions = (hex->getX() & 1) ? oddDirections : evenDirections;
+        for (auto& [dx, dy] : directions)
         {
-            auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
-            auto chosenDir = std::pair<coord,coord>(0,0);
-            bool found = false;
-            float minDistance = FLT_MAX;
-            for(auto& [dx,dy] : directions)
+            Hexagon* h = getHexagon(hex->getX() + dx, hex->getY() + dy);
+            if (h != nullptr && empty(h->getResident()))
             {
-                Hexagon* h = getHexagon(hex->getX() + dx, hex->getY() + dy);
-                if (h!=nullptr && empty(h->getResident()))
+                glm::vec2 neighborPos = game->Renderer->calculateHexPosition(h->getX(), h->getY(), 10);
+                float dist = glm::distance(neighborPos, rPosCenter);
+                if (dist < minDistance) // Musi być bliżej niż obecne pole
                 {
-                    int xh=h->getX(),yh=h->getY();
-                    glm::vec2 rPosHex = game->Renderer->calculateHexPosition(xh,yh,10);
-                    glm::vec2 rPosCenter = game->Renderer->calculateHexPosition(xCenter,yCenter,10);
-                    float distance = glm::distance(rPosHex,rPosCenter);
-                    if (distance<minDistance)
-                    {
-                        minDistance=distance;
-                        chosenDir = std::pair(dx,dy);
-                        found=true;
-                    }
+                    minDistance = dist;
+                    targetIdx = (h->getY() * getWidth()) + h->getX();
                 }
             }
-            Hexagon* h = getHexagon(hex->getX() + chosenDir.first, hex->getY() + chosenDir.second);
-            if (found)
-            {
-                if (energy(hex->getResident())) h->placeEnergy(hex->getData().energy.amount);
-                else if (protein(hex->getResident())) h->placeProtein(hex->getData().protein.amount);
-                else if (acid(hex->getResident())) h->placeAcid(hex->getData().acid.amount);
-                hex->placeEmpty();
-            }
+        }
+        if (targetIdx != -1) moves.push_back({i, targetIdx});
+    }
 
+    for (auto& m : moves)
+    {
+        Hexagon* from = &board[m.first];
+        Hexagon* to = &board[m.second];
+        if (empty(to->getResident()))
+        {
+            if (energy(from->getResident())) to->placeEnergy(from->getData().energy.amount);
+            else if (protein(from->getResident())) to->placeProtein(from->getData().protein.amount);
+            else if (acid(from->getResident())) to->placeAcid(from->getData().acid.amount);
+            from->placeEmpty();
         }
     }
 }
@@ -518,25 +534,7 @@ int Board::getAliveBacteriaCount()
     return counter;
 }
 
-std::vector<std::pair<coord, coord>> evenDirections =
-{
-    { 0, -1}, // górny
-    {-1, -1}, // lewy górny
-    {-1,  0}, // lewy dolny
-    { 0,  1}, // dolny
-    { 1,  0}, // prawy dolny
-    { 1, -1}  // prawy górny
-};
 
-std::vector<std::pair<coord, coord>> oddDirections =
-{
-    { 0, -1}, // górny
-    {-1,  0}, // lewy górny
-    {-1,  1}, // lewy dolny
-    { 0,  1}, // dolny
-    { 1,  1}, // prawy dolny
-    { 1,  0}  // prawy górny
-};
 
 void addNeighboursLayer(Board* board, std::unordered_set<Hexagon*>& visited, std::vector<Hexagon*>& hexagons, int recursion, std::function<bool(Hexagon*)> filter)
 {

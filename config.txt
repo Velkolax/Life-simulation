@@ -1,9 +1,9 @@
 seed=0
-bacteriaCount=1000
+bacteriaCount=10
 width=100
 height=100
 onlyStorage=1
-clansCount=5
+clansCount=2
 
 moveCost=0.3
 attackCost=0.3
@@ -14,8 +14,8 @@ sleepCost=0.3
 
 energyPlacementMin=10
 energyPlacementMax=30
-energyPlacementInterval=200
-energyThreshold=0.2
+energyPlacementInterval=10
+energyThreshold=0.6
 resourceCenteringInterval=10
 
 substeps=1

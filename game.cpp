@@ -52,9 +52,13 @@ Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
     int seed = GameConfigData::getInt("seed");
     std::cout << "Seed: " << seed << std::endl;
     std::mt19937 g{std::random_device{}()};
-    if (seed==0) GameConfigData::setInt("seed",std::to_string(std::uniform_int_distribution<int>{0,1000}(g)));
-    std::cout << "Seed: " << seed << std::endl;
-
+    if (seed==0)
+    {
+        std::cout << "AAA" << std::endl;
+        GameConfigData::setInt("seed",std::to_string(std::uniform_int_distribution<int>{0,1000}(g)));
+    }
+    std::cout << "Seed: " << GameConfigData::getInt("seed") << std::endl;
+    gen.seed(GameConfigData::getInt("seed"));
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load(24);
     int bacteriaCount = GameConfigData::getInt("bacteriaCount");
@@ -65,7 +69,7 @@ Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
     Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height,this);
 
     board->spawnBacteria(bacteriaCount, GameConfigData::getInt("clansCount"));
-    board->spawnFood(0.1);
+    //board->spawnFood(0.1);
     engine = new SimulationEngine(board);
 
 }
