@@ -36,6 +36,7 @@ Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
 
 
     ResourceManager::LoadShader({"shaders/instance.vs.glsl"},{"shaders/instance.fs.glsl"},"instance");
+    ResourceManager::LoadShader({"shaders/instance.vs.glsl"},{"shaders/instance_bac.fs.glsl"},"instance_bac");
     ResourceManager::LoadComputeShader({"shaders/process_network.cs.glsl"},"network");
     ResourceManager::LoadComputeShader({"shaders/init_weights.cs.glsl"},"init");
     ResourceManager::LoadComputeShader({"shaders/kill.cs.glsl"},"kill");
@@ -64,7 +65,7 @@ Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
     board->spawnBacteria(bacteriaCount, GameConfigData::getInt("clansCount"));
     board->spawnFood(0.1);
     engine = new SimulationEngine(board);
-    Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height);
+    Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height,this);
 
 }
 
@@ -89,7 +90,7 @@ void Game::restart()
     board->spawnBacteria(bacteriaCount, GameConfigData::getInt("clansCount"));
     board->spawnFood(0.1);
     engine->Restart();
-    Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height);
+    Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height,this);
 
 }
 

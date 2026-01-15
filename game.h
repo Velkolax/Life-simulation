@@ -50,7 +50,10 @@ class Game
         void restart();
         void tick();
         void Resize(int width, int height);
+        void peekBacteria();
+        void lockBacteria();
         void Render();
+        inline Input getInput(){return input;}
         static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
         static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
         static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);

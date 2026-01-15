@@ -135,30 +135,27 @@ void Board::tick()
     if (step % GameConfigData::getInt("energyPlacementInterval") == 0 && !isResourceOverLimit()) spawnFood(0.1);
     spawnProteinFromShortage();
     if (step % GameConfigData::getInt("resourceCenteringInterval") == 0) pushResourcesToCenter();
-    //resourcesMerge();
+    if (getHighestAge()>highestAge) highestAge = getHighestAge();
+    resourcesMerge();
 }
 
-void Board::resourcesMerge()
-{
-    for (int y = 0; y < getHeight(); y++)
-    {
-        for (int x = 0; x < getWidth(); x++)
-        {
+void Board::resourcesMerge() {
+    for (int y = 0; y < getHeight(); y++) {
+        for (int x = 0; x < getWidth(); x++) {
             Hexagon* hex = getHexagon(x, y);
-            if (protein(hex->getResident()) || acid(hex->getResident()))
-            {
-                uint8_t hexR = hex->getData().acid.amount; // struktura wewnętrzna wszystkich zasobów jest taka sama więc pobierzmy ilość jako z kwasu 
+            Resident resType = hex->getResident();
+
+            if (protein(resType) || acid(resType)) {
                 auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
-                for(auto& [dx,dy] : directions)
-                {
+                for(auto& [dx,dy] : directions) {
                     Hexagon* h = getHexagon(hex->getX() + dx, hex->getY() + dy);
-                    if (h != nullptr && h->getResident() == hex->getResident())
-                    {
-                        uint8_t hR = h->getData().acid.amount; // tak samo jak wyżej
-                        if(hexR + hR <= MAX_STORED_VALUE)
-                        {
-                            h->getData().acid.amount += hR;
-                            hexR += hR;
+
+                    if (h != nullptr && h->getResident() == resType) {
+                        uint8_t& currentAmount = hex->getData().acid.amount;
+                        uint8_t neighborAmount = h->getData().acid.amount;
+
+                        if((int)currentAmount + neighborAmount <= MAX_STORED_VALUE) {
+                            currentAmount += neighborAmount;
                             h->placeEmpty();
                         }
                     }

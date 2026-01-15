@@ -120,7 +120,7 @@ void SimulationEngine::InitNetworkData()
 
 
     int totalBiases = BIASES;
-    DispatchInit(0, totalBiases, 0.05f,0.05f);
+    DispatchInit(0, totalBiases, 0.0f,0.0f);
 
     int currentParamOffset = BIASES;
 

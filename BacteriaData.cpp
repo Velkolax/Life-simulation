@@ -516,7 +516,7 @@ void BacteriaData::breed(Board* board, Hexagon* dadHex, float* data, coord x, co
                 lifespanSent = std::max(1, lifespanSent);
                 if(lifespanSent == tempProtein) lifespanSent--;
                 speedSent = tempProtein - lifespanSent;
-                std::cout << "Emergency resource split: " << lifespanSent << " / " << speedSent << " (" << (int)this->protein << ")\n";
+                //std::cout << "Emergency resource split: " << lifespanSent << " / " << speedSent << " (" << (int)this->protein << ")\n";
             }
         }
 
@@ -620,21 +620,31 @@ void BacteriaData::eat(Board* board, Hexagon* eatenHex, float* data, coord x, co
         else // białko
         {
             int proteinPlacement = std::clamp(int(data[2] * 3), 0, 2);
-            if(proteinPlacement == 0) // magazyn
+
+            if (GameConfigData::getInt("onlyStorage")==1)
             {
                 toEat = std::min(toEat, MAX_STORED_VALUE - protein);
                 protein += toEat;
             }
-            else if(proteinPlacement == 1) // żywotność
+            else
             {
-                toEat = std::min(toEat, MAX_ACCUSTOMABLE_VALUE - lifespan);
-                lifespan += toEat;
+                if(proteinPlacement == 0) // magazyn
+                {
+                    toEat = std::min(toEat, MAX_STORED_VALUE - protein);
+                    protein += toEat;
+                }
+                else if(proteinPlacement == 1) // żywotność
+                {
+                    toEat = std::min(toEat, MAX_ACCUSTOMABLE_VALUE - lifespan);
+                    lifespan += toEat;
+                }
+                else // prędkość
+                {
+                    toEat = std::min(toEat, MAX_ACCUSTOMABLE_VALUE - speed);
+                    speed += toEat;
+                }
             }
-            else // prędkość
-            {
-                toEat = std::min(toEat, MAX_ACCUSTOMABLE_VALUE - speed);
-                speed += toEat;
-            }
+
         }
         eatenHex->getData().acid.amount -= toEat;
         if(eatenHex->getData().acid.amount == 0) eatenHex->placeEmpty();

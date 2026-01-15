@@ -8,7 +8,7 @@
 
 
 
-SpriteRenderer::SpriteRenderer(Shader &shader,Board *board,int screenWidth, int screenHeight)
+SpriteRenderer::SpriteRenderer(Shader &shader,Board *board,int screenWidth, int screenHeight, Game *game)
 {
     this->width = screenWidth;
     this->height = screenHeight;
@@ -19,6 +19,8 @@ SpriteRenderer::SpriteRenderer(Shader &shader,Board *board,int screenWidth, int 
     this->hexData.resize(bWidth*bHeight);
     this->residentData.resize(20);
     this->getActualDimensions(board);
+    this->game = game;
+    this->board = board;
     for (auto& r : residentData) r.resize(bWidth*bHeight);
 }
 
@@ -236,36 +238,43 @@ void SpriteRenderer::generateSprites(Board *board)
         glm::vec2 hexSizeVec(size, size * 1.73 / 2.0f);
         float smallSize = size * 0.8;
         glm::vec2 smallSizeVec(smallSize, smallSize);
+
         glm::vec3 color = glm::vec3(1.0f,1.0f,1.0f);
+        if (bacteria(hex->getResident()))
+        {
+            BacteriaData &bac = board->getBacteria(hex->getData().bacteriaIndex);
+            if (game->getInput().isToggled(GLFW_KEY_0)) color.x = 1.0f-((float)bac.energy/(float)MAX_STORED_VALUE);
+            else if (game->getInput().isToggled(GLFW_KEY_1)) color.y = 1.0f-((float)bac.protein/(float)MAX_STORED_VALUE);
+            else if (game->getInput().isToggled(GLFW_KEY_2)) color.x = (bac.lastAction==Action::Eat ? 0.2f : 0.7f);
+            else if (game->getInput().isToggled(GLFW_KEY_3)) color.y = 1.0f-((float)bac.age/(float)board->highestAge);
+            else if (game->getInput().isToggled(GLFW_KEY_4)) color.y = 1.0f-((float)bac.mothered/5.0f);
+        }
 
         glm::vec2 hexPos = calculateHexPosition(hex->getX(), hex->getY(), size);
         glm::vec2 unitPos = hexPos + glm::vec2((size-smallSize)/2,0);
 
-        if (!wall(hex->getResident())) hexData.push_back(HexInstanceData(hexPos,color,0.0f,hexSizeVec));
-        residentData[(int)hex->getResident()].push_back({unitPos,glm::vec3(1.0f),0.0f,smallSizeVec});
+        if (!wall(hex->getResident())) hexData.push_back(HexInstanceData(hexPos,glm::vec3(1.0f),0.0f,hexSizeVec));
+        residentData[(int)hex->getResident()].push_back({unitPos,color,0.0f,smallSizeVec});
     }
 }
 
 
 void SpriteRenderer::DrawBoard(Board *board, int width, int height)
 {
-    // This generates sprites and puts them in vectors ready to render
     generateSprites(board);
-
     this->shader.Use();
     glm::mat4 projection = glm::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);
     this->shader.SetMatrix4("projection", projection);
-
     RenderBatch("hexagon", hexData);
-
-    for (int i=0;i<=(int)Resident::Protein;i++)
+    for (int i=0;i<(int)Resident::Protein;i++)
     {
-        if (textures[i]!="nic")
-        {
+        if (textures[i]!="nic" && !game->getInput().isToggled(GLFW_KEY_V) && !bacteria((Resident)i))
             RenderBatch(textures[i],residentData[i]);
-        }
     }
-
+    Shader &sh = ResourceManager::GetShader("instance_bac");
+    sh.Use();
+    sh.SetMatrix4("projection",projection);
+    RenderBatch(textures[(int)Resident::Bacteria],residentData[(int)Resident::Bacteria]);
 }
 
 
