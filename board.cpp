@@ -133,7 +133,8 @@ void Board::tick()
 
 
     if (step % GameConfigData::getInt("energyPlacementInterval") == 0 && !isResourceOverLimit()) spawnFood(0.1);
-    resourcesMerge();
+    spawnProteinFromShortage();
+    //resourcesMerge();
 }
 
 void Board::resourcesMerge()
@@ -309,6 +310,12 @@ void Hexagon::placeProtein()
     data.protein.amount = std::uniform_int_distribution<uint8_t>(1, 10)(gen);
 }
 
+void Hexagon::placeProtein(int number)
+{
+    resident = Resident::Protein;
+    data.protein.amount = number;
+}
+
 void Hexagon::placeProtein(uint8_t amount)
 {
     resident = Resident::Protein;
@@ -381,6 +388,36 @@ void Board::spawnBacteria(int bacteriaCount)
             //int y = board[range[i]].getY();
             board[range[i]].placeBacteria(this);
         }
+    }
+}
+
+void Board::spawnProteinFromShortage()
+{
+    std::uniform_int_distribution<int> dist(0,100);
+    int count = board.size();
+    std::vector<int> range(count);
+    std::iota(range.begin(), range.end(), 0);
+    std::erase_if(range,[this](int i){return this->board[i].getResident()!=Resident::Empty;});
+
+    std::shuffle(range.begin(),range.end(),gen);
+    for (int i=0;i<range.size()*0.1f;i++)
+    {
+        int index = dist(gen);
+        if (empty(board[range[i]].getResident()))
+        {
+            if (proteinShortage>=30)
+            {
+                board[range[i]].placeProtein(30);
+                proteinShortage-=30;
+            }
+            else if (acidShortage>=30)
+            {
+                board[range[i]].placeAcid(30);
+                acidShortage-=30;
+            }
+
+        }
+
     }
 }
 

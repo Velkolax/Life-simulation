@@ -81,6 +81,7 @@ public:
     void placeEnergy();
     void placeEnergy(uint8_t amount);
     void placeProtein();
+    void placeProtein(int number);
     void placeProtein(uint8_t amount);
     void placeBacteria(Board* board);
     void placeChild(Board* board, BacteriaData& mom,int energySent,int lifespanSent,int speedSent);
@@ -123,6 +124,7 @@ public:
     float getActionPercentage(Action a);
     void spawnFood(double foodRatio);
     void spawnBacteria(int bacteriaCount);
+    void spawnProteinFromShortage();
     bool isResourceOverLimit();
     // gettery/settery
     inline coord getWidth() const noexcept { return width; }
