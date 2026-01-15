@@ -452,7 +452,7 @@ void Board::pushResourcesToCenter()
                 Hexagon* h = getHexagon(hex->getX() + dx, hex->getY() + dy);
                 if (h!=nullptr && empty(h->getResident()))
                 {
-                    int xh=hex->getX(),yh=hex->getY();
+                    int xh=h->getX(),yh=h->getY();
                     glm::vec2 rPosHex = game->Renderer->calculateHexPosition(xh,yh,10);
                     glm::vec2 rPosCenter = game->Renderer->calculateHexPosition(xCenter,yCenter,10);
                     float distance = glm::distance(rPosHex,rPosCenter);
