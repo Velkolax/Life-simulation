@@ -493,8 +493,27 @@ void BacteriaData::breed(Board* board, Hexagon* dadHex, float* data, coord x, co
 
         if (BACTERIA_BODY_SIZE + lifespanSent + speedSent > this->protein)
         {
-            if(lastAction == Action::BreedFailure) lastAction = Action::BreedFailureNoProtein;
-            return;
+            if(BACTERIA_BODY_SIZE + 2 > this->protein)
+            {
+                if(lastAction == Action::BreedFailure) lastAction = Action::BreedFailureNoProtein;
+                return;
+            }
+            int tempProtein = this->protein;
+            tempProtein -= BACTERIA_BODY_SIZE;
+            float sum = data[2] + data[3];
+            if (sum <= 0.0f)
+            {
+                lifespanSent = 1;
+                speedSent = 1;
+            }
+            else
+            {
+                lifespanSent = tempProtein * data[2] / sum;
+                lifespanSent = std::max(1, lifespanSent);
+                if(lifespanSent == tempProtein) lifespanSent--;
+                speedSent = tempProtein - lifespanSent;
+                std::cout << "Emergency resource split: " << lifespanSent << " / " << speedSent << " (" << (int)this->protein << ")\n";
+            }
         }
 
         std::vector<Hexagon*> possiblePlacements;
