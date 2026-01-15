@@ -602,7 +602,7 @@ void BacteriaData::eat(Board* board, Hexagon* eatenHex, float* data, coord x, co
     {
         if(!consumeEnergy(GameConfigData::getFloat("eatCost"), board, x, y)) return;
         if(!eatenHex || !resource(eatenHex->getResident())) return;
-        int toEat = data[1] * eatenHex->getData().acid.amount; // wszystkie zasoby mają tylko parametr amount więc pobranie go z byle którego nic nie zmienia
+        int toEat = std::max(int(data[1] * eatenHex->getData().acid.amount), 1); // wszystkie zasoby mają tylko parametr amount więc pobranie go z byle którego nic nie zmienia
         if(::acid(eatenHex->getResident()))
         {
             toEat = std::min(toEat, MAX_STORED_VALUE - acid);
