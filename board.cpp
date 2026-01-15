@@ -449,6 +449,7 @@ void Board::pushResourcesToCenter()
         {
             auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
             auto chosenDir = std::pair<coord,coord>(0,0);
+            bool found = false;
             float minDistance = FLT_MAX;
             for(auto& [dx,dy] : directions)
             {
@@ -463,14 +464,19 @@ void Board::pushResourcesToCenter()
                     {
                         minDistance=distance;
                         chosenDir = std::pair(dx,dy);
+                        found=true;
                     }
                 }
             }
             Hexagon* h = getHexagon(hex->getX() + chosenDir.first, hex->getY() + chosenDir.second);
-            if (energy(hex->getResident())) h->placeEnergy(hex->getData().energy.amount);
-            else if (protein(hex->getResident())) h->placeProtein(hex->getData().protein.amount);
-            else if (acid(hex->getResident())) h->placeAcid(hex->getData().acid.amount);
-            hex->placeEmpty();
+            if (found)
+            {
+                if (energy(hex->getResident())) h->placeEnergy(hex->getData().energy.amount);
+                else if (protein(hex->getResident())) h->placeProtein(hex->getData().protein.amount);
+                else if (acid(hex->getResident())) h->placeAcid(hex->getData().acid.amount);
+                hex->placeEmpty();
+            }
+
         }
     }
 }
