@@ -61,7 +61,7 @@ Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
     int y = GameConfigData::getInt("height");
     board = new Board(x, y, this,bacteriaCount);
     board->InitializeNeighbour(x/2-1, true);
-    board->spawnBacteria(bacteriaCount);
+    board->spawnBacteria(bacteriaCount, GameConfigData::getInt("clansCount"));
     board->spawnFood(0.1);
     engine = new SimulationEngine(board);
     Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height);
@@ -86,7 +86,7 @@ void Game::restart()
     int y = GameConfigData::getInt("height");
     board = new Board(x, y, this,bacteriaCount);
     board->InitializeNeighbour(x/2-1, true);
-    board->spawnBacteria(bacteriaCount);
+    board->spawnBacteria(bacteriaCount, GameConfigData::getInt("clansCount"));
     board->spawnFood(0.1);
     engine->Restart();
     Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height);

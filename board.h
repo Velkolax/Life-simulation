@@ -11,31 +11,30 @@
 #include "glm/vec2.hpp"
 #include "BacteriaData.h"
 
-#define BIG_NUMBER 10000000
-
 enum class Resident : uint8_t
 {
     // Plain
     Wall,
     Empty,
 
-    // Bacteria
-    Bacteria,
-
     // Resource
     Acid,
     Energy,
-    Protein
+    Protein,
+
+    // Bacteria
+    Bacteria,
 };
 
 inline bool plain(Resident resident) noexcept { return resident == Resident::Wall || resident == Resident::Empty; };
 inline bool wall(Resident resident) noexcept { return resident == Resident::Wall; };
 inline bool empty(Resident resident) noexcept { return resident == Resident::Empty; };
-inline bool bacteria(Resident resident) noexcept { return resident == Resident::Bacteria; };
 inline bool resource(Resident resident) noexcept { return resident >= Resident::Acid && resident <= Resident::Protein; };
 inline bool acid(Resident resident) noexcept {return resident == Resident::Acid;};
 inline bool energy(Resident resident) noexcept { return resident == Resident::Energy; };
 inline bool protein(Resident resident) noexcept { return resident == Resident::Protein; };
+inline bool bacteria(Resident resident) noexcept { return resident >= Resident::Bacteria; };
+inline bool clanned(Resident resident) noexcept { return resident > Resident::Bacteria; };
 
 
 union ResidentData
@@ -83,9 +82,10 @@ public:
     void placeProtein();
     void placeProtein(int number);
     void placeProtein(uint8_t amount);
-    void placeBacteria(Board* board);
-    void placeChild(Board* board, BacteriaData& mom,int energySent,int lifespanSent,int speedSent);
-    void placeBacteria(Board* board, uint32_t id);
+    void placeBacteriaC(Board* board, uint8_t clan);
+    void placeBacteriaCB(Board* board, Resident clannedBacteria);
+    void placeChild(Board* board, BacteriaData& mom, Resident clannedBacteria, int energySent, int lifespanSent, int speedSent);
+    void importBacteria(uint32_t id);
 
     //bool isNearWater(Board* board);
 
@@ -123,7 +123,7 @@ public:
     float getFailureRatio();
     float getActionPercentage(Action a);
     void spawnFood(double foodRatio);
-    void spawnBacteria(int bacteriaCount);
+    void spawnBacteria(int bacteriaCount, uint8_t clansCount);
     void spawnProteinFromShortage();
     bool isResourceOverLimit();
     void pushResourcesToCenter();

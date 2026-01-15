@@ -326,25 +326,32 @@ void Hexagon::placeProtein(uint8_t amount)
     data.protein.amount = amount;
 }
 
-void Hexagon::placeBacteria(Board* board)
+void Hexagon::placeBacteriaC(Board* board, uint8_t clan)
 {
-    resident = Resident::Bacteria;
+    resident = Resident(int(Resident::Bacteria) + clan);
     int32_t newId = board->addBacteria();
     data.bacteriaIndex = newId;
     board->getBacteria(newId).randomize();
 }
 
-void Hexagon::placeChild(Board* board, BacteriaData& mom,int energySent,int lifespanSent,int speedSent)
+void Hexagon::placeBacteriaCB(Board* board, Resident clannedBacteria)
 {
-    resident = Resident::Bacteria;
+    resident = clannedBacteria;
     int32_t newId = board->addBacteria();
     data.bacteriaIndex = newId;
-    board->getBacteria(newId).cross(mom,energySent,lifespanSent,speedSent);
+    board->getBacteria(newId).randomize();
 }
 
-void Hexagon::placeBacteria(Board* board, uint32_t id)
+void Hexagon::placeChild(Board* board, BacteriaData& mom, Resident clannedBacteria, int energySent, int lifespanSent, int speedSent)
 {
-    resident = Resident::Bacteria;
+    resident = clannedBacteria;
+    int32_t newId = board->addBacteria();
+    data.bacteriaIndex = newId;
+    board->getBacteria(newId).cross(mom, energySent, lifespanSent, speedSent);
+}
+
+void Hexagon::importBacteria(uint32_t id)
+{
     data.bacteriaIndex = id;
 }
 
@@ -376,21 +383,42 @@ void Board::spawnFood(double foodRatio)
     }
 }
 
-void Board::spawnBacteria(int bacteriaCount)
+void Board::spawnBacteria(int bacteriaCount, uint8_t clansCount)
 {
     int count = board.size();
     std::vector<int> range(count);
     std::iota(range.begin(), range.end(), 0);
-    std::erase_if(range,[this](int i){return this->board[i].getResident()!=Resident::Empty;});
+    std::erase_if(range, [this](int i){ return this->board[i].getResident() != Resident::Empty; });
+    std::shuffle(range.begin(), range.end(), gen);
 
-    std::shuffle(range.begin(),range.end(),gen);
+    std::vector<Hexagon*> centroids(clansCount);
+    std::uniform_int_distribution<int> dist(0, count-1);
+    for(int i = 0; i < clansCount; i++)
+    {
+        centroids[i] = &(board[dist(gen)]);
+    }
+
     for (int i = 0; i < range.size(); i++)
     {
         if (i < bacteriaCount)
         {
-            //int x = board[range[i]].getX();
-            //int y = board[range[i]].getY();
-            board[range[i]].placeBacteria(this);
+            Hexagon* hex = &(board[range[i]]);
+            int nearestCentroidIdx = 0;
+            glm::vec2 rPosHex = game->Renderer->calculateHexPosition(hex->getX(), hex->getY(), 10);
+            glm::vec2 rPosCentroid = game->Renderer->calculateHexPosition(centroids[nearestCentroidIdx]->getX(), centroids[nearestCentroidIdx]->getY(), 10);
+            float nearestDistance = glm::distance(rPosHex, rPosCentroid);
+            for (int j = 1; j < clansCount; j++)
+            {
+                rPosCentroid = game->Renderer->calculateHexPosition(centroids[j]->getX(), centroids[j]->getY(), 10);
+                float distance = glm::distance(rPosHex, rPosCentroid);
+                if(distance < nearestDistance)
+                {
+                    nearestCentroidIdx = j;
+                    nearestDistance = distance;
+                }
+            }
+
+            hex->placeBacteriaC(this, uint8_t(nearestCentroidIdx + 1));
         }
     }
 }

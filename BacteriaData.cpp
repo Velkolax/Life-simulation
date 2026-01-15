@@ -166,9 +166,15 @@ void BacteriaData::execute(Board* board, float* data, coord x, coord y)
         auto& directions = (x & 1) ? oddDirections2lws : evenDirections2lws;
         auto& [dx, dy] = directions[pos];
         Hexagon* hex = board->getHexagon(x + dx, y + dy);
-        if (hex!=nullptr)
+        if (hex)
         {
-            (this->*interactionsInEnumOrder[(int)hex->getResident()])(board, hex, data + 1, x, y);
+            if (bacteria(hex->getResident()))
+            {
+                Resident clan = board->getHexagon(x, y)->getResident();
+                if(hex->getResident() == clan) breed(board, hex, data + 1, x, y);
+                else attack(board, hex, data + 1, x, y);
+            } 
+            else (this->*interactionsInEnumOrder[(int)hex->getResident()])(board, hex, data + 1, x, y);
         }
 
     }
@@ -212,7 +218,7 @@ void BacteriaData::move(Board* board, Hexagon* hex, float* data, coord x, coord 
     {
         if(!hex || !empty(hex->getResident())) return;
         if(!consumeEnergy(GameConfigData::getFloat("moveCost"), board, oldHex->getX(), oldHex->getY())) return;
-        hex->placeBacteria(board, id);
+        hex->importBacteria(id);
         oldHex->placeEmpty();
         oldHex = hex;
         hex = directionToHex(board, data[i], oldHex->getX(), oldHex->getY());
@@ -539,7 +545,7 @@ void BacteriaData::breed(Board* board, Hexagon* dadHex, float* data, coord x, co
         if(::acid(childHex->getResident())) board->acidShortage += childHex->getData().acid.amount;
         if(::protein(childHex->getResident())) board->proteinShortage += childHex->getData().protein.amount;
 
-        childHex->placeChild(board, *this, energySent, lifespanSent, speedSent);
+        childHex->placeChild(board, *this, momHex->getResident(), energySent, lifespanSent, speedSent);
 
         if (!board->emptyVacant())
         {

@@ -143,10 +143,11 @@ struct BacteriaData
     {
         &BacteriaData::sleep,   // Wall
         &BacteriaData::move,    // Empty
-        &BacteriaData::breed,   // Bacteria
         &BacteriaData::eat,     // Acid
         &BacteriaData::eat,     // Energy
         &BacteriaData::eat      // Protein
+        //&BacteriaData::breed,   // Bacteria
+        //&BacteriaData::attack   // Bacteria (different clan)
     };
 
     void execute(Board* board, float* data, coord x, coord y);
