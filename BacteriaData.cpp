@@ -99,7 +99,7 @@ void BacteriaData::die(Board* board, coord x, coord y)
     int acidDrained = acid;
     int energyDrained = energy;
     int proteinDrained = protein + lifespan + speed + BACTERIA_BODY_SIZE;
-
+    //std::cout << "DIE!!!" << std::endl;
     hex->placeEmpty();
     *this = BacteriaData{};
     board->addVacant(id);
@@ -213,7 +213,7 @@ void BacteriaData::move(Board* board, Hexagon* hex, float* data, coord x, coord 
     int reps = repeats(*data);
     Hexagon* oldHex = board->getHexagon(x, y);
     int32_t id = oldHex->getData().bacteriaIndex;
-
+    //std::cout << "MOVE" << std::endl;
     for(int i = 0; i < reps; i++)
     {
         if(!hex || !empty(hex->getResident())) return;

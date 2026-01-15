@@ -21,10 +21,10 @@ struct HexInstanceData {
 inline std::string textures[] = {
     "nic",
     "nic",
-    "bacteria",
     "acid",
     "apple",
     "protein",
+    "bacteria",
 };
 
 
@@ -54,7 +54,7 @@ public:
     void addToDisplacementX(Board *board,int dx);
     void addToDisplacementY(Board *board,int dy);
     void addToResizeMultiplier(double ds, Board* board, float width);
-    glm::ivec3 hsv_to_rgb(float h,float s,float v);
+    glm::vec3 hsv_to_rgb(float h,float s,float v);
     void generatePalette(int n);
 
     float size;
@@ -71,7 +71,7 @@ public:
     double resizeMultiplier = 1.0f;
     int width;
     int height;
-    std::vector<glm::ivec3> palette;
+    std::vector<glm::vec3> palette;
 private:
     Shader       shader;
     unsigned int quadVAO;

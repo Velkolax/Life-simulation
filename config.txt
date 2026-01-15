@@ -18,4 +18,4 @@ energyPlacementInterval=200
 energyThreshold=0.2
 resourceCenteringInterval=500
 
-substeps=5
+substeps=1
