@@ -38,11 +38,9 @@ public:
     SpriteRenderer(Shader &shader, Board *board,int screenWidth, int screenHeight,Game *game);
     void getActualDimensions(Board* board);
     ~SpriteRenderer();
-    void constrainMapBounds(Board* board);
 
     std::vector<int> getAllIndicesOnAScreen(Board* board);
     void generateSprites(Board* board);
-    void generateBorders(Board* board);
     void DrawBoard(Board* board, int width, int height);
 
 
@@ -50,16 +48,14 @@ public:
     float getSize(Board* board);
     void RenderBatch(const std::string& textureName, const std::vector<HexInstanceData>& data);
     glm::ivec2 CheckWhichHexagon(int x, int y, float size);
-    glm::ivec2 CheckWhichActualHexagon(int _x, int _y, float baseSize);
     void Zoom(float zoomFactor, float pivotX, float pivotY, Board* board);
     glm::vec2 calculateHexPosition(int gridX, int gridY, float size);
-    void InitPalette(Board *board);
 
     void addToDisplacementX(Board *board,int dx);
     void addToDisplacementY(Board *board,int dy);
     void addToResizeMultiplier(double ds, Board* board, float width);
-    void setBrightenedHexes(std::vector<Hexagon*> hexes);
-    void ClearBrightenedHexes();
+    glm::ivec3 hsv_to_rgb(float h,float s,float v);
+    void generatePalette(int n);
 
     float size;
     std::vector<HexInstanceData> hexData;
@@ -75,6 +71,7 @@ public:
     double resizeMultiplier = 1.0f;
     int width;
     int height;
+    std::vector<glm::ivec3> palette;
 private:
     Shader       shader;
     unsigned int quadVAO;

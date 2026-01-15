@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "game_configdata.h"
 
 
 SpriteRenderer::SpriteRenderer(Shader &shader,Board *board,int screenWidth, int screenHeight, Game *game)
@@ -22,6 +23,7 @@ SpriteRenderer::SpriteRenderer(Shader &shader,Board *board,int screenWidth, int 
     this->game = game;
     this->board = board;
     for (auto& r : residentData) r.resize(bWidth*bHeight);
+    generatePalette(GameConfigData::getInt("clansCount"));
 }
 
 void SpriteRenderer::getActualDimensions(Board *board)
@@ -76,6 +78,37 @@ void SpriteRenderer::addToDisplacementY(Board *board,int dy)
 void SpriteRenderer::addToResizeMultiplier(double ds,Board *board,float width)
 {
     resizeMultiplier *= ds;
+}
+
+glm::ivec3 SpriteRenderer::hsv_to_rgb(float h, float s, float v)
+{
+    int i = floor(h * 6);
+    float f = h * 6 - i;
+    float p = v * (1 - s);
+    float q = v * (1 - f * s);
+    float t = v * (1 - (1 - f) * s);
+    float r, g, b;
+    switch (i % 6) {
+    case 0: r = v, g = t, b = p; break;
+    case 1: r = q, g = v, b = p; break;
+    case 2: r = p, g = v, b = t; break;
+    case 3: r = p, g = q, b = v; break;
+    case 4: r = t, g = p, b = v; break;
+    case 5: r = v, g = p, b = q; break;
+    }
+    return {static_cast<int>(r * 255), static_cast<int>(g * 255), static_cast<int>(b * 255)};
+}
+
+void SpriteRenderer::generatePalette(int n)
+{
+    float h = 0.5;
+    const float golden_ratio_conjugate = 0.618033988749895f;
+
+    for (int i = 0; i < n; ++i) {
+        palette.push_back(hsv_to_rgb(h, 0.6f, 0.9f));
+        h += golden_ratio_conjugate;
+        if (h > 1.0f) h -= 1.0f; // h = fmod(h, 1.0f)
+    }
 }
 
 glm::ivec2 fromAxial(int q,int r)
@@ -254,7 +287,7 @@ void SpriteRenderer::generateSprites(Board *board)
         glm::vec2 unitPos = hexPos + glm::vec2((size-smallSize)/2,0);
 
         if (!wall(hex->getResident())) hexData.push_back(HexInstanceData(hexPos,glm::vec3(1.0f),0.0f,hexSizeVec));
-        residentData[(int)hex->getResident()].push_back({unitPos,color,0.0f,smallSizeVec});
+        residentData[(int)hex->getResident()].push_back({unitPos,,0.0f,smallSizeVec});
     }
 }
 
