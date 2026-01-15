@@ -43,7 +43,7 @@ void main() {
     float rndProb = float(hash(seed)) * (1.0 / 4294967296.0);
 
     float rndCrossover = float(hash(seed+37)) * (1.0 / 4294967296.0);
-    float newWeight = (rndCrossover < 0.5) ? weightA : weightB;
+    float newWeight = (weightA+weightB)*0.5;
 
     if (rndProb < mutationChance) {
         float rndVal = float(hash(seed+2137)) * (1.0 / 4294967296.0);

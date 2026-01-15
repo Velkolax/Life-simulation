@@ -69,7 +69,7 @@ Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
     Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height,this);
 
     board->spawnBacteria(bacteriaCount, GameConfigData::getInt("clansCount"));
-    //board->spawnFood(0.1);
+    board->spawnFood(0.1);
     engine = new SimulationEngine(board);
 
 }
