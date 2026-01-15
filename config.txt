@@ -14,5 +14,6 @@ energyPlacementMin=70
 energyPlacementMax=130
 energyPlacementInterval=10
 energyThreshold=0.2
+resourceCenteringInterval=50
 
 substeps=1
