@@ -64,7 +64,7 @@ Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
     board->spawnBacteria(bacteriaCount);
     board->spawnFood(0.1);
     engine = new SimulationEngine(board);
-    Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height);
+    Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height,this);
 
 }
 
@@ -89,7 +89,7 @@ void Game::restart()
     board->spawnBacteria(bacteriaCount);
     board->spawnFood(0.1);
     engine->Restart();
-    Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height);
+    Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height,this);
 
 }
 

@@ -5,12 +5,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
-
 #include "texture.h"
 #include "shader.h"
-
 #include "resource_manager.h"
-#include "board.h"
 #include <cstdlib>
 
 
@@ -31,12 +28,14 @@ inline std::string textures[] = {
 };
 
 
-
+class Board;
+class Game;
+class Hexagon;
 
 class SpriteRenderer
 {
 public:
-    SpriteRenderer(Shader &shader, Board *board,int screenWidth, int screenHeight);
+    SpriteRenderer(Shader &shader, Board *board,int screenWidth, int screenHeight,Game *game);
     void getActualDimensions(Board* board);
     ~SpriteRenderer();
     void constrainMapBounds(Board* board);
@@ -77,15 +76,12 @@ public:
     int width;
     int height;
 private:
-    // Render state
     Shader       shader;
     unsigned int quadVAO;
     unsigned int instanceVBO;
     unsigned int quadVBO;
-
-
-
-    // Initializes and configures the quad's buffer and vertex attributes
+    Board *board;
+    Game *game;
     void initRenderData(int bWidth, int bHeight);
 };
 
