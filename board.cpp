@@ -347,8 +347,9 @@ void Hexagon::placeChild(Board* board, BacteriaData& mom, Resident clannedBacter
     board->getBacteria(newId).cross(mom, energySent, lifespanSent, speedSent);
 }
 
-void Hexagon::importBacteria(uint32_t id)
+void Hexagon::importBacteria(Resident clannedBacteria, uint32_t id)
 {
+    resident = clannedBacteria;
     data.bacteriaIndex = id;
 }
 
