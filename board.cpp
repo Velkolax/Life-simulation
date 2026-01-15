@@ -449,7 +449,7 @@ void Board::pushResourcesToCenter()
         {
             auto& directions = (x & 1) ? oddDirections2l : evenDirections2l;
             auto chosenDir = std::pair<coord,coord>(0,0);
-            float minDistance = MAXFLOAT;
+            float minDistance = FLT_MAX;
             for(auto& [dx,dy] : directions)
             {
                 Hexagon* h = getHexagon(hex->getX() + dx, hex->getY() + dy);
