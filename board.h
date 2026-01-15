@@ -86,7 +86,7 @@ public:
     void placeBacteriaC(Board* board, uint8_t clan);
     void placeBacteriaCB(Board* board, Resident clannedBacteria);
     void placeChild(Board* board, BacteriaData& mom, Resident clannedBacteria, int energySent, int lifespanSent, int speedSent);
-    void importBacteria(uint32_t id);
+    void importBacteria(Resident clannedBacteria, uint32_t id);
 
     //bool isNearWater(Board* board);
 

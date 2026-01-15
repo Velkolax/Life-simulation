@@ -218,7 +218,7 @@ void BacteriaData::move(Board* board, Hexagon* hex, float* data, coord x, coord 
     {
         if(!hex || !empty(hex->getResident())) return;
         if(!consumeEnergy(GameConfigData::getFloat("moveCost"), board, oldHex->getX(), oldHex->getY())) return;
-        hex->importBacteria(id);
+        hex->importBacteria(oldHex->getResident(), id);
         oldHex->placeEmpty();
         oldHex = hex;
         hex = directionToHex(board, data[i], oldHex->getX(), oldHex->getY());
