@@ -477,7 +477,7 @@ void Board::spawnBacteria()
         int count = board.size();
         std::vector<int> range(count);
         std::iota(range.begin(), range.end(), 0);
-        std::erase_if(range, [this](int i){ return !empty(this->board[i].getResident()) });
+        std::erase_if(range, [this](int i){ return !empty(this->board[i].getResident()); });
         std::shuffle(range.begin(), range.end(), gen);
 
         std::vector<Hexagon*> centroids(clansCount);
@@ -489,7 +489,7 @@ void Board::spawnBacteria()
 
         for (int idx : std::views::take(range, bacteriaCount))
         {
-            Hexagon* hex = &(board[range[i]]);
+            Hexagon* hex = &(board[range[idx]]);
             int nearestCentroidIdx = 0;
             glm::vec2 rPosHex = game->Renderer->calculateHexPosition(hex->getX(), hex->getY(), 10);
             glm::vec2 rPosCentroid = game->Renderer->calculateHexPosition(centroids[nearestCentroidIdx]->getX(), centroids[nearestCentroidIdx]->getY(), 10);
