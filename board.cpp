@@ -392,12 +392,83 @@ void Board::spawnFood(double foodRatio)
 
 }
 
+
+std::vector<Hexagon*> nearestWantedAddNeighboursLayer(Board* board, Resident wanted, std::unordered_set<Hexagon*>& visited, std::vector<Hexagon*>& hexagons)
+{
+    std::vector<Hexagon*> newHexagons;
+    if(hexagons.size() == 0) return newHexagons;
+    newHexagons.reserve(hexagons.size() * 6);
+    bool found = false;
+
+    for(auto hexagon : hexagons)
+    {
+        coord x = hexagon->getX();
+        coord y = hexagon->getY();
+        auto& directions = (x % 2 == 0) ? evenDirections : oddDirections;
+
+        for (auto [dx, dy] : directions)
+        {
+            Hexagon* hex = board->getHexagon(x + dx, y + dy); // getHexagon() robi sprawdzanie zakresów
+            if(hex != nullptr && !wall(hex->getResident()) && !visited.count(hex))
+            {
+                newHexagons.push_back(hex);
+                visited.insert(hex);
+                if(hex->getResident() == wanted) found = true;
+            }
+        }
+    }
+    if(found) return newHexagons;
+    else return nearestWantedAddNeighboursLayer(board, wanted, visited, newHexagons);
+}
+
+std::vector<Hexagon*> Hexagon::findNearestLayerWith(Board *board, Resident wanted, bool includeSelf)
+{
+    std::vector<Hexagon*> newHexagons = { this };
+    if(includeSelf && resident == wanted) return newHexagons;
+    std::unordered_set<Hexagon*> visited = { this };
+    return nearestWantedAddNeighboursLayer(board, wanted, visited, newHexagons);
+}
+
 void Board::spawnBacteria()
 {
     std::string mode = GameConfigData::getString("mode");
     if (mode == "species")
     {
+        int bacteriaPerClan = GameConfigData::getInt("bacteriaPerClan");
+        int clansCount = GameConfigData::getInt("clansCount");
 
+        std::vector<int> range(board.size());
+        std::iota(range.begin(), range.end(), 0);
+        std::erase_if(range, [this](int i){ return wall(this->board[i].getResident()); });
+        std::vector<Hexagon*> centroids(clansCount);
+        for(int i = 0; i < clansCount; i++)
+        {
+            int r = std::uniform_int_distribution<int>(0, range.size()-1)(gen);
+            centroids[i] = &(board[range[r]]);
+            range[r] = range[range.size()-1];
+            range.pop_back();
+        }
+
+        range.resize(board.size());
+        std::iota(range.begin(), range.end(), 0);
+        std::erase_if(range, [this](int i){ return !empty(this->board[i].getResident()); });
+        std::shuffle(range.begin(), range.end(), gen);
+
+        int bacteriaCount = bacteriaPerClan * clansCount;
+        for(int i = 0; i < bacteriaCount; i++)
+        {
+            board[range[i]].placeBacteriaCB(this, Resident::Bacteria);
+        }
+
+        for(int i = 0; i < bacteriaPerClan; i++)
+        {
+            for(int centroidIdx = 0; centroidIdx < clansCount; centroidIdx++)
+            {
+                std::vector<Hexagon*> layer = centroids[centroidIdx]->findNearestLayerWith(board, Resident::Bacteria, true);
+                Hexagon* randomHex = layer[std::uniform_int_distribution<int>(0, layer.size()-1)(gen)];
+                randomHex->setClan(centroidIdx + 1);
+            }
+        }
     }
     else if (mode == "unrelated")
     {
@@ -406,7 +477,7 @@ void Board::spawnBacteria()
         int count = board.size();
         std::vector<int> range(count);
         std::iota(range.begin(), range.end(), 0);
-        std::erase_if(range, [this](int i){ return this->board[i].getResident() != Resident::Empty; });
+        std::erase_if(range, [this](int i){ return !empty(this->board[i].getResident()) });
         std::shuffle(range.begin(), range.end(), gen);
 
         std::vector<Hexagon*> centroids(clansCount);

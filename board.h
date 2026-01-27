@@ -73,8 +73,9 @@ public:
     inline coord getY() const noexcept { return y; }
     inline glm::ivec2 getPos() const noexcept { return glm::ivec2(x, y); }
     inline Resident getResident() const noexcept { return resident; }
-    inline clan_t getClan() const noexcept { if(clanned(resident)) return clan_t(int(resident) - int(Resident::Bacteria)); else return 0; };
+    inline clan_t getClan() const noexcept { return clanned(resident) ? clan_t(int(resident) - int(Resident::Bacteria)) : 0; };
     //inline void setResident(Resident resident) noexcept { this->resident = resident; } // Używaj funkcji place zamiast tego
+    inline setClan(clan_t clan) noexcept { if(bacteria(resident)) resident = Resident(int(Resident::Bacteria) + clan); }
     inline ResidentData& getData() noexcept { return data; }
 
     void placeWall();
@@ -95,6 +96,7 @@ public:
 
     std::vector<Hexagon*> neighbours(Board* board, int recursion = 0, bool includeSelf = false, std::function<bool(Hexagon*)> filter = nullptr);
     std::vector<Hexagon*> doubleFilterNeighbours(Board* board, int recursion, bool includeSelf, std::function<bool(Hexagon*)> expansionFilter, std::function<bool(Hexagon*)> resultFilter);
+    std::vector<Hexagon*> findNearestEmptyLayer(Board *board, bool includeSelf);
 };
 
 class Board
