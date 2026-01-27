@@ -544,7 +544,7 @@ int Board::getNumberOfMembersOfSpecies(clan_t clan)
         Hexagon *hex = this->getHexagon(i);
         if (bacteria(hex->getResident()))
         {
-            clan_t clanB = hex->getClan()-1;
+            clan_t clanB = hex->getClan();
             if (clan==clanB) sum++;
         }
     }
