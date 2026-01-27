@@ -8,9 +8,10 @@ class GameConfigData
 {
 public:
     static void setConfigDataFromFile(std::string filename);
-    static int getInt(const std::string& key, int defaultValue=0);
+    static int getInt(const std::string& key);
     static void setInt(const std::string& key, const std::string& value);
-    static float getFloat(const std::string& key, float defaultValue = 0.0f);
+    static float getFloat(const std::string& key);
+    static std::string getString(const std::string& key);
 private:
     GameConfigData() {};
     static std::unordered_map<std::string,std::string> configMap;

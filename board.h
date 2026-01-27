@@ -128,7 +128,7 @@ public:
     float getFailureRatio();
     float getActionPercentage(Action a);
     void spawnFood(double foodRatio);
-    void spawnBacteria(int bacteriaCount, clan_t clansCount);
+    void spawnBacteria();
     void spawnProteinFromShortage();
     bool isResourceOverLimit();
     void pushResourcesToCenter();

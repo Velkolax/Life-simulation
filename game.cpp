@@ -51,11 +51,11 @@ Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
     GameConfigData::setConfigDataFromFile("config.txt");
     int seed = GameConfigData::getInt("seed");
     std::cout << "Seed: " << seed << std::endl;
-    std::mt19937 g{std::random_device{}()};
-    if (seed==0)
+    if (!seed)
     {
+        std::mt19937 g{std::random_device{}()};
         std::cout << "AAA" << std::endl;
-        GameConfigData::setInt("seed",std::to_string(std::uniform_int_distribution<int>{0,1000}(g)));
+        GameConfigData::setInt("seed",std::to_string(std::uniform_int_distribution<int>{0,100000}(g)));
     }
     std::cout << "Seed: " << GameConfigData::getInt("seed") << std::endl;
     gen.seed(GameConfigData::getInt("seed"));
@@ -65,10 +65,10 @@ Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
     int x = GameConfigData::getInt("width");
     int y = GameConfigData::getInt("height");
     board = new Board(x, y, this,bacteriaCount);
-    board->InitializeNeighbour(x/2-1, true);
+    board->InitializeNeighbour((x-2)/2, true);
     Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height,this);
 
-    board->spawnBacteria(bacteriaCount, GameConfigData::getInt("clansCount"));
+    board->spawnBacteria();
     board->spawnFood(0.1);
     engine = new SimulationEngine(board);
 
@@ -82,8 +82,11 @@ void Game::restart()
 
     GameConfigData::setConfigDataFromFile("config.txt");
     int seed = GameConfigData::getInt("seed");
-    std::mt19937 g{std::random_device{}()};
-    if (seed==0) GameConfigData::setInt("seed",std::to_string(std::uniform_int_distribution<int>{0,1000}(g)));
+    if (!seed)
+    {
+        std::mt19937 g{std::random_device{}()};
+        GameConfigData::setInt("seed",std::to_string(std::uniform_int_distribution<int>{0,100000}(g)));
+    }
 
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load(24);
@@ -91,8 +94,8 @@ void Game::restart()
     int x = GameConfigData::getInt("width");
     int y = GameConfigData::getInt("height");
     board = new Board(x, y, this,bacteriaCount);
-    board->InitializeNeighbour(x/2-1, true);
-    board->spawnBacteria(bacteriaCount, GameConfigData::getInt("clansCount"));
+    board->InitializeNeighbour((x-2)/2, true);
+    board->spawnBacteria();
     board->spawnFood(0.1);
     engine->Restart();
     Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height,this);

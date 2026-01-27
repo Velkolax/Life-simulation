@@ -22,7 +22,7 @@ void GameConfigData::setConfigDataFromFile(std::string filename)
     }
 }
 
-int GameConfigData::getInt(const std::string& key, int defaultValue)
+int GameConfigData::getInt(const std::string& key)
 {
     if (configMap.contains(key)) return std::stoi(configMap[key]);
     std::cerr << "Nie ma takiego klucza w configu!!!" << std::endl;
@@ -39,9 +39,16 @@ void GameConfigData::setInt(const std::string& key, const std::string& value)
     }
 }
 
-float GameConfigData::getFloat(const std::string& key, float defaultValue)
+float GameConfigData::getFloat(const std::string& key)
 {
     if (configMap.contains(key)) return std::stof(configMap[key]);
+    std::cerr << "Nie ma takiego klucza w configu!!!" << std::endl;
+    exit(1);
+}
+
+std::string GameConfigData::getString(const std::string& key)
+{
+    if (configMap.contains(key)) return configMap[key];
     std::cerr << "Nie ma takiego klucza w configu!!!" << std::endl;
     exit(1);
 }

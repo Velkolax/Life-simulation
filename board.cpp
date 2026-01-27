@@ -392,43 +392,58 @@ void Board::spawnFood(double foodRatio)
 
 }
 
-void Board::spawnBacteria(int bacteriaCount, clan_t clansCount)
+void Board::spawnBacteria()
 {
-    int count = board.size();
-    std::vector<int> range(count);
-    std::iota(range.begin(), range.end(), 0);
-    std::erase_if(range, [this](int i){ return this->board[i].getResident() != Resident::Empty; });
-    std::shuffle(range.begin(), range.end(), gen);
-
-    std::vector<Hexagon*> centroids(clansCount);
-    std::uniform_int_distribution<int> dist(0, count-1);
-    for(int i = 0; i < clansCount; i++)
+    std::string mode = GameConfigData::getString("mode");
+    if (mode == "species")
     {
-        centroids[i] = &(board[dist(gen)]);
+
     }
-
-    for (int i = 0; i < range.size(); i++)
+    else if (mode == "unrelated")
     {
-        if (i < bacteriaCount)
-        {
-            Hexagon* hex = &(board[range[i]]);
-            int nearestCentroidIdx = 0;
-            glm::vec2 rPosHex = game->Renderer->calculateHexPosition(hex->getX(), hex->getY(), 10);
-            glm::vec2 rPosCentroid = game->Renderer->calculateHexPosition(centroids[nearestCentroidIdx]->getX(), centroids[nearestCentroidIdx]->getY(), 10);
-            float nearestDistance = glm::distance(rPosHex, rPosCentroid);
-            for (int j = 1; j < clansCount; j++)
-            {
-                rPosCentroid = game->Renderer->calculateHexPosition(centroids[j]->getX(), centroids[j]->getY(), 10);
-                float distance = glm::distance(rPosHex, rPosCentroid);
-                if(distance < nearestDistance)
-                {
-                    nearestCentroidIdx = j;
-                    nearestDistance = distance;
-                }
-            }
+        int bacteriaCount = GameConfigData::getInt("bacteriaCount");
+        int clansCount = GameConfigData::getInt("clansCount");
+        int count = board.size();
+        std::vector<int> range(count);
+        std::iota(range.begin(), range.end(), 0);
+        std::erase_if(range, [this](int i){ return this->board[i].getResident() != Resident::Empty; });
+        std::shuffle(range.begin(), range.end(), gen);
 
-            hex->placeBacteriaC(this, clan_t(nearestCentroidIdx + 1));
+        std::vector<Hexagon*> centroids(clansCount);
+        std::uniform_int_distribution<int> dist(0, count-1);
+        for(int i = 0; i < clansCount; i++)
+        {
+            centroids[i] = &(board[dist(gen)]);
         }
+
+        for (int i = 0; i < range.size(); i++)
+        {
+            if (i < bacteriaCount)
+            {
+                Hexagon* hex = &(board[range[i]]);
+                int nearestCentroidIdx = 0;
+                glm::vec2 rPosHex = game->Renderer->calculateHexPosition(hex->getX(), hex->getY(), 10);
+                glm::vec2 rPosCentroid = game->Renderer->calculateHexPosition(centroids[nearestCentroidIdx]->getX(), centroids[nearestCentroidIdx]->getY(), 10);
+                float nearestDistance = glm::distance(rPosHex, rPosCentroid);
+                for (int j = 1; j < clansCount; j++)
+                {
+                    rPosCentroid = game->Renderer->calculateHexPosition(centroids[j]->getX(), centroids[j]->getY(), 10);
+                    float distance = glm::distance(rPosHex, rPosCentroid);
+                    if(distance < nearestDistance)
+                    {
+                        nearestCentroidIdx = j;
+                        nearestDistance = distance;
+                    }
+                }
+
+                hex->placeBacteriaC(this, clan_t(nearestCentroidIdx + 1));
+            }
+        }
+    }
+    else
+    {
+        std::cerr << "Niepoprawny tryb!!!" << std::endl;
+        exit(1);
     }
 }
 
