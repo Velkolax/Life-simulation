@@ -36,6 +36,6 @@ void main() {
     uint addedSeed = hash(uint(globalSeed) + bacteriaID + hash(paramLocalID + paramOffset));
     float baseRnd = float(hash(baseSeed)) * (1.0 / 4294967296.0);
     float addedRnd = float(hash(addedSeed)) * (1.0 / 4294967296.0);
-    allWeights[memoryIndex] = minVal + baseRnd * (maxVal-minVal) * 0.9 + addedRnd * (maxVal - minVal) * 0.1;
+    allWeights[memoryIndex] = minVal + baseRnd * (maxVal-minVal) * 0.95 + addedRnd * (maxVal - minVal) * 0.05;
     //allWeights[memoryIndex] = float(allSpecies[trueID]);
 }
