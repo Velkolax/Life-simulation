@@ -516,6 +516,27 @@ void Board::spawnBacteria()
     }
 }
 
+int Board::getAliveSpeciesNumber()
+{
+    int numOfClans = GameConfigData::getInt("clansCount");
+    bool clans[numOfClans];
+    for (int i=0;i<numOfClans;i++) clans[i]=false;
+
+    for (int i=0;i<board.size();i++)
+    {
+        Hexagon *hex = this->getHexagon(i);
+        if (bacteria(hex->getResident()))
+        {
+            clan_t clan = hex->getClan()-1;
+            if (!clans[clan]) clans[clan]=true;
+        }
+    }
+    int sum = 0;
+    for (int i=0;i<numOfClans;i++) sum+=clans[i];
+    return sum;
+}
+
+
 void Board::spawnProteinFromShortage()
 {
     std::uniform_int_distribution<int> dist(0,100);
