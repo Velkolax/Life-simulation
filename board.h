@@ -38,6 +38,7 @@ inline bool energy(Resident resident) noexcept { return resident == Resident::En
 inline bool protein(Resident resident) noexcept { return resident == Resident::Protein; };
 inline bool bacteria(Resident resident) noexcept { return resident >= Resident::Bacteria; };
 inline bool clanned(Resident resident) noexcept { return resident > Resident::Bacteria; };
+inline bool unclannedBacteria(Resident resident) noexcept { return resident == Resident::Bacteria; };
 
 
 union ResidentData
