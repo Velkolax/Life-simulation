@@ -13,7 +13,14 @@ SimulationEngine::SimulationEngine(Board* board)
     shader = ResourceManager::GetShader("network");
     std::cout << "BCAPACITY: " << bCapacity << " BSIZE: " << bSize << std::endl;
     InitSsbos(board);
-    InitNetworkData();
+    std::vector<uint32_t> species;
+    for (int i=0;i<board->getWidth()*board->getHeight();i++)
+    {
+        Hexagon *hex = board->getHexagon(i);
+        clan_t clan = hex->getClan();
+        species.push_back(clan);
+    }
+    InitNetworkData(species.data());
 }
 
 SimulationEngine::~SimulationEngine()
@@ -32,7 +39,7 @@ SimulationEngine::~SimulationEngine()
 
 void SimulationEngine::Restart()
 {
-    InitNetworkData();
+    //InitNetworkData(TODO);
 }
 
 
@@ -84,12 +91,17 @@ void SimulationEngine::InitSsbos(Board *board)
 
 }
 
-void SimulationEngine::InitNetworkData()
+void SimulationEngine::InitNetworkData(uint32_t *species)
 {
-    Shader initShader = ResourceManager::GetShader("init");
+    GLuint ssboSpecies;
+    glCreateBuffers(1,&ssboSpecies);
+    glNamedBufferStorage(ssboSpecies,bCapacity * sizeof(uint32_t),species,0);
 
+
+    Shader initShader = ResourceManager::GetShader("init");
     initShader.Use();
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssboNetworks);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER,1,ssboSpecies);
     initShader.SetInteger("stride", bCapacity);
     initShader.SetInteger("globalSeed", GameConfigData::getInt("seed"));
 
@@ -144,6 +156,8 @@ void SimulationEngine::InitNetworkData()
 
 
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+
+    glDeleteBuffers(1,&ssboSpecies);
 
     std::cout << "Inicjalizacja na GPU zakonczona." << std::endl;
     size_t weightStartOffset = (size_t)BIASES * bCapacity;
