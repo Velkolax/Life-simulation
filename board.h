@@ -37,7 +37,7 @@ inline bool acid(Resident resident) noexcept { return resident == Resident::Acid
 inline bool energy(Resident resident) noexcept { return resident == Resident::Energy; };
 inline bool protein(Resident resident) noexcept { return resident == Resident::Protein; };
 inline bool bacteria(Resident resident) noexcept { return resident >= Resident::Bacteria; };
-inline bool clanned(Resident resident) noexcept { return resident > Resident::Bacteria; };
+inline bool clannedBacteria(Resident resident) noexcept { return resident > Resident::Bacteria; };
 inline bool unclannedBacteria(Resident resident) noexcept { return resident == Resident::Bacteria; };
 
 
@@ -74,7 +74,7 @@ public:
     inline coord getY() const noexcept { return y; }
     inline glm::ivec2 getPos() const noexcept { return glm::ivec2(x, y); }
     inline Resident getResident() const noexcept { return resident; }
-    inline clan_t getClan() const noexcept { return clanned(resident) ? clan_t(int(resident) - int(Resident::Bacteria)) : 0; };
+    inline clan_t getClan() const noexcept { return clannedBacteria(resident) ? clan_t(int(resident) - int(Resident::Bacteria)) : 0; };
     //inline void setResident(Resident resident) noexcept { this->resident = resident; } // Używaj funkcji place zamiast tego
     inline void setClan(clan_t clan) noexcept { if(bacteria(resident)) resident = Resident(int(Resident::Bacteria) + clan); }
     inline ResidentData& getData() noexcept { return data; }
