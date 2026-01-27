@@ -11,7 +11,10 @@
 #include "glm/vec2.hpp"
 #include "BacteriaData.h"
 
-enum class Resident : uint8_t
+
+typedef uint16_t clan_t;
+
+enum class Resident : clan_t
 {
     // Plain
     Wall,
@@ -30,7 +33,7 @@ inline bool plain(Resident resident) noexcept { return resident == Resident::Wal
 inline bool wall(Resident resident) noexcept { return resident == Resident::Wall; };
 inline bool empty(Resident resident) noexcept { return resident == Resident::Empty; };
 inline bool resource(Resident resident) noexcept { return resident >= Resident::Acid && resident <= Resident::Protein; };
-inline bool acid(Resident resident) noexcept {return resident == Resident::Acid;};
+inline bool acid(Resident resident) noexcept { return resident == Resident::Acid; };
 inline bool energy(Resident resident) noexcept { return resident == Resident::Energy; };
 inline bool protein(Resident resident) noexcept { return resident == Resident::Protein; };
 inline bool bacteria(Resident resident) noexcept { return resident >= Resident::Bacteria; };
@@ -70,7 +73,7 @@ public:
     inline coord getY() const noexcept { return y; }
     inline glm::ivec2 getPos() const noexcept { return glm::ivec2(x, y); }
     inline Resident getResident() const noexcept { return resident; }
-    inline uint8_t getClan() const noexcept { if(clanned(resident)) return uint8_t(int(resident) - int(Resident::Bacteria)); else return 0; };
+    inline clan_t getClan() const noexcept { if(clanned(resident)) return clan_t(int(resident) - int(Resident::Bacteria)); else return 0; };
     //inline void setResident(Resident resident) noexcept { this->resident = resident; } // Używaj funkcji place zamiast tego
     inline ResidentData& getData() noexcept { return data; }
 
@@ -83,7 +86,7 @@ public:
     void placeProtein();
     void placeProtein(int number);
     void placeProtein(uint8_t amount);
-    void placeBacteriaC(Board* board, uint8_t clan);
+    void placeBacteriaC(Board* board, clan_t clan);
     void placeBacteriaCB(Board* board, Resident clannedBacteria);
     void placeChild(Board* board, BacteriaData& mom, Resident clannedBacteria, int energySent, int lifespanSent, int speedSent);
     void importBacteria(Resident clannedBacteria, uint32_t id);
@@ -125,7 +128,7 @@ public:
     float getFailureRatio();
     float getActionPercentage(Action a);
     void spawnFood(double foodRatio);
-    void spawnBacteria(int bacteriaCount, uint8_t clansCount);
+    void spawnBacteria(int bacteriaCount, clan_t clansCount);
     void spawnProteinFromShortage();
     bool isResourceOverLimit();
     void pushResourcesToCenter();

@@ -312,7 +312,8 @@ void SpriteRenderer::DrawBoard(Board *board, int width, int height)
     Shader &sh = ResourceManager::GetShader("instance_bac");
     sh.Use();
     sh.SetMatrix4("projection",projection);
-    for (int i=(int)Resident::Bacteria;i<=(int)Resident::Bacteria+GameConfigData::getInt("clansCount");i++)
+    int sum = (int)Resident::Bacteria + GameConfigData::getInt("clansCount");
+    for (int i = (int)Resident::Bacteria; i <= sum; i++)
     {
         RenderBatch(textures[(int)Resident::Bacteria],residentData[i]);
     }

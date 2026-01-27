@@ -343,7 +343,7 @@ void Hexagon::placeProtein(uint8_t amount)
     data.protein.amount = amount;
 }
 
-void Hexagon::placeBacteriaC(Board* board, uint8_t clan)
+void Hexagon::placeBacteriaC(Board* board, clan_t clan)
 {
     resident = Resident(int(Resident::Bacteria) + clan);
     int32_t newId = board->addBacteria();
@@ -392,7 +392,7 @@ void Board::spawnFood(double foodRatio)
 
 }
 
-void Board::spawnBacteria(int bacteriaCount, uint8_t clansCount)
+void Board::spawnBacteria(int bacteriaCount, clan_t clansCount)
 {
     int count = board.size();
     std::vector<int> range(count);
@@ -427,7 +427,7 @@ void Board::spawnBacteria(int bacteriaCount, uint8_t clansCount)
                 }
             }
 
-            hex->placeBacteriaC(this, uint8_t(nearestCentroidIdx + 1));
+            hex->placeBacteriaC(this, clan_t(nearestCentroidIdx + 1));
         }
     }
 }
