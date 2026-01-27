@@ -464,7 +464,7 @@ void Board::spawnBacteria()
         {
             for(int centroidIdx = 0; centroidIdx < clansCount; centroidIdx++)
             {
-                std::vector<Hexagon*> layer = centroids[centroidIdx]->findNearestLayerWith(board, Resident::Bacteria, true);
+                std::vector<Hexagon*> layer = centroids[centroidIdx]->findNearestLayerWith(this, Resident::Bacteria, true);
                 Hexagon* randomHex = layer[std::uniform_int_distribution<int>(0, layer.size()-1)(gen)];
                 randomHex->setClan(centroidIdx + 1);
             }
