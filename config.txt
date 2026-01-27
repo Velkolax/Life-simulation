@@ -4,6 +4,7 @@ width=400
 height=400
 onlyStorage=1
 clansCount=10
+mode=unrelated
 
 moveCost=0.3
 attackCost=0.3
