@@ -132,6 +132,8 @@ public:
     float getActionPercentage(Action a);
     void spawnFood(double foodRatio);
     void spawnBacteria();
+    int getAliveSpeciesNumber();
+    int getNumberOfMembersOfSpecies(clan_t clan);
     void spawnProteinFromShortage();
     bool isResourceOverLimit();
     void pushResourcesToCenter();

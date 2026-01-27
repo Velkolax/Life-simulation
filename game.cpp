@@ -192,6 +192,8 @@ void Game::Render()
             Text->RenderText("LAST ACTION: "+stringActions[(int)bac.lastAction],10,190,1.0);
             Text->RenderText("MOTHRED: "+std::to_string(bac.mothered),10,220,1.0);
             Text->RenderText("FATHERED: "+std::to_string(bac.fathered),10,250,1.0);
+            Text->RenderText("SPECIES: "+std::to_string(hex->getClan()),10,280,1.0);
+            Text->RenderText("POPULATION: "+std::to_string(board->getNumberOfMembersOfSpecies(hex->getClan())),10,310,1.0);
         }
         if (hex!=nullptr && protein(hex->getResident()))
         {
@@ -214,19 +216,8 @@ void Game::Render()
     }
 
     Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getAliveBacteriaCount()),Width*0.5,10,1.0);
-    Text->RenderText("EAT PERCENTAGE: " + std::to_string(board->getActionPercentage(Action::Eat)),Width*0.5,40,1.0);
-    Text->RenderText("EAT_FAILURE PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::EatFailure)),Width*0.5,70,1.0);
-    Text->RenderText("BREED PERCENTAGE: " + std::to_string(board->getActionPercentage(Action::Breed)),Width*0.5,100,1.0);
-    Text->RenderText("BREED_FAILURE_PROTEIN PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::BreedFailureNoProtein)),Width*0.5,130,1.0);
-    Text->RenderText("MOVE PERCENTAGE: " + std::to_string(board->getActionPercentage(Action::Move)),Width*0.5,160,1.0);
-    Text->RenderText("MOVE_FAILURE PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::MoveFailure)),Width*0.5,190,1.0);
-    Text->RenderText("ATTACK PERCENTAGE: " + std::to_string(board->getActionPercentage(Action::Attack)),Width*0.5,220,1.0);
-    Text->RenderText("ATTACK_FAILURE PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::AttackFailure)),Width*0.5,250,1.0);
-    Text->RenderText("SLEEP PERCENTAGE: "+std::to_string(board->getActionPercentage(Action::Sleep)),Width*0.5,280,1.0);
-    Text->RenderText("FAILURE RATIO: "+ std::to_string(board->getFailureRatio()),Width*0.5,310,1.0);
-    Text->RenderText("STEP: "+std::to_string(board->getStep()),Width*0.5,340,1.0);
-    Text->RenderText("PROTEIN DEFICIT: "+ std::to_string(board->proteinShortage),Width*0.5,430,1.0);
-    Text->RenderText("PROTEIN SUM: " + std::to_string(board->getProteinCount()),Width*0.5,460,1.0);
+    Text->RenderText("STEP: "+std::to_string(board->getStep()),Width*0.5,40,1.0);
+    Text->RenderText("SPECIES LEFT: "+std::to_string(board->getAliveSpeciesNumber()),Width*0.5,70,1.0);
 
 }
 
