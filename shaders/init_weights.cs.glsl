@@ -32,7 +32,7 @@ void main() {
     uint globalParamIdx = paramOffset + paramLocalID;
     uint memoryIndex = globalParamIdx * stride + bacteriaID;
 
-    uint baseSeed = hash(hash(allSpecies[bacteriaID]) + hash(globalParamIdx));
+    uint baseSeed = hash(hash(allSpecies[bacteriaID]) + hash(globalParamIdx) + hash(uint(globalSeed)));
     uint addedSeed = hash(uint(globalSeed) + bacteriaID + hash(paramLocalID + paramOffset));
     float baseRnd = float(hash(baseSeed)) * (1.0 / 4294967296.0);
     float addedRnd = float(hash(addedSeed)) * (1.0 / 4294967296.0);
