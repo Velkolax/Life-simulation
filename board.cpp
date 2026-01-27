@@ -487,28 +487,25 @@ void Board::spawnBacteria()
             centroids[i] = &(board[dist(gen)]);
         }
 
-        for (int i = 0; i < range.size(); i++)
+        for (int idx : std::views::take(range, bacteriaCount))
         {
-            if (i < bacteriaCount)
+            Hexagon* hex = &(board[range[i]]);
+            int nearestCentroidIdx = 0;
+            glm::vec2 rPosHex = game->Renderer->calculateHexPosition(hex->getX(), hex->getY(), 10);
+            glm::vec2 rPosCentroid = game->Renderer->calculateHexPosition(centroids[nearestCentroidIdx]->getX(), centroids[nearestCentroidIdx]->getY(), 10);
+            float nearestDistance = glm::distance(rPosHex, rPosCentroid);
+            for (int j = 1; j < clansCount; j++)
             {
-                Hexagon* hex = &(board[range[i]]);
-                int nearestCentroidIdx = 0;
-                glm::vec2 rPosHex = game->Renderer->calculateHexPosition(hex->getX(), hex->getY(), 10);
-                glm::vec2 rPosCentroid = game->Renderer->calculateHexPosition(centroids[nearestCentroidIdx]->getX(), centroids[nearestCentroidIdx]->getY(), 10);
-                float nearestDistance = glm::distance(rPosHex, rPosCentroid);
-                for (int j = 1; j < clansCount; j++)
+                rPosCentroid = game->Renderer->calculateHexPosition(centroids[j]->getX(), centroids[j]->getY(), 10);
+                float distance = glm::distance(rPosHex, rPosCentroid);
+                if(distance < nearestDistance)
                 {
-                    rPosCentroid = game->Renderer->calculateHexPosition(centroids[j]->getX(), centroids[j]->getY(), 10);
-                    float distance = glm::distance(rPosHex, rPosCentroid);
-                    if(distance < nearestDistance)
-                    {
-                        nearestCentroidIdx = j;
-                        nearestDistance = distance;
-                    }
+                    nearestCentroidIdx = j;
+                    nearestDistance = distance;
                 }
-
-                hex->placeBacteriaC(this, clan_t(nearestCentroidIdx + 1));
             }
+
+            hex->placeBacteriaC(this, clan_t(nearestCentroidIdx + 1));
         }
     }
     else
