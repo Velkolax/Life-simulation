@@ -487,9 +487,9 @@ void Board::spawnBacteria()
             centroids[i] = &(board[dist(gen)]);
         }
 
-        for (int idx : std::views::take(range, bacteriaCount))
+        for (int i = 0; i < bacteriaCount; i++)
         {
-            Hexagon* hex = &(board[range[idx]]);
+            Hexagon* hex = &(board[range[i]]);
             int nearestCentroidIdx = 0;
             glm::vec2 rPosHex = game->Renderer->calculateHexPosition(hex->getX(), hex->getY(), 10);
             glm::vec2 rPosCentroid = game->Renderer->calculateHexPosition(centroids[nearestCentroidIdx]->getX(), centroids[nearestCentroidIdx]->getY(), 10);

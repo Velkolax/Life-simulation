@@ -1,11 +1,14 @@
 seed=681
-bacteriaCount=2000
 width=200
 height=200
 onlyStorage=1
-clansCount=100
-bacteriaPerClan=10
+
 mode=species
+clansCount=100
+
+bacteriaPerClan=50
+
+bacteriaCount=5000
 
 moveCost=0.3
 attackCost=0.3
