@@ -1,7 +1,7 @@
 seed=681
-bacteriaCount=30000
-width=400
-height=400
+bacteriaCount=5000
+width=200
+height=200
 onlyStorage=1
 clansCount=10
 mode=unrelated
@@ -19,4 +19,4 @@ energyPlacementInterval=1000
 energyThreshold=0.6
 resourceCenteringInterval=100
 
-substeps=1
+substeps=10

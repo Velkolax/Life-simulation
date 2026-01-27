@@ -5,7 +5,7 @@ layout(std430, binding=0) writeonly buffer NetworkBuffer {
     float allWeights[];
 };
 
-layout(std430, binding=1) readonly buffer SpeciesBuffer {
+layout(std430, binding=1) buffer SpeciesBuffer {
     uint allSpecies[];
 };
 
@@ -26,7 +26,7 @@ uint hash(uint x) {
 void main() {
     uint bacteriaID = gl_GlobalInvocationID.x;
     uint paramLocalID = gl_GlobalInvocationID.y;
-
+    uint trueID = bacteriaID/paramCount;
     if (bacteriaID >= stride || paramLocalID >= paramCount) return;
 
     uint globalParamIdx = paramOffset + paramLocalID;
@@ -37,4 +37,5 @@ void main() {
     float baseRnd = float(hash(baseSeed)) * (1.0 / 4294967296.0);
     float addedRnd = float(hash(addedSeed)) * (1.0 / 4294967296.0);
     allWeights[memoryIndex] = minVal + baseRnd * (maxVal-minVal) * 0.9 + addedRnd * (maxVal - minVal) * 0.1;
+    //allWeights[memoryIndex] = float(allSpecies[trueID]);
 }

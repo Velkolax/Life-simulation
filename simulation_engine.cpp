@@ -14,12 +14,18 @@ SimulationEngine::SimulationEngine(Board* board)
     std::cout << "BCAPACITY: " << bCapacity << " BSIZE: " << bSize << std::endl;
     InitSsbos(board);
     std::vector<uint32_t> species;
+    species.resize(board->getWidth()*board->getHeight(),0);
     for (int i=0;i<board->getWidth()*board->getHeight();i++)
     {
         Hexagon *hex = board->getHexagon(i);
-        clan_t clan = hex->getClan();
-        species.push_back(clan);
+        if (bacteria(hex->getResident()))
+        {
+            clan_t clan = hex->getClan();
+            species[hex->getData().bacteriaIndex] = clan;
+        }
+
     }
+
     InitNetworkData(species.data());
 }
 
@@ -93,13 +99,28 @@ void SimulationEngine::InitSsbos(Board *board)
 
 void SimulationEngine::InitNetworkData(uint32_t *species)
 {
+    for (int i=0;i<100;i++) std::cout << "SPECIES: " << species[i] << std::endl;
     GLuint ssboSpecies;
     glCreateBuffers(1,&ssboSpecies);
     glNamedBufferStorage(ssboSpecies,bCapacity * sizeof(uint32_t),species,0);
 
+    std::vector<uint32_t> checkData(bCapacity);
+    glGetNamedBufferSubData(ssboSpecies, 0, bCapacity * sizeof(uint32_t), checkData.data());
+
+    std::cout << "Weryfikacja SSBO na GPU: ";
+    for(int i=0; i<10; i++) std::cout << checkData[i] << " ";
+    std::cout << std::endl;
 
     Shader initShader = ResourceManager::GetShader("init");
     initShader.Use();
+    GLuint block_index = glGetProgramResourceIndex(initShader.ID, GL_SHADER_STORAGE_BLOCK, "SpeciesBuffer");
+    if (block_index == GL_INVALID_INDEX) {
+        std::cout << "ERROR: Shader nie posiada bloku SpeciesBuffer!" << std::endl;
+    } else {
+        GLint binding = 0;
+        glGetProgramResourceiv(initShader.ID, GL_SHADER_STORAGE_BLOCK, block_index, 1, (const GLenum[]){GL_BUFFER_BINDING}, 1, NULL, &binding);
+        std::cout << "Shader SpeciesBuffer binding point: " << binding << std::endl;
+    }
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssboNetworks);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER,1,ssboSpecies);
     initShader.SetInteger("stride", bCapacity);
