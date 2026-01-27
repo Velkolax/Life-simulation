@@ -288,7 +288,9 @@ void SpriteRenderer::generateSprites(Board *board)
         glm::vec2 unitPos = hexPos + glm::vec2((size-smallSize)/2,0);
 
         if (!wall(hex->getResident())) hexData.push_back(HexInstanceData(hexPos,glm::vec3(1.0f),0.0f,hexSizeVec));
-        residentData[(int)hex->getResident()].push_back({unitPos,color,0.0f,smallSizeVec});
+        if (hex->getClan()==0)
+            residentData[(int)hex->getResident()].push_back({unitPos,color,0.0f,smallSizeVec});
+        else residentData[(int)Resident::Bacteria].push_back({unitPos,color,0.0f,smallSizeVec});
     }
 }
 
@@ -312,11 +314,7 @@ void SpriteRenderer::DrawBoard(Board *board, int width, int height)
     Shader &sh = ResourceManager::GetShader("instance_bac");
     sh.Use();
     sh.SetMatrix4("projection",projection);
-    int sum = (int)Resident::Bacteria + GameConfigData::getInt("clansCount");
-    for (int i = (int)Resident::Bacteria; i <= sum; i++)
-    {
-        RenderBatch(textures[(int)Resident::Bacteria],residentData[i]);
-    }
+    RenderBatch(textures[(int)Resident::Bacteria],residentData[(int)Resident::Bacteria]);
 
 }
 
