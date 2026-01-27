@@ -193,6 +193,7 @@ void Game::Render()
             Text->RenderText("MOTHRED: "+std::to_string(bac.mothered),10,220,1.0);
             Text->RenderText("FATHERED: "+std::to_string(bac.fathered),10,250,1.0);
             Text->RenderText("SPECIES: "+std::to_string(hex->getClan()),10,280,1.0);
+            Text->RenderText("POPULATION: "+std::to_string(board->getNumberOfMembersOfSpecies(hex->getClan())),10,310,1.0);
         }
         if (hex!=nullptr && protein(hex->getResident()))
         {

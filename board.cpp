@@ -536,6 +536,21 @@ int Board::getAliveSpeciesNumber()
     return sum;
 }
 
+int Board::getNumberOfMembersOfSpecies(clan_t clan)
+{
+    int sum=0;
+    for (int i=0;i<board.size();i++)
+    {
+        Hexagon *hex = this->getHexagon(i);
+        if (bacteria(hex->getResident()))
+        {
+            clan_t clanB = hex->getClan()-1;
+            if (clan==clanB) sum++;
+        }
+    }
+    return sum;
+}
+
 
 void Board::spawnProteinFromShortage()
 {
