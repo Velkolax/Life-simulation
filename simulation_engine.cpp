@@ -22,6 +22,7 @@ SimulationEngine::SimulationEngine(Board* board)
         {
             clan_t clan = hex->getClan();
             species[hex->getData().bacteriaIndex] = clan;
+            std::cout << "ZNALEZIONO SPECIES: " << clan << std::endl;
         }
 
     }
