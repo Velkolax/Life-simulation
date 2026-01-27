@@ -477,7 +477,7 @@ void BacteriaData::breed(Board* board, Hexagon* dadHex, float* data, coord x, co
     if (!dadHex || !bacteria(dadHex->getResident())) return;
 
     Hexagon* momHex = board->getHexagon(x, y);
-
+    int32_t myIndex = board->getHexagon(x, y)->getData().bacteriaIndex;
     int reps = repeats(*data);
 
     for (int i = 0; i < reps; i++)
@@ -551,10 +551,11 @@ void BacteriaData::breed(Board* board, Hexagon* dadHex, float* data, coord x, co
         {
             board->getGame()->engine->reproduceNetwork(momHex->getData().bacteriaIndex, dadHex->getData().bacteriaIndex, board->popVacant());
         }
-        this->mothered++;
+        BacteriaData& mom = board->getBacteria(myIndex);
+        mom.mothered++;
         BacteriaData &dad = board->getBacteria(dadHex->getData().bacteriaIndex);
         dad.fathered++;
-        this->lastAction = Action::Breed;
+        mom.lastAction = Action::Breed;
     }
 }
 

@@ -11,7 +11,7 @@ public:
     void Restart();
     inline void Increment(){counter++;}
     void InitSsbos(Board *board);
-    void InitNetworkData();
+    void InitNetworkData(uint32_t* species);
     void Process(uint32_t id_size, uint32_t* ids, float* inputData, float* outputData);
     void killNetwork(int id);
     void reproduceNetwork(int parentA, int parentB, int childIdx);
