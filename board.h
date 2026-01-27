@@ -134,7 +134,7 @@ public:
     void spawnBacteria();
     int getAliveSpeciesNumber();
     int getNumberOfMembersOfSpecies(clan_t clan);
-    void spawnProteinFromShortage();
+    void spawnProteinAndAcidFromShortage();
     bool isResourceOverLimit();
     void pushResourcesToCenter();
     // gettery/settery

@@ -153,7 +153,7 @@ void Board::tick()
 
 
     if (step % GameConfigData::getInt("energyPlacementInterval") == 0 && !isResourceOverLimit()) spawnFood(0.1);
-    spawnProteinFromShortage();
+    spawnProteinAndAcidFromShortage();
     if (step % GameConfigData::getInt("resourceCenteringInterval") == 0) pushResourcesToCenter();
     if (getHighestAge()>highestAge) highestAge = getHighestAge();
     resourcesMerge();
@@ -552,7 +552,7 @@ int Board::getNumberOfMembersOfSpecies(clan_t clan)
 }
 
 
-void Board::spawnProteinFromShortage()
+void Board::spawnProteinAndAcidFromShortage()
 {
     std::uniform_int_distribution<int> dist(0,100);
     int count = board.size();
