@@ -14,6 +14,16 @@ unsigned int SCREEN_HEIGHT = 600;
 bool fullScreen = false;
 bool fPressed = false;
 
+
+void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity,
+                            GLsizei length, const char* message, const void* userParam) {
+    if (severity==GL_DEBUG_SEVERITY_MEDIUM)
+    {
+        std::cout << "OpenGL Warning Message: " << message << std::endl;
+    }
+    else std::cerr << "OpenGL Error Message: " << message << std::endl;
+}
+
 Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
 {
     glfwInit();
@@ -33,7 +43,10 @@ Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+    glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(glDebugOutput, nullptr);
 
     ResourceManager::LoadShader({"shaders/instance.vs.glsl"},{"shaders/instance.fs.glsl"},"instance");
     ResourceManager::LoadShader({"shaders/instance.vs.glsl"},{"shaders/instance_bac.fs.glsl"},"instance_bac");
@@ -136,7 +149,7 @@ void Game::Resize(int width, int height)
     Text->TextShader.SetMatrix4("projection", glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f), true);
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->Width),
         static_cast<float>(this->Height), 0.0f, -1.0f, 1.0f);
-    ResourceManager::GetShader("sprite").Use().SetMatrix4("projection", projection);
+    ResourceManager::GetShader("instance").Use().SetMatrix4("projection", projection);
 }
 
 
@@ -257,3 +270,4 @@ void Game::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     if(yoffset==-1) game->scroll = -1;
     else if(yoffset==1) game->scroll = 1;
 }
+

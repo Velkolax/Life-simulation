@@ -34,8 +34,8 @@ Shader& ResourceManager::LoadShaderText(std::string name)
 Shader& ResourceManager::GetShader(std::string name)
 {
     if (Shaders.contains(name)) return Shaders[name];
-    std::cout << "ERROR: SHADER NOT FOUND!!!" << std::endl;
-    return Shaders[name];
+    std::cerr << "ERROR: SHADER " << name << " NOT FOUND!!!" << std::endl;
+    exit(1);
 }
 
 Texture2D& ResourceManager::LoadTexture(const char *file, bool alpha, std::string name)

@@ -460,6 +460,7 @@ void Board::spawnBacteria()
             board[range[i]].placeBacteriaCB(this, Resident::Bacteria);
         }
 
+
         for(int i = 0; i < bacteriaPerClan; i++)
         {
             for(int centroidIdx = 0; centroidIdx < clansCount; centroidIdx++)
