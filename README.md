@@ -1,7 +1,7 @@
 # Life simulation
 
-## How to trun it on?
-On windows you just need to clone the repo and use the **life-sim.exe** file included in the main directory. On linux 
+## How to turn it on?
+On Windows you just need to clone the repo and use the **life-sim.exe** file included in the main directory. On linux 
 you can use linux executable file **life-sim**. Remember to not take them out of the main directory!
 
 
