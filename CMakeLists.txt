@@ -8,6 +8,8 @@ if(WIN32)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif ()
 
+
+
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
@@ -45,3 +47,7 @@ target_link_libraries(life-sim
         glm::glm
         freetype
 )
+
+if(MINGW)
+    target_link_options(life-sim PRIVATE -static-libgcc -static-libstdc++ -static)
+endif()
