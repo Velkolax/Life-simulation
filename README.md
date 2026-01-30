@@ -6,7 +6,8 @@ you can use linux executable file **life-sim**. Remember to not take them out of
 
 
 ## Building instructions
-If you do not trust random executables you can always build it yourself. We recommend cmake with vcpkg to handle all dependencies.
+You can also build the program yourself. We recommend cmake with vcpkg to handle all dependencies. All needed 
+libraries are included in **vcpkg.json**.
 
 ## Controls
 While inside the simulation you can use the following controls:
