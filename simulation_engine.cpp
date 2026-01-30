@@ -271,7 +271,7 @@ void SimulationEngine::reproduceNetwork(int parentA, int parentB, int childIdx)
     reproShader.SetInteger("childIdx", childIdx);
 
     reproShader.SetFloat("mutationRate", 0.02f);
-    reproShader.SetFloat("mutationChance", 0.2f);
+    reproShader.SetFloat("mutationChance", 0.02f);
     reproShader.SetInteger("simStep", counter);
     reproShader.SetInteger("globalSeed",GameConfigData::getInt("seed"));
 
