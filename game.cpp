@@ -110,7 +110,7 @@ void Game::restart()
     board->InitializeNeighbour((x-2)/2, true);
     board->spawnBacteria();
     board->spawnFood(0.1);
-    engine->Restart();
+    engine->Restart(board);
     Renderer = new SpriteRenderer(ResourceManager::GetShader("instance"),board,Width,Height,this);
 
 }

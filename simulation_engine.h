@@ -8,7 +8,7 @@ class SimulationEngine
 public:
     SimulationEngine(Board *board);
     ~SimulationEngine();
-    void Restart();
+    void Restart(Board* board);
     inline void Increment(){counter++;}
     void InitSsbos(Board *board);
     void InitNetworkData(uint32_t* species);

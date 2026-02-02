@@ -44,9 +44,22 @@ SimulationEngine::~SimulationEngine()
     glDeleteBuffers(1,&ssboIds);
 }
 
-void SimulationEngine::Restart()
+void SimulationEngine::Restart(Board *board)
 {
-    //InitNetworkData(TODO);
+    // std::vector<uint32_t> species;
+    // for (int i=0;i<board->getWidth()*board->getHeight();i++)
+    // {
+    //     Hexagon *hex = board->getHexagon(i);
+    //     if (bacteria(hex->getResident()))
+    //     {
+    //         clan_t clan = hex->getClan();
+    //         species[hex->getData().bacteriaIndex] = clan;
+    //         std::cout << "ZNALEZIONO SPECIES: " << clan << std::endl;
+    //     }
+    //
+    // }
+    //
+    // InitNetworkData(species.data());
 }
 
 
@@ -257,8 +270,8 @@ void SimulationEngine::reproduceNetwork(int parentA, int parentB, int childIdx)
     reproShader.SetInteger("parentBIdx", parentB);
     reproShader.SetInteger("childIdx", childIdx);
 
-    reproShader.SetFloat("mutationRate", 0.01f);
-    reproShader.SetFloat("mutationChance", 0.05f);
+    reproShader.SetFloat("mutationRate", 0.02f);
+    reproShader.SetFloat("mutationChance", 0.02f);
     reproShader.SetInteger("simStep", counter);
     reproShader.SetInteger("globalSeed",GameConfigData::getInt("seed"));
 
