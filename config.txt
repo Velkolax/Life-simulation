@@ -1,12 +1,12 @@
 seed=5685
-width=30
-height=30
+width=100
+height=100
 onlyStorage=1
 
 mode=species
-clansCount=3
+clansCount=50
 
-bacteriaPerClan=10
+bacteriaPerClan=50
 
 bacteriaCount=5000
 
