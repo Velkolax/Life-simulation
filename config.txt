@@ -1,6 +1,6 @@
-seed=0
-width=200
-height=200
+seed=3436
+width=150
+height=150
 onlyStorage=1
 
 mode=species
@@ -23,4 +23,4 @@ energyPlacementInterval=1000
 energyThreshold=0.6
 resourceCenteringInterval=100
 
-substeps=1
+substeps=2

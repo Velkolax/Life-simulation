@@ -30,7 +30,7 @@ Game::Game() : Width(SCREEN_WIDTH), Height(SCREEN_HEIGHT), board()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, false);
+    glfwWindowHint(GLFW_RESIZABLE, true);
     window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Simulation", nullptr, nullptr);
     glfwSetWindowUserPointer(window, this);
     glfwMakeContextCurrent(window);
@@ -172,12 +172,12 @@ void Game::ProcessInput()
     else if (input.isDown(GLFW_KEY_SPACE)) this->tick();
     else if (input.isToggled(GLFW_KEY_P)) this->tick();
 
-    if (input.isPressed(GLFW_KEY_F))
-    {
-        fullscreen = !fullscreen;
-        if (fullscreen) glfwSetWindowMonitor(window,glfwGetPrimaryMonitor(),0,0,glfwGetVideoMode(glfwGetPrimaryMonitor())->width,glfwGetVideoMode(glfwGetPrimaryMonitor())->height,GLFW_DONT_CARE);
-        else glfwSetWindowMonitor(window,NULL,0,0,SCREEN_WIDTH,SCREEN_HEIGHT,GLFW_DONT_CARE);
-    }
+    // if (input.isPressed(GLFW_KEY_F))
+    // {
+    //     fullscreen = !fullscreen;
+    //     if (fullscreen) glfwSetWindowMonitor(window,glfwGetPrimaryMonitor(),0,0,glfwGetVideoMode(glfwGetPrimaryMonitor())->width,glfwGetVideoMode(glfwGetPrimaryMonitor())->height,GLFW_DONT_CARE);
+    //     else glfwSetWindowMonitor(window,NULL,0,0,SCREEN_WIDTH,SCREEN_HEIGHT,GLFW_DONT_CARE);
+    // }
 
     if (input.isReleased(GLFW_KEY_R)) this->restart();
 }
