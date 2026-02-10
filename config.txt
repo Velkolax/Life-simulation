@@ -1,10 +1,10 @@
-seed=3436
-width=150
-height=150
+seed=5685
+width=100
+height=100
 onlyStorage=1
 
 mode=species
-clansCount=100
+clansCount=50
 
 bacteriaPerClan=50
 
@@ -23,4 +23,4 @@ energyPlacementInterval=1000
 energyThreshold=0.6
 resourceCenteringInterval=100
 
-substeps=2
+substeps=100

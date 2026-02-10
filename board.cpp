@@ -630,6 +630,8 @@ void Board::pushResourcesToCenter()
         if (targetIdx != -1) moves.push_back({i, targetIdx});
     }
 
+    std::sort(moves.begin(), moves.end(), [](std::pair<int, int> p1, std::pair<int, int> p2){ return (p1.second == p2.second) ? p1.first > p2.first : p1.second > p2.second; });
+
     for (auto& m : moves)
     {
         Hexagon* from = &board[m.first];
