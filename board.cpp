@@ -154,7 +154,8 @@ void Board::tick()
 
     if (step % GameConfigData::getInt("energyPlacementInterval") == 0 && !isResourceOverLimit()) spawnFood(0.1);
     spawnProteinAndAcidFromShortage();
-    //if (step % GameConfigData::getInt("resourceCenteringInterval") == 0) pushResourcesToCenter();
+    int interval = GameConfigData::getInt("resourceCenteringInterval");
+    if (interval>=0 && step%interval == 0) pushResourcesToCenter();
     if (getHighestAge()>highestAge) highestAge = getHighestAge();
     resourcesMerge();
 }
