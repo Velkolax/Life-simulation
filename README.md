@@ -4,7 +4,10 @@
 Life simulation is an evolutionary multi-species simulator where microorganisms compete for limited resources on a hexagonal grid. 
 They can freely move, eat, breed or fight, all depending on the output of their own Neural Network. 
 We optimised all the heavy calculations by leveraging the GPU using GLSL compute shaders.
-![Evolutionary Simulation in action](sim.gif)
+
+<p align="center">
+  <img src="sim.gif" width="500" alt="Evolutionary Simulation Demo">
+</p>
 
 ## How to turn it on?
 On Windows you just need to clone the repo and use the **life-sim.exe** file included in the main directory. On linux 
