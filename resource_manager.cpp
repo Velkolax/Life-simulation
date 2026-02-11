@@ -46,6 +46,10 @@ Texture2D* ResourceManager::LoadTexture(const char *file, bool alpha, std::strin
 
 Texture2D* ResourceManager::GetTexture(std::string name)
 {
+    if (!Textures.contains(name)) {
+        std::cerr << "ERROR: Texture '" << name << "' not found!" << std::endl;
+        return Textures.begin()->second;
+    }
     return Textures[name];
 }
 

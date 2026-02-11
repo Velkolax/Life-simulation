@@ -28,6 +28,7 @@ BacteriaWidget::BacteriaWidget(QWidget* parent)
 {
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, QOverload<>::of(&BacteriaWidget::update));
+    timer->start(16);
 }
 
 BacteriaWidget::~BacteriaWidget()
@@ -41,7 +42,10 @@ BacteriaWidget::~BacteriaWidget()
 void BacteriaWidget::initializeGL()
 {
     initializeOpenGLFunctions();
+    this->Width = width();
+    this->Height = height();
     glEnable(GL_BLEND);
+    glDisable(GL_DEPTH_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
@@ -85,7 +89,6 @@ void BacteriaWidget::initializeGL()
     board->spawnFood(0.1);
     engine = new SimulationEngine(board);
 
-    timer->start(16);
 }
 
 void BacteriaWidget::paintGL()
@@ -145,10 +148,15 @@ void BacteriaWidget::resizeGL(int w, int h)
 {
     this->Width = w;
     this->Height = h;
-    Text->TextShader->SetMatrix4("projection", glm::ortho(0.0f, static_cast<float>(w), static_cast<float>(h), 0.0f), true);
+    glViewport(0, 0, w, h);
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->Width),
         static_cast<float>(this->Height), 0.0f, -1.0f, 1.0f);
     ResourceManager::GetShader("instance")->Use().SetMatrix4("projection", projection);
+    //ResourceManager::GetShader("instance_bac")->Use().SetMatrix4("projection", projection);
+    if (Text) {
+        Text->TextShader->Use().SetMatrix4("projection",
+            glm::ortho(0.0f, static_cast<float>(w), static_cast<float>(h), 0.0f));
+    }
 }
 
 void BacteriaWidget::keyPressEvent(QKeyEvent* event)
