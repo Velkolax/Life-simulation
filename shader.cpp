@@ -2,14 +2,22 @@
 
 #include <iostream>
 
+Shader::~Shader()
+{
+    if (this->ID != 0)
+        glDeleteProgram(this->ID);
+}
+
 Shader &Shader::Use()
 {
+    initializeOpenGLFunctions();
     glUseProgram(this->ID);
     return *this;
 }
 
 void Shader::Compile(const char* vertexSources[], const char* fragmentSources[], GLint vLengths[], GLint fLengths[], GLuint vlen, GLuint flen)
 {
+    initializeOpenGLFunctions();
     unsigned int sVertex, sFragment, gShader;
     // vertex Shader
     sVertex = glCreateShader(GL_VERTEX_SHADER);
@@ -35,6 +43,7 @@ void Shader::Compile(const char* vertexSources[], const char* fragmentSources[],
 
 void Shader::CompileText(const char* vertexSource, const char* fragmentSource, const char* geometrySource)
 {
+    initializeOpenGLFunctions();
     unsigned int sVertex, sFragment, gShader;
     // vertex Shader
     sVertex = glCreateShader(GL_VERTEX_SHADER);
@@ -71,6 +80,7 @@ void Shader::CompileText(const char* vertexSource, const char* fragmentSource, c
 
 void Shader::CompileCompute(const char* computeSources[], GLint lengths[],int len)
 {
+    initializeOpenGLFunctions();
     unsigned int cShader;
     cShader = glCreateShader(GL_COMPUTE_SHADER);
     glShaderSource(cShader,len,computeSources,lengths);

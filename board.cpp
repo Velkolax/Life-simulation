@@ -36,7 +36,7 @@ Hexagon::Hexagon(coord x, coord y) : x(x), y(y), resident(Resident::Wall){}
 Hexagon::Hexagon(coord x, coord y, Resident resident) : x(x), y(y), resident(resident)
 {}
 
-Board::Board(coord width, coord height, Game* game, int bacteriaCount) : width(width), height(height), game(game)
+Board::Board(coord width, coord height, BacteriaWidget* widget, int bacteriaCount) : width(width), height(height), widget(widget)
 {
     uint32_t seed = static_cast<uint32_t>(GameConfigData::getInt("seed"));
     gen.seed(seed);
@@ -101,7 +101,7 @@ void Board::InitializeRandom(int min, int max)
 void Board::tick()
 {
     step++;
-    game->engine->Increment();
+    widget->engine->Increment();
     struct Point
     {
         coord x;
@@ -140,7 +140,7 @@ void Board::tick()
     }
     if (idsBuffer.empty()) return;
     std::vector<float> hostOutBuffer; hostOutBuffer.resize(count*OUTPUT);
-    game->engine->Process(idsBuffer.size(), idsBuffer.data(), hostInBuffer.data(), hostOutBuffer.data());
+    widget->engine->Process(idsBuffer.size(), idsBuffer.data(), hostInBuffer.data(), hostOutBuffer.data());
     for(int i = 0; i < idsBuffer.size(); i++)
     {
         if(!bacteria(getHexagon(points[i].x, points[i].y)->getResident())) continue; // Bakteria zginęła i teraz na heksie jest pustka
@@ -494,12 +494,12 @@ void Board::spawnBacteria()
         {
             Hexagon* hex = &(board[range[i]]);
             int nearestCentroidIdx = 0;
-            glm::vec2 rPosHex = game->Renderer->calculateHexPosition(hex->getX(), hex->getY(), 10);
-            glm::vec2 rPosCentroid = game->Renderer->calculateHexPosition(centroids[nearestCentroidIdx]->getX(), centroids[nearestCentroidIdx]->getY(), 10);
+            glm::vec2 rPosHex = widget->Renderer->calculateHexPosition(hex->getX(), hex->getY(), 10);
+            glm::vec2 rPosCentroid = widget->Renderer->calculateHexPosition(centroids[nearestCentroidIdx]->getX(), centroids[nearestCentroidIdx]->getY(), 10);
             float nearestDistance = glm::distance(rPosHex, rPosCentroid);
             for (int j = 1; j < clansCount; j++)
             {
-                rPosCentroid = game->Renderer->calculateHexPosition(centroids[j]->getX(), centroids[j]->getY(), 10);
+                rPosCentroid = widget->Renderer->calculateHexPosition(centroids[j]->getX(), centroids[j]->getY(), 10);
                 float distance = glm::distance(rPosHex, rPosCentroid);
                 if(distance < nearestDistance)
                 {
@@ -601,14 +601,14 @@ void Board::pushResourcesToCenter()
 {
     int xCenter = getWidth() / 2;
     int yCenter = getHeight() / 2;
-    glm::vec2 rPosCenter = game->Renderer->calculateHexPosition(xCenter, yCenter, 10);
+    glm::vec2 rPosCenter = widget->Renderer->calculateHexPosition(xCenter, yCenter, 10);
     std::vector<std::pair<int, int>> moves;
 
     for (int i = 0; i < board.size(); i++)
     {
         Hexagon *hex = &board[i];
         if (!resource(hex->getResident())) continue;
-        glm::vec2 currentPos = game->Renderer->calculateHexPosition(hex->getX(), hex->getY(), 10);
+        glm::vec2 currentPos = widget->Renderer->calculateHexPosition(hex->getX(), hex->getY(), 10);
         float currentDist = glm::distance(currentPos, rPosCenter);
         if (currentDist < 0.1f) continue;
         float minDistance = currentDist;
@@ -619,7 +619,7 @@ void Board::pushResourcesToCenter()
             Hexagon* h = getHexagon(hex->getX() + dx, hex->getY() + dy);
             if (h != nullptr && empty(h->getResident()))
             {
-                glm::vec2 neighborPos = game->Renderer->calculateHexPosition(h->getX(), h->getY(), 10);
+                glm::vec2 neighborPos = widget->Renderer->calculateHexPosition(h->getX(), h->getY(), 10);
                 float dist = glm::distance(neighborPos, rPosCenter);
                 if (dist < minDistance) // Musi być bliżej niż obecne pole
                 {

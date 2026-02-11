@@ -2,8 +2,9 @@
 #include "board.h"
 #include "resource_manager.h"
 #include <omp.h>
+#include <QOpenGLFunctions_4_5_Core>
 
-class SimulationEngine
+class SimulationEngine : protected QOpenGLFunctions_4_5_Core
 {
 public:
     SimulationEngine(Board *board);
@@ -33,7 +34,7 @@ private:
     uint32_t* idPtr = nullptr;
     uint32_t* emptyPtr = nullptr;
     const size_t BATCH_SIZE = 1000;
-    Shader shader;
+    Shader *shader;
     size_t bWidth,bHeight;
     size_t bCapacity;
     size_t bSize;

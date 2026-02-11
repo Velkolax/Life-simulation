@@ -3,11 +3,11 @@
 
 #include <map>
 
-#include <glad/glad.h>
 #include <glm/glm.hpp>
 
 #include "texture.h"
 #include "shader.h"
+#include <QOpenGLFunctions_4_5_Core>
 
 struct Character {
     unsigned int TextureID; // ID handle of the glyph texture
@@ -20,14 +20,14 @@ struct Character {
 // A renderer class for rendering text displayed by a font loaded using the
 // FreeType library. A single font is loaded, processed into a list of Character
 // items for later rendering.
-class TextRenderer
+class TextRenderer : QOpenGLFunctions_4_5_Core
 {
 public:
     // holds a list of pre-compiled Characters
     std::map<char, Character> Characters;
     std::map<char, Character> CharactersOutline;
     // shader used for text rendering
-    Shader TextShader;
+    Shader *TextShader;
     // constructor
     TextRenderer(unsigned int width, unsigned int height);
     // pre-compiles a list of characters from the given font

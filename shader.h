@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include <glad/glad.h>
+#include <QOpenGLFunctions_4_5_Core>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -11,13 +11,15 @@
 // General purpose shader object. Compiles from file, generates
 // compile/link-time error messages and hosts several utility 
 // functions for easy management.
-class Shader
+class Shader : protected QOpenGLFunctions_4_5_Core
 {
 public:
     // state
     unsigned int ID; 
     // constructor
     Shader() { }
+    ~Shader();
+    void initFunctions() {initializeOpenGLFunctions();}
     // sets the current shader as active
     Shader  &Use();
     // compiles the shader from given source code

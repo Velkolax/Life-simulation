@@ -2,10 +2,12 @@
 #include <glm/gtc/type_precision.hpp>
 #include "BacteriaData.h"
 #include "game_configdata.h"
-#include "GLFW/glfw3.h"
+//#include "GLFW/glfw3.h"
+
 
 SimulationEngine::SimulationEngine(Board* board)
 {
+    QOpenGLFunctions_4_5_Core::initializeOpenGLFunctions();
     bWidth = board->getWidth();
     bHeight = board->getHeight();
     bCapacity = bWidth * bHeight;
@@ -125,26 +127,26 @@ void SimulationEngine::InitNetworkData(uint32_t *species)
     for(int i=0; i<10; i++) std::cout << checkData[i] << " ";
     std::cout << std::endl;
 
-    Shader initShader = ResourceManager::GetShader("init");
-    initShader.Use();
-    GLuint block_index = glGetProgramResourceIndex(initShader.ID, GL_SHADER_STORAGE_BLOCK, "SpeciesBuffer");
+    Shader *initShader = ResourceManager::GetShader("init");
+    initShader->Use();
+    GLuint block_index = glGetProgramResourceIndex(initShader->ID, GL_SHADER_STORAGE_BLOCK, "SpeciesBuffer");
     if (block_index == GL_INVALID_INDEX) {
         std::cout << "ERROR: Shader nie posiada bloku SpeciesBuffer!" << std::endl;
     } else {
         GLint binding = 0;
-        glGetProgramResourceiv(initShader.ID, GL_SHADER_STORAGE_BLOCK, block_index, 1, (const GLenum[]){GL_BUFFER_BINDING}, 1, NULL, &binding);
+        glGetProgramResourceiv(initShader->ID, GL_SHADER_STORAGE_BLOCK, block_index, 1, (const GLenum[]){GL_BUFFER_BINDING}, 1, NULL, &binding);
         std::cout << "Shader SpeciesBuffer binding point: " << binding << std::endl;
     }
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssboNetworks);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER,1,ssboSpecies);
-    initShader.SetInteger("stride", bCapacity);
-    initShader.SetInteger("globalSeed", GameConfigData::getInt("seed"));
+    initShader->SetInteger("stride", bCapacity);
+    initShader->SetInteger("globalSeed", GameConfigData::getInt("seed"));
 
     auto DispatchInit = [&](int startParam, int count, float minVal,float maxVal) {
-        initShader.SetInteger("paramOffset", startParam);
-        initShader.SetInteger("paramCount", count);
-        initShader.SetFloat("minVal", minVal);
-        initShader.SetFloat("maxVal", maxVal);
+        initShader->SetInteger("paramOffset", startParam);
+        initShader->SetInteger("paramCount", count);
+        initShader->SetFloat("minVal", minVal);
+        initShader->SetFloat("maxVal", maxVal);
 
 
         int groupsX = (bCapacity + 63) / 64;
@@ -153,10 +155,10 @@ void SimulationEngine::InitNetworkData(uint32_t *species)
         glDispatchCompute(groupsX, groupsY, 1);
     };
     auto DispatchInit2 = [&](int startParam, int count, float range) {
-        initShader.SetInteger("paramOffset", startParam);
-        initShader.SetInteger("paramCount", count);
-        initShader.SetFloat("minVal", -range);
-        initShader.SetFloat("maxVal", range);
+        initShader->SetInteger("paramOffset", startParam);
+        initShader->SetInteger("paramCount", count);
+        initShader->SetFloat("minVal", -range);
+        initShader->SetFloat("maxVal", range);
 
 
         int groupsX = (bCapacity + 63) / 64;
@@ -216,16 +218,16 @@ void SimulationEngine::Process(uint32_t id_size, uint32_t *ids, float* inputData
     memcpy(idPtr,ids,id_size*sizeof(uint32_t));
     memcpy(InPtr, inputData, id_size * INPUT * sizeof(float));
     glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
-    shader.Use();
+    shader->Use();
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER,0,ssboNetworks);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER,1,ssboIn);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER,2,ssboOut);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER,3,ssboIds);
-    shader.SetInteger("activeBacteria",bSize);
-    shader.SetInteger("stride",bCapacity);
-    shader.SetInteger("indices",id_size);
-    shader.SetInteger("simStep", counter);
-    shader.SetInteger("globalSeed",GameConfigData::getInt("seed"));
+    shader->SetInteger("activeBacteria",bSize);
+    shader->SetInteger("stride",bCapacity);
+    shader->SetInteger("indices",id_size);
+    shader->SetInteger("simStep", counter);
+    shader->SetInteger("globalSeed",GameConfigData::getInt("seed"));
     glDispatchCompute((id_size + 63) / 64, 1, 1);
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
@@ -246,12 +248,12 @@ void SimulationEngine::killNetwork(int deadIdx)
     int lastIdx = bSize - 1;
 
     if (deadIdx != lastIdx) {
-        Shader killShader = ResourceManager::GetShader("kill");
-        killShader.Use();
-        killShader.SetInteger("stride", bCapacity);
-        killShader.SetInteger("paramCount", SIZE);
-        killShader.SetInteger("deadIdx", deadIdx);
-        killShader.SetInteger("lastIdx", lastIdx);
+        Shader *killShader = ResourceManager::GetShader("kill");
+        killShader->Use();
+        killShader->SetInteger("stride", bCapacity);
+        killShader->SetInteger("paramCount", SIZE);
+        killShader->SetInteger("deadIdx", deadIdx);
+        killShader->SetInteger("lastIdx", lastIdx);
 
         glDispatchCompute((SIZE + 63) / 64, 1, 1);
     }
@@ -262,18 +264,18 @@ void SimulationEngine::reproduceNetwork(int parentA, int parentB, int childIdx)
 {
     if (bSize >= bCapacity) return;
 
-    Shader reproShader = ResourceManager::GetShader("reproduce");
-    reproShader.Use();
-    reproShader.SetInteger("stride", bCapacity);
-    reproShader.SetInteger("paramCount", SIZE);
-    reproShader.SetInteger("parentAIdx", parentA);
-    reproShader.SetInteger("parentBIdx", parentB);
-    reproShader.SetInteger("childIdx", childIdx);
+    Shader *reproShader = ResourceManager::GetShader("reproduce");
+    reproShader->Use();
+    reproShader->SetInteger("stride", bCapacity);
+    reproShader->SetInteger("paramCount", SIZE);
+    reproShader->SetInteger("parentAIdx", parentA);
+    reproShader->SetInteger("parentBIdx", parentB);
+    reproShader->SetInteger("childIdx", childIdx);
 
-    reproShader.SetFloat("mutationRate", 0.02f);
-    reproShader.SetFloat("mutationChance", 0.02f);
-    reproShader.SetInteger("simStep", counter);
-    reproShader.SetInteger("globalSeed",GameConfigData::getInt("seed"));
+    reproShader->SetFloat("mutationRate", 0.02f);
+    reproShader->SetFloat("mutationChance", 0.02f);
+    reproShader->SetInteger("simStep", counter);
+    reproShader->SetInteger("globalSeed",GameConfigData::getInt("seed"));
 
     glDispatchCompute((SIZE + 63) / 64, 1, 1);
 

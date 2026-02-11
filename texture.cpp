@@ -6,11 +6,20 @@
 Texture2D::Texture2D()
     : Width(0), Height(0), Internal_Format(GL_RGB), Image_Format(GL_RGB), Wrap_S(GL_REPEAT), Wrap_T(GL_REPEAT), Filter_Min(GL_LINEAR), Filter_Max(GL_LINEAR)
 {
-    glGenTextures(1, &this->ID);
+    // glGenTextures(1, &this->ID);
 }
+
+Texture2D::~Texture2D()
+{
+    if (this->ID!=0)
+        glDeleteTextures(1, &this->ID);
+}
+
 
 void Texture2D::Generate(unsigned int width, unsigned int height, unsigned char* data)
 {
+    if (this->ID == 0)
+        glGenTextures(1,&this->ID);
     this->Width = width;
     this->Height = height;
     // create Texture
@@ -25,7 +34,11 @@ void Texture2D::Generate(unsigned int width, unsigned int height, unsigned char*
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Texture2D::Bind() const
+void Texture2D::Bind()
 {
+    if (this->ID == 0) {
+        std::cerr << "BŁĄD: Próba bindowania tekstury o ID 0!" << std::endl;
+        return;
+    }
     glBindTexture(GL_TEXTURE_2D, this->ID);
 }

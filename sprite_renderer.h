@@ -1,7 +1,7 @@
 #ifndef SPRITE_RENDERER_H
 #define SPRITE_RENDERER_H
 
-#include <glad/glad.h>
+#include <QOpenGLFunctions_4_5_Core>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
@@ -29,13 +29,13 @@ inline std::string textures[] = {
 
 
 class Board;
-class Game;
+class BacteriaWidget;
 class Hexagon;
 
-class SpriteRenderer
+class SpriteRenderer : protected QOpenGLFunctions_4_5_Core
 {
 public:
-    SpriteRenderer(Shader &shader, Board *board,int screenWidth, int screenHeight,Game *game);
+    SpriteRenderer(Shader *shader, Board *board,int screenWidth, int screenHeight,BacteriaWidget *game);
     void getActualDimensions(Board* board);
     ~SpriteRenderer();
 
@@ -73,12 +73,12 @@ public:
     int height;
     std::vector<glm::vec3> palette;
 private:
-    Shader       shader;
+    Shader       *shader;
     unsigned int quadVAO;
     unsigned int instanceVBO;
     unsigned int quadVBO;
     Board *board;
-    Game *game;
+    BacteriaWidget *game;
     void initRenderData(int bWidth, int bHeight);
 };
 

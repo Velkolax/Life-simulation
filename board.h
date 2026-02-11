@@ -50,7 +50,7 @@ union ResidentData
     AcidData acid;
 };
 
-class Game;
+class BacteriaWidget;
 class SimulationEngine;
 
 class Hexagon
@@ -111,14 +111,14 @@ private:
 
     uint64_t step = 0;
 
-    Game* game;
+    BacteriaWidget* widget;
 
 public:
     int acidShortage = 0;
     int proteinShortage = 0;
     int highestAge=0;
     // inicjalizatory
-    Board(coord width, coord height, Game* game, int bacteriaCount);
+    Board(coord width, coord height, BacteriaWidget* widget, int bacteriaCount);
     void InitializeRandom(int min, int max);
     void InitializeNeighbour(int recursion, bool includeMiddle);
 
@@ -155,7 +155,7 @@ public:
     inline int32_t popVacant() noexcept { int32_t r = vacantSlots.back(); vacantSlots.pop_back(); return r; }
     inline bool emptyVacant() noexcept { return vacantSlots.empty(); }
     inline uint64_t getStep() const noexcept { return step; }
-    inline const Game* getGame() const noexcept { return game; }
+    inline const BacteriaWidget* getGame() const noexcept { return widget; }
 
 };
 

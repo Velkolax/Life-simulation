@@ -10,41 +10,41 @@
 #include "shaders-arr/text_vs.h"
 #include "shaders-arr/text_fs.h"
 // Instantiate static variables
-std::map<std::string, Texture2D>    ResourceManager::Textures;
-std::map<std::string, Shader>       ResourceManager::Shaders;
+std::map<std::string, Texture2D*>    ResourceManager::Textures;
+std::map<std::string, Shader*>       ResourceManager::Shaders;
 
 
-Shader& ResourceManager::LoadShader(std::vector<const char*> vShaderFiles,std::vector<const char*> fShaderFiles, std::string name)
+Shader* ResourceManager::LoadShader(std::vector<const char*> vShaderFiles,std::vector<const char*> fShaderFiles, std::string name)
 {
     Shaders[name] = loadShaderFromFile(vShaderFiles, fShaderFiles);
     return Shaders[name];
 }
-Shader& ResourceManager::LoadComputeShader(std::vector<const char*> cShaderFiles,std::string name)
+Shader* ResourceManager::LoadComputeShader(std::vector<const char*> cShaderFiles,std::string name)
 {
     Shaders[name] = loadComputeShaderFromFile(cShaderFiles);
     return Shaders[name];
 }
 
-Shader& ResourceManager::LoadShaderText(std::string name)
+Shader* ResourceManager::LoadShaderText(std::string name)
 {
     Shaders[name] = loadTextShader();
     return Shaders[name];
 }
 
-Shader& ResourceManager::GetShader(std::string name)
+Shader* ResourceManager::GetShader(std::string name)
 {
     if (Shaders.contains(name)) return Shaders[name];
     std::cerr << "ERROR: SHADER " << name << " NOT FOUND!!!" << std::endl;
     exit(1);
 }
 
-Texture2D& ResourceManager::LoadTexture(const char *file, bool alpha, std::string name)
+Texture2D* ResourceManager::LoadTexture(const char *file, bool alpha, std::string name)
 {
     Textures[name] = loadTextureFromFile(file, alpha);
     return Textures[name];
 }
 
-Texture2D& ResourceManager::GetTexture(std::string name)
+Texture2D* ResourceManager::GetTexture(std::string name)
 {
     return Textures[name];
 }
@@ -53,13 +53,16 @@ void ResourceManager::Clear()
 {
     // (properly) delete all shaders	
     for (auto iter : Shaders)
-        glDeleteProgram(iter.second.ID);
+        delete iter.second;
+    Shaders.clear();
     // (properly) delete all textures
     for (auto iter : Textures)
-        glDeleteTextures(1, &iter.second.ID);
+        delete iter.second;
+    Textures.clear();
 }
 
-Shader ResourceManager::loadShaderFromFile(std::vector<const char*> vShaderFiles, std::vector<const char*> fShaderFiles)
+Shader* ResourceManager::loadShaderFromFile(std::vector<const char*> vShaderFiles,
+                                            std::vector<const char*> fShaderFiles)
 {
     std::vector<std::string> vShaderContents;
     std::vector<const char*> vShaderCodes;
@@ -127,12 +130,13 @@ Shader ResourceManager::loadShaderFromFile(std::vector<const char*> vShaderFiles
     }
     GLint vs = vShaderCodes.size();
     GLint fs = fShaderCodes.size();
-    Shader shader;
-    shader.Compile(vShaderCodes.data(),fShaderCodes.data(),vlengths.data(),flengths.data(),vs,fs);
+    Shader *shader = new Shader();
+    shader->initFunctions();
+    shader->Compile(vShaderCodes.data(),fShaderCodes.data(),vlengths.data(),flengths.data(),vs,fs);
     return shader;
 }
 
-Shader ResourceManager::loadComputeShaderFromFile(std::vector<const char*> cShaderFiles)
+Shader* ResourceManager::loadComputeShaderFromFile(std::vector<const char*> cShaderFiles)
 {
     std::vector<std::string> cShaderContents;
     std::vector<const char*> cShaderCodes;
@@ -167,8 +171,9 @@ Shader ResourceManager::loadComputeShaderFromFile(std::vector<const char*> cShad
         lengths.push_back((GLint)content.length());
     }
     GLint s = cShaderCodes.size();
-    Shader shader;
-    shader.CompileCompute(cShaderCodes.data(),lengths.data(),s);
+    Shader *shader = new Shader();
+    shader->initFunctions();
+    shader->CompileCompute(cShaderCodes.data(),lengths.data(),s);
     return shader;
 }
 
@@ -187,27 +192,29 @@ Shader ResourceManager::loadComputeShaderFromFile(std::vector<const char*> cShad
 // }
 
 
-Shader ResourceManager::loadTextShader()
+Shader* ResourceManager::loadTextShader()
 {
-    Shader shader;
-    shader.CompileText(shaders_text_vs,shaders_text_fs,nullptr);
+    auto *shader = new Shader();
+    shader->initFunctions();
+    shader->CompileText(shaders_text_vs,shaders_text_fs,nullptr);
     return shader;
 }
 
-Texture2D ResourceManager::loadTextureFromFile(const char *file, bool alpha)
+Texture2D* ResourceManager::loadTextureFromFile(const char* file, bool alpha)
 {
     // create texture object
-    Texture2D texture;
+    auto *texture = new Texture2D();
+    texture->initFunctions();
     if (alpha)
     {
-        texture.Internal_Format = GL_RGBA;
-        texture.Image_Format = GL_RGBA;
+        texture->Internal_Format = GL_RGBA;
+        texture->Image_Format = GL_RGBA;
     }
     // load image
     int width, height, nrChannels;
     unsigned char* data = stbi_load(file, &width, &height, &nrChannels, 0);
     // now generate texture
-    texture.Generate(width, height, data);
+    texture->Generate(width, height, data);
     // and finally free image data
     stbi_image_free(data);
     return texture;
