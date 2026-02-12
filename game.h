@@ -55,6 +55,7 @@ class BacteriaWidget : public QOpenGLWidget, protected QOpenGLFunctions_4_5_Core
 public:
     BacteriaWidget(QWidget *parent = nullptr);
     ~BacteriaWidget();
+    Input* getInput(){return &input;}
     SpriteRenderer *Renderer;
     TextRenderer *Text;
     SimulationEngine *engine;
