@@ -30,6 +30,7 @@ BacteriaWidget::BacteriaWidget(QWidget* parent)
     connect(timer, &QTimer::timeout, this, QOverload<>::of(&BacteriaWidget::update));
     timer->start(16);
     this->setFocusPolicy(Qt::StrongFocus);
+    this->setMouseTracking(true);
 }
 
 BacteriaWidget::~BacteriaWidget()
@@ -98,46 +99,7 @@ void BacteriaWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     this->tick();
     Renderer -> DrawBoard(board,Width,Height);
-    // if (mousePressed)
-    // {
-    //     float size = Renderer -> getSize(board);
-    //     glm::ivec2 p = Renderer -> CheckWhichHexagon(cursorPosX,cursorPosY,size/2);
-    //     Hexagon *hex = board->getHexagon(p.y*board->getWidth()+p.x);
-    //     if (hex!=nullptr && bacteria(hex->getResident()))
-    //     {
-    //         ResidentData res = hex->getData();
-    //         BacteriaData bac = board->getBacteria(res.bacteriaIndex);
-    //         Text->RenderText("AGE: "+ std::to_string(bac.age),10,10,1.0);
-    //         Text->RenderText("ACID: "+ std::to_string(bac.acid),10,40,1.0);
-    //         Text->RenderText("ENERGY: "+ std::to_string(bac.energy),10,70,1.0);
-    //         Text->RenderText("PROTEIN: "+std::to_string(bac.protein),10,100,1.0);
-    //         Text->RenderText("SPEED: " + std::to_string(bac.speed),10,130,1.0);
-    //         Text->RenderText("LIFESPAN: " + std::to_string(bac.lifespan),10,160,1.0);
-    //         Text->RenderText("LAST ACTION: "+stringActions[(int)bac.lastAction],10,190,1.0);
-    //         Text->RenderText("MOTHRED: "+std::to_string(bac.mothered),10,220,1.0);
-    //         Text->RenderText("FATHERED: "+std::to_string(bac.fathered),10,250,1.0);
-    //         Text->RenderText("SPECIES: "+std::to_string(hex->getClan()),10,280,1.0);
-    //         Text->RenderText("POPULATION: "+std::to_string(board->getNumberOfMembersOfSpecies(hex->getClan())),10,310,1.0);
-    //     }
-    //     if (hex!=nullptr && protein(hex->getResident()))
-    //     {
-    //         ProteinData res = hex->getData().protein;
-    //         auto a = res.amount;
-    //         Text->RenderText("PROTEIN AMOUNT: "+ std::to_string(a),10,10,1.0 );
-    //     }
-    //     if (hex!=nullptr && energy(hex->getResident()))
-    //     {
-    //         EnergyData res = hex->getData().energy;
-    //         auto a = res.amount;
-    //         Text->RenderText("ENERGY AMOUNT: "+ std::to_string(a),10,10,1.0 );
-    //     }
-    //     if (hex!=nullptr && acid(hex->getResident()))
-    //     {
-    //         AcidData res = hex->getData().acid;
-    //         auto a = res.amount;
-    //         Text->RenderText("ACID AMOUNT: "+ std::to_string(a),10,10,1.0 );
-    //     }
-    // }
+
 
     Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getAliveBacteriaCount()),Width*0.5,10,1.0);
     Text->RenderText("STEP: "+std::to_string(board->getStep()),Width*0.5,40,1.0);
@@ -171,12 +133,79 @@ void BacteriaWidget::keyReleaseEvent(QKeyEvent* event)
         input.setKeyState(event->key(),false);
 }
 
+void BacteriaWidget::mousePressEvent(QMouseEvent* event)
+{
+    input.setButtonState(event->button(), true);
+}
+
+void BacteriaWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+    input.setButtonState(event->button(), false);
+}
+
+void BacteriaWidget::mouseMoveEvent(QMouseEvent* event)
+{
+    input.cursorX=event->pos().x();
+    input.cursorY=event->pos().y();
+}
+
+void BacteriaWidget::wheelEvent(QWheelEvent* event)
+{
+    input.scrollDelta = event->angleDelta().y();
+}
+
 void BacteriaWidget::tick()
 {
     if (input.isDown(Qt::Key_W)) Renderer -> addToDisplacementY(board,10);
     if (input.isDown(Qt::Key_A)) Renderer ->addToDisplacementX(board,10);
     if (input.isDown(Qt::Key_S)) Renderer -> addToDisplacementY(board,-10);
     if (input.isDown(Qt::Key_D)) Renderer -> addToDisplacementX(board,-10);
+
+    if (input.isButtonDown(Qt::LeftButton)) {
+        float size = Renderer -> getSize(board);
+        glm::ivec2 p = Renderer -> CheckWhichHexagon(input.cursorX,input.cursorY,size/2);
+        Hexagon *hex = board->getHexagon(p.y*board->getWidth()+p.x);
+        if (hex!=nullptr && bacteria(hex->getResident()))
+        {
+            ResidentData res = hex->getData();
+            BacteriaData bac = board->getBacteria(res.bacteriaIndex);
+            Text->RenderText("AGE: "+ std::to_string(bac.age),10,10,1.0);
+            Text->RenderText("ACID: "+ std::to_string(bac.acid),10,40,1.0);
+            Text->RenderText("ENERGY: "+ std::to_string(bac.energy),10,70,1.0);
+            Text->RenderText("PROTEIN: "+std::to_string(bac.protein),10,100,1.0);
+            Text->RenderText("SPEED: " + std::to_string(bac.speed),10,130,1.0);
+            Text->RenderText("LIFESPAN: " + std::to_string(bac.lifespan),10,160,1.0);
+            Text->RenderText("LAST ACTION: "+stringActions[(int)bac.lastAction],10,190,1.0);
+            Text->RenderText("MOTHRED: "+std::to_string(bac.mothered),10,220,1.0);
+            Text->RenderText("FATHERED: "+std::to_string(bac.fathered),10,250,1.0);
+            Text->RenderText("SPECIES: "+std::to_string(hex->getClan()),10,280,1.0);
+            Text->RenderText("POPULATION: "+std::to_string(board->getNumberOfMembersOfSpecies(hex->getClan())),10,310,1.0);
+        }
+        if (hex!=nullptr && protein(hex->getResident()))
+        {
+            ProteinData res = hex->getData().protein;
+            auto a = res.amount;
+            Text->RenderText("PROTEIN AMOUNT: "+ std::to_string(a),10,10,1.0 );
+        }
+        if (hex!=nullptr && energy(hex->getResident()))
+        {
+            EnergyData res = hex->getData().energy;
+            auto a = res.amount;
+            Text->RenderText("ENERGY AMOUNT: "+ std::to_string(a),10,10,1.0 );
+        }
+        if (hex!=nullptr && acid(hex->getResident()))
+        {
+            AcidData res = hex->getData().acid;
+            auto a = res.amount;
+            Text->RenderText("ACID AMOUNT: "+ std::to_string(a),10,10,1.0 );
+        }
+    }
+
+    if (input.scrollDelta != 0) {
+        float zoomFactor = (input.scrollDelta > 0) ? 1.1f : 0.9f;
+        Renderer->Zoom(zoomFactor, input.cursorX, input.cursorY, board);
+    }
+
     if (input.isReleased(Qt::Key_Return)) board->tick();
     else if (input.isDown(Qt::Key_Space)) board->tick();
     else if (input.isToggled(Qt::Key_P)) board->tick();
