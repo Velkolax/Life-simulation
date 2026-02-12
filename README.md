@@ -30,4 +30,11 @@ While inside the simulation you can use the following controls:
 | ENTER  | Go one step through the simulation            |
 | SPACE  | Go through the simulation while it is pushed  |
 | SCROLL | To change the size of the map                 |
-| F      | Toggle to fullscreen (off by default)         |
+
+## Config
+All the simulation parameters can be easily configured in the [config.txt](config.txt) file where they are formatted as following:
+```
+parameter_name1=12
+parameter_name2=15.6
+parameter_name3=value
+```
