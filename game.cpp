@@ -161,16 +161,20 @@ void BacteriaWidget::resizeGL(int w, int h)
 
 void BacteriaWidget::keyPressEvent(QKeyEvent* event)
 {
-    QOpenGLWidget::keyPressEvent(event);
+    input.setKeyState(event->key(),true);
 }
 
 void BacteriaWidget::keyReleaseEvent(QKeyEvent* event)
 {
-    QOpenGLWidget::keyReleaseEvent(event);
+    input.setKeyState(event->key(),false);
 }
 
 void BacteriaWidget::tick()
 {
+    if (input.isDown(Qt::Key_W)) Renderer -> addToDisplacementY(board,10);
+    if (input.isDown(Qt::Key_A)) Renderer ->addToDisplacementX(board,10);
+    if (input.isDown(Qt::Key_S)) Renderer -> addToDisplacementY(board,-10);
+    if (input.isDown(Qt::Key_D)) Renderer -> addToDisplacementX(board,-10);
     board->tick();
 }
 

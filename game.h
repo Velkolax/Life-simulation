@@ -11,7 +11,31 @@
 #include "board.h"
 #include "text_renderer.h"
 
+struct Input
+{
+    std::unordered_map<int, bool> keys;
+    std::unordered_map<int, bool> keysPressed;
+    std::unordered_map<int,bool> toggles;
 
+    bool isDown(int key){return keys[key];}
+    bool isPressed(int key)
+    {
+        bool res = keysPressed[key];
+        keysPressed[key] = false;
+        return res;
+    }
+    bool isToggled(int key){return toggles[key];}
+
+    void setKeyState(int key,bool pressed)
+    {
+        if (pressed && !keys[key])
+        {
+            keysPressed[key] = true;
+            toggles[key] = !toggles[key];
+        }
+        keys[key]=pressed;
+    }
+};
 
 class BacteriaWidget : public QOpenGLWidget, protected QOpenGLFunctions_4_5_Core
 {
@@ -28,10 +52,11 @@ protected:
     void resizeGL(int w, int h) override;
     void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent* event) override;
+
 private:
     void tick();
     void restart();
-
+    Input input;
     Board *board;
 
 
@@ -40,27 +65,7 @@ private:
     int Width,Height;
 };
 
-// struct Input
-// {
-//     bool keys[1024] = {false};
-//     bool keysLast[1024] = {false};
-//     bool toggles[1024] = {false};
-//
-//     void update(GLFWwindow* window)
-//     {
-//         for (int i=0;i<1024;i++)
-//         {
-//             keysLast[i] = keys[i];
-//             keys[i] = glfwGetKey(window,i) == GLFW_PRESS;
-//             if (keys[i] && !keysLast[i]) toggles[i] = !toggles[i];
-//         }
-//     }
-//     bool isDown(int key){return keys[key];}
-//     bool isPressed(int key){return keys[key] && !keysLast[key];}
-//     bool isReleased(int key){return !keys[key] && keysLast[key];}
-//     bool isToggled(int key){return toggles[key];}
-//     void setToggle(int key, bool state){toggles[key]=state;}
-// };
+
 
 // class Game
 // {
