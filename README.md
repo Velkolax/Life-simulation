@@ -10,13 +10,12 @@ We optimised all the heavy calculations by leveraging the GPU using GLSL compute
 </p>
 
 ## How to turn it on?
-On Windows you just need to clone the repo and use the **life-sim.exe** file included in the main directory. On linux 
-you can use linux executable file **life-sim**. Remember to not take them out of the main directory!
+Go to the releases section and choose the one you prefer. There is the new [Qt](https://github.com/Velkolax/Life-simulation/releases/tag/Qt) release on linux and also older GLFW releases on [linux](https://github.com/Velkolax/Life-simulation/releases/tag/linux) or [windows](https://github.com/Velkolax/Life-simulation/releases/tag/windows)
 
 
 ## Building instructions
-You can also build the program yourself. We recommend cmake with vcpkg to handle all dependencies. All needed 
-libraries are included in **vcpkg.json**.
+You can also build the program yourself. We recommend cmake with vcpkg to handle all dependencies. **Qt** is needed to build the newer versions. The rest of the 
+libraries are included in **vcpkg.json**. 
 
 ## Controls
 While inside the simulation you can use the following controls:
