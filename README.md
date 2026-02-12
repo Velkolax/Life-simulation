@@ -6,7 +6,7 @@ They can freely move, eat, breed or fight, all depending on the output of their 
 We optimised all the heavy calculations by leveraging the GPU using GLSL compute shaders. We also added a simple UI in QT.
 
 <p align="center">
-  <img src="sim.gif" width=90% alt="Evolutionary Simulation Demo">
+  <img src="sim2.gif" width=90% alt="Evolutionary Simulation Demo">
 </p>
 
 ## How to turn it on?
