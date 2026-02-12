@@ -6,14 +6,8 @@ int main(int argc, char *argv[])
 {
     QSurfaceFormat format;
     format.setVersion(4,5);
-    format.setProfile(QSurfaceFormat::CoreProfile);
-    format.setDepthBufferSize(24);
-    format.setStencilBufferSize(24);
+    format.setProfile(QSurfaceFormat::CompatibilityProfile);
 
-    format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
-    format.setSwapInterval(1);
-
-    format.setOption(QSurfaceFormat::DebugContext);
     QSurfaceFormat::setDefaultFormat(format);
 
     QApplication a(argc,argv);

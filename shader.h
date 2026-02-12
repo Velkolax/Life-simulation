@@ -17,7 +17,7 @@ public:
     // state
     unsigned int ID; 
     // constructor
-    Shader() { }
+    Shader(): ID(0) { }
     ~Shader();
     void initFunctions() {initializeOpenGLFunctions();}
     // sets the current shader as active
