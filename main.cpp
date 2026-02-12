@@ -2,6 +2,8 @@
 #include <QApplication>
 #include <QSurfaceFormat>
 
+#include "main_window.h"
+
 int main(int argc, char *argv[])
 {
     QSurfaceFormat format;
@@ -12,9 +14,9 @@ int main(int argc, char *argv[])
 
     QApplication a(argc,argv);
 
-    BacteriaWidget w;
+    MainWindow w;
     w.setWindowTitle("Evolution simulator");
-    w.resize(1000,800);
+    w.resize(1200,800);
 
     w.show();
     return a.exec();

@@ -40,6 +40,8 @@ add_executable(life-sim
         BacteriaData.cpp
         game_configdata.cpp
         game_configdata.h
+        main_window.cpp
+        main_window.h
 
 )
 include_directories(life-sim PRIVATE include)

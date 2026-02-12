@@ -82,40 +82,4 @@ private:
     int Width,Height;
 };
 
-
-
-// class Game
-// {
-//     public:
-//         bool mousePressed = false, fullscreen=false;
-//         float cursorPosX,cursorPosY;
-//         int scroll = 0;
-//         unsigned int Width, Height;
-//         Board* board;
-//         SimulationEngine* engine;
-//         TextRenderer  *Text;
-//     SpriteRenderer* Renderer;
-//         GLFWwindow* window;
-//         Game();
-//         ~Game();
-//         void Run();
-//         void ProcessInput();
-//         void restart();
-//         void tick();
-//         void Resize(int width, int height);
-//         void peekBacteria();
-//         void lockBacteria();
-//         void Render();
-//         inline Input getInput(){return input;}
-//         static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-//         static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
-//         static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
-//         static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-//     private:
-//         Input input;
-// };
-
-
-
-
 #endif
