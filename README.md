@@ -3,7 +3,7 @@
 ## About
 Life simulation is an evolutionary multi-species simulator where microorganisms compete for limited resources on a hexagonal grid. 
 They can freely move, eat, breed or fight, all depending on the output of their own Neural Network. 
-We optimised all the heavy calculations by leveraging the GPU using GLSL compute shaders.
+We optimised all the heavy calculations by leveraging the GPU using GLSL compute shaders. We also added a simple UI in QT.
 
 <p align="center">
   <img src="sim.gif" width=90% alt="Evolutionary Simulation Demo">
