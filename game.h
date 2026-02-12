@@ -59,6 +59,12 @@ public:
     SpriteRenderer *Renderer;
     TextRenderer *Text;
     SimulationEngine *engine;
+
+    signals:
+    void statsUpdated(int count);
+    void stepInfoUpdated(int count);
+    void speciesInfoUpdated(int count);
+
 protected:
     void initializeGL() override;
     void paintGL() override;
@@ -80,6 +86,8 @@ private:
     QTimer *timer;
     std::set<int> pressedKeys;
     int Width,Height;
+
+
 };
 
 #endif

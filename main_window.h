@@ -19,9 +19,10 @@ class MainWindow : public QWidget
     Q_OBJECT
 public:
     MainWindow();
+    ~MainWindow();
 private:
     BacteriaWidget *bacteriaWidget;
-    QLabel *statsLabel;
+    QLabel *statsLabel,*stepInfoLabel,*speciesInfoLabel;
 };
 
 

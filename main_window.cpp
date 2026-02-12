@@ -4,6 +4,7 @@
 
 #include "main_window.h"
 
+
 MainWindow::MainWindow()
 {
     QHBoxLayout *mainLayout = new QHBoxLayout(this);
@@ -33,5 +34,29 @@ MainWindow::MainWindow()
 
     statsLabel = new QLabel("Bacteria Count: 0",this);
     sidePanel->addWidget(statsLabel);
+    connect(bacteriaWidget,&BacteriaWidget::statsUpdated, [this](int count)
+    {
+        statsLabel->setText(QString("Bacteria Count: %1").arg(count));
+    });
+
+    stepInfoLabel = new QLabel("Step: 0",this);
+    sidePanel->addWidget(stepInfoLabel);
+    connect(bacteriaWidget,&BacteriaWidget::stepInfoUpdated,[this](int count)
+    {
+       stepInfoLabel->setText(QString("Step: %1").arg(count));
+    });
+    
+    speciesInfoLabel = new QLabel("Species Left: 0",this);
+    sidePanel->addWidget(speciesInfoLabel);
+    connect(bacteriaWidget,&BacteriaWidget::speciesInfoUpdated,[this](int count)
+    {
+       speciesInfoLabel->setText(QString("Species Left: %1").arg(count));
+    });
+
     sidePanel->addStretch();
+}
+
+MainWindow::~MainWindow()
+{
+
 }

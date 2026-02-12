@@ -94,10 +94,12 @@ void BacteriaWidget::paintGL()
     Renderer -> DrawBoard(board,Width,Height);
 
 
-    Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getAliveBacteriaCount()),Width*0.5,10,1.0);
-    Text->RenderText("STEP: "+std::to_string(board->getStep()),Width*0.5,40,1.0);
-    Text->RenderText("SPECIES LEFT: "+std::to_string(board->getAliveSpeciesNumber()),Width*0.5,70,1.0);
-
+    //Text->RenderText("NUMBER OF BACTERIA: "+std::to_string(board->getAliveBacteriaCount()),Width*0.5,10,1.0);
+    emit statsUpdated(board->getAliveBacteriaCount());
+    //Text->RenderText("STEP: "+std::to_string(board->getStep()),Width*0.5,40,1.0);
+    emit stepInfoUpdated(board->getStep());
+    //Text->RenderText("SPECIES LEFT: "+std::to_string(board->getAliveSpeciesNumber()),Width*0.5,70,1.0);
+    emit speciesInfoUpdated(board->getAliveSpeciesNumber());
 }
 
 void BacteriaWidget::resizeGL(int w, int h)
