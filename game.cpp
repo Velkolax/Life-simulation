@@ -29,6 +29,7 @@ BacteriaWidget::BacteriaWidget(QWidget* parent)
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, QOverload<>::of(&BacteriaWidget::update));
     timer->start(16);
+    this->setFocusPolicy(Qt::StrongFocus);
 }
 
 BacteriaWidget::~BacteriaWidget()
@@ -166,7 +167,8 @@ void BacteriaWidget::keyPressEvent(QKeyEvent* event)
 
 void BacteriaWidget::keyReleaseEvent(QKeyEvent* event)
 {
-    input.setKeyState(event->key(),false);
+    if (!event->isAutoRepeat())
+        input.setKeyState(event->key(),false);
 }
 
 void BacteriaWidget::tick()
@@ -175,7 +177,11 @@ void BacteriaWidget::tick()
     if (input.isDown(Qt::Key_A)) Renderer ->addToDisplacementX(board,10);
     if (input.isDown(Qt::Key_S)) Renderer -> addToDisplacementY(board,-10);
     if (input.isDown(Qt::Key_D)) Renderer -> addToDisplacementX(board,-10);
-    board->tick();
+    if (input.isReleased(Qt::Key_Return)) board->tick();
+    else if (input.isDown(Qt::Key_Space)) board->tick();
+    else if (input.isToggled(Qt::Key_P)) board->tick();
+    //board->tick();
+    input.update();
 }
 
 void BacteriaWidget::restart()

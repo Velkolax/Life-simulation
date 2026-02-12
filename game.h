@@ -14,26 +14,23 @@
 struct Input
 {
     std::unordered_map<int, bool> keys;
-    std::unordered_map<int, bool> keysPressed;
+    std::unordered_map<int, bool> keysLast;
     std::unordered_map<int,bool> toggles;
 
     bool isDown(int key){return keys[key];}
-    bool isPressed(int key)
-    {
-        bool res = keysPressed[key];
-        keysPressed[key] = false;
-        return res;
-    }
+    bool isPressed(int key){return keys[key] && !keysLast[key];}
+    bool isReleased(int key){return !keys[key] && keysLast[key];}
     bool isToggled(int key){return toggles[key];}
 
     void setKeyState(int key,bool pressed)
     {
-        if (pressed && !keys[key])
-        {
-            keysPressed[key] = true;
-            toggles[key] = !toggles[key];
-        }
-        keys[key]=pressed;
+        keysLast[key]=keys[key];
+        keys[key] = pressed;
+        if (keys[key] && !keysLast[key]) toggles[key] = !toggles[key];
+    }
+    void update()
+    {
+        keysLast = keys;
     }
 };
 
