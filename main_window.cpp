@@ -3,7 +3,7 @@
 //
 
 #include "main_window.h"
-
+#include "game_configdata.h"
 
 MainWindow::MainWindow()
 {
@@ -14,22 +14,23 @@ MainWindow::MainWindow()
     QVBoxLayout *sidePanel = new QVBoxLayout();
     mainLayout->addLayout(sidePanel,1);
 
-    QPushButton *btnReset = new QPushButton("Reset Simulation",this);
-    sidePanel->addWidget(btnReset);
-    connect(btnReset, &QPushButton::clicked, [this]()
-    {
-       qDebug() << "ZRESTARTOWANA!";
-    });
+    // QPushButton *btnReset = new QPushButton("Reset Simulation",this);
+    // sidePanel->addWidget(btnReset);
+    // connect(btnReset, &QPushButton::clicked, [this]()
+    // {
+    //    qDebug() << "ZRESTARTOWANA!";
+    // });
 
     sidePanel->addWidget(new QLabel("Simulation Speed: ",this));
     QSlider *speedSlider = new QSlider(Qt::Horizontal, this);
-    speedSlider->setRange(1,10);
-    speedSlider->setValue(1);
+    speedSlider->setRange(1,30);
+    speedSlider->setValue(GameConfigData::getInt("substeps"));
     sidePanel->addWidget(speedSlider);
 
     connect(speedSlider, &QSlider::valueChanged, [this](int val)
     {
-       qDebug() << "Odczytano: " << val;
+        bacteriaWidget->setSubsteps(val);
+        //qDebug() << "Odczytano: " << val;
     });
 
     statsLabel = new QLabel("Bacteria Count: 0",this);
@@ -45,7 +46,7 @@ MainWindow::MainWindow()
     {
        stepInfoLabel->setText(QString("Step: %1").arg(count));
     });
-    
+
     speciesInfoLabel = new QLabel("Species Left: 0",this);
     sidePanel->addWidget(speciesInfoLabel);
     connect(bacteriaWidget,&BacteriaWidget::speciesInfoUpdated,[this](int count)

@@ -60,7 +60,8 @@ void BacteriaWidget::initializeGL()
     ResourceManager::LoadTexture("textures/acid.png",true,"acid");
     ResourceManager::LoadTexture("textures/protein.png",true,"protein");
 
-    GameConfigData::setConfigDataFromFile("config.txt");
+
+    substeps = GameConfigData::getInt("substeps");
     int seed = GameConfigData::getInt("seed");
     std::cout << "Seed: " << seed << std::endl;
     if (!seed)
@@ -201,9 +202,15 @@ void BacteriaWidget::tick()
         Renderer->Zoom(zoomFactor, input.cursorX, input.cursorY, board);
     }
 
-    if (input.isReleased(Qt::Key_Return)) board->tick();
-    else if (input.isDown(Qt::Key_Space)) board->tick();
-    else if (input.isToggled(Qt::Key_P)) board->tick();
+    if (input.isReleased(Qt::Key_Return))
+        for (int i=0;i<substeps;i++)
+            board->tick();
+    else if (input.isDown(Qt::Key_Space))
+        for (int i=0;i<substeps;i++)
+            board->tick();
+    else if (input.isToggled(Qt::Key_P))
+        for (int i=0;i<substeps;i++)
+            board->tick();
     //board->tick();
     input.update();
 }

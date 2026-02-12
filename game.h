@@ -56,6 +56,7 @@ public:
     BacteriaWidget(QWidget *parent = nullptr);
     ~BacteriaWidget();
     Input* getInput(){return &input;}
+    void setSubsteps(int val){substeps=val;}
     SpriteRenderer *Renderer;
     TextRenderer *Text;
     SimulationEngine *engine;
@@ -86,7 +87,7 @@ private:
     QTimer *timer;
     std::set<int> pressedKeys;
     int Width,Height;
-
+    int substeps=1;
 
 };
 
