@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Evolution Simulator
+Exec=life-sim
+Icon=life-sim
+Categories=Game;
