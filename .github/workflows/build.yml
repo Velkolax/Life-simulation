@@ -28,7 +28,7 @@ jobs:
       uses: jurplel/install-qt-action@v3
       with:
         version: '6.6.0'
-        modules: 'qtopenglwidgets qtopengl'
+        modules: 'qtshadertools'
 
     - name: Setup vcpkg
       run: |
