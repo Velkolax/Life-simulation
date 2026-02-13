@@ -1,0 +1,58 @@
+name: C++ Qt & vcpkg Build Check
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Install System Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libgl1-mesa-dev libx11-dev libxkbcommon-x11-dev libdbus-1-dev \
+          libxcb-cursor0 libxcb-xinerama0 libfontconfig1-dev libfreetype6-dev \
+          ninja-build # Ninja jest szybszy i zalecany dla vcpkg
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.6.0'
+        modules: 'qtopenglwidgets qtopengl'
+
+    - name: Setup vcpkg
+      run: |
+        echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT" >> $GITHUB_ENV
+
+    - name: Restore vcpkg binary cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/vcpkg
+        key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
+        restore-keys: |
+          ${{ runner.os }}-vcpkg-
+
+    - name: Configure CMake
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake \
+          -G Ninja
+    - name: Build
+      run: cmake --build build --config Release
+
+    - name: Upload Result
+      uses: actions/upload-artifact@v4
+      with:
+        name: life-sim-linux-binary
+        path: build/life-sim
