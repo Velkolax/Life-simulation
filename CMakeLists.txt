@@ -43,7 +43,7 @@ add_executable(life-sim
         main_window.h
 
 )
-include_directories(life-sim PRIVATE include)
+target_include_directories(life-sim PRIVATE include)
 target_link_libraries(life-sim
         PRIVATE
         Qt6::Widgets

@@ -85,7 +85,6 @@ private:
 
 
     QTimer *timer;
-    std::set<int> pressedKeys;
     int Width,Height;
     int substeps=1;
 
