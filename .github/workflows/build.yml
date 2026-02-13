@@ -20,9 +20,19 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y \
-          libgl1-mesa-dev libx11-dev libxkbcommon-x11-dev libdbus-1-dev \
-          libxcb-cursor0 libxcb-xinerama0 libfontconfig1-dev libfreetype6-dev \
-          ninja-build # Ninja jest szybszy i zalecany dla vcpkg
+          libgl1-mesa-dev \
+          libx11-dev \
+          libxrandr-dev \
+          libxinerama-dev \
+          libxcursor-dev \
+          libxi-dev \
+          libxkbcommon-x11-dev \
+          libdbus-1-dev \
+          libxcb-cursor0 \
+          libxcb-xinerama0 \
+          libfontconfig1-dev \
+          libfreetype6-dev \
+          ninja-build
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
