@@ -64,6 +64,13 @@ jobs:
     - name: Build
       run: cmake --build build --config Release
 
+    - name: Copy assets
+      run: |
+        cp -r shaders build
+        cp config.txt build
+        mkdir build/tests
+        mv build/unit_tests build/tests
+
     - name: Run Tests
       run: |
         export MESA_GL_VERSION_OVERRIDE=4.5
