@@ -29,14 +29,14 @@ inline std::mt19937 gen;
 
 #define BACTERIA_BODY_SIZE 10
 
-constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> evenDirections2l =
+static constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> evenDirections2l =
 {{
     { 0, -1}, {-1, -1}, {-1,  0}, { 0,  1}, { 1,  0}, { 1, -1},
     { 0, -2}, {-1, -2}, {-2, -1}, {-2,  0}, {-2,  1}, {-1,  1}, { 0,  2}, { 1,  1}, { 2,  1}, { 2,  0}, { 2, -1}, { 1, -2}
 }};
 static_assert(evenDirections2l.size() == TWO_NEIGHBOUR_LAYERS_SIZE);
 
-constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> oddDirections2l =
+static constexpr std::array<std::pair<coord, coord>, TWO_NEIGHBOUR_LAYERS_SIZE> oddDirections2l =
 {{
     { 0, -1}, {-1,  0}, {-1,  1}, { 0,  1}, { 1,  1}, { 1,  0},
     { 0, -2}, {-1, -1}, {-2, -1}, {-2,  0}, {-2,  1}, {-1,  2}, { 0,  2}, { 1,  2}, { 2,  1}, { 2,  0}, { 2, -1}, { 1, -1}
@@ -126,7 +126,7 @@ struct BacteriaData
 
     void move(Board* board, Hexagon* hex, float* data, coord x, coord y);
     void attack(Board* board, Hexagon* attackedHex, float* data, coord x, coord y);
-    void breed(Board* board, Hexagon* dadHex, float* data, coord x, coord y);
+    int breed(Board* board, Hexagon* dadHex, float* data, coord x, coord y);
     void eat(Board* board, Hexagon* eatenHex, float* data, coord x, coord y);
     void sleep(Board* board, Hexagon* hex, float* data, coord x, coord y);
 

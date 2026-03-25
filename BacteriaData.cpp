@@ -470,11 +470,11 @@ void BacteriaData::cross(BacteriaData& mom,int energySent,int lifespanSent,int s
     this->lastAction = Action::Breed;
 }*/
 
-void BacteriaData::breed(Board* board, Hexagon* dadHex, float* data, coord x, coord y)
+int BacteriaData::breed(Board* board, Hexagon* dadHex, float* data, coord x, coord y)
 {
     lastAction = Action::BreedFailure;
-    if (!this->consumeEnergy(GameConfigData::getFloat("breedCost"), board, x, y)) return;
-    if (!dadHex || !bacteria(dadHex->getResident())) return;
+    if (!this->consumeEnergy(GameConfigData::getFloat("breedCost"), board, x, y)) return -1;
+    if (!dadHex || !bacteria(dadHex->getResident())) return -2;
 
     Hexagon* momHex = board->getHexagon(x, y);
     int32_t myIndex = board->getHexagon(x, y)->getData().bacteriaIndex;
@@ -486,21 +486,22 @@ void BacteriaData::breed(Board* board, Hexagon* dadHex, float* data, coord x, co
         if (this->energy <= energySent)
         {
             if(lastAction == Action::BreedFailure) lastAction = Action::BreedFailureNoEnergy;
-            return;
+            return -3;
         }
 
         int lifespanSent = std::min(int(data[2] * this->protein * 0.3), MAX_ACCUSTOMABLE_VALUE);
+
         if (!lifespanSent) lifespanSent = 1;
+
 
         int speedSent = std::min(int(data[3] * this->protein * 0.3), MAX_ACCUSTOMABLE_VALUE);
         if (!speedSent) speedSent = 1;
-
         if (BACTERIA_BODY_SIZE + lifespanSent + speedSent > this->protein)
         {
             if(BACTERIA_BODY_SIZE + 2 > this->protein)
             {
                 if(lastAction == Action::BreedFailure) lastAction = Action::BreedFailureNoProtein;
-                return;
+                return -4;
             }
             int tempProtein = this->protein;
             tempProtein -= BACTERIA_BODY_SIZE;
@@ -534,7 +535,7 @@ void BacteriaData::breed(Board* board, Hexagon* dadHex, float* data, coord x, co
         if (possiblePlacements.empty())
         {
             if(lastAction == Action::BreedFailure) lastAction = Action::BreedFailureNoSpace;
-            return;
+            return -5;
         }
 
         this->protein -= BACTERIA_BODY_SIZE + lifespanSent + speedSent;
@@ -557,6 +558,7 @@ void BacteriaData::breed(Board* board, Hexagon* dadHex, float* data, coord x, co
         dad.fathered++;
         mom.lastAction = Action::Breed;
     }
+    return 1;
 }
 
 
