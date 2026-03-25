@@ -115,7 +115,7 @@ void SimulationEngine::InitSsbos(Board *board)
 
 void SimulationEngine::InitNetworkData(uint32_t *species)
 {
-    for (int i=0;i<100;i++) std::cout << "SPECIES: " << species[i] << std::endl;
+    //for (int i=0;i<100;i++) std::cout << "SPECIES: " << species[i] << std::endl;
     GLuint ssboSpecies;
     glCreateBuffers(1,&ssboSpecies);
     glNamedBufferStorage(ssboSpecies,bCapacity * sizeof(uint32_t),species,0);
