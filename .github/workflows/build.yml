@@ -32,7 +32,10 @@ jobs:
           libxcb-xinerama0 \
           libfontconfig1-dev \
           libfreetype6-dev \
-          ninja-build
+          ninja-build \
+          xvfb \
+          mesa-utils \
+          libgl1-mesa-dri \
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
@@ -60,6 +63,12 @@ jobs:
           -G Ninja
     - name: Build
       run: cmake --build build --config Release
+
+    - name: Run Tests
+      run: |
+        export MESA_GL_VERSION_OVERRIDE=4.5
+        export MESA_GLSL_VERSION_OVERRIDE=450
+        xvfb-run --auto-servernum ./build/unit_tests
 
     - name: Upload Result
       uses: actions/upload-artifact@v4
