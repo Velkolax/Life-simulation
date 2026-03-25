@@ -70,15 +70,18 @@ TEST_CASE("Bacterium breeding logic","[bacteria]")
         momData.energy = 100;
         momData.protein = 100;
 
+
         float mockData[] = {0.1f,0.5f,0.3f,0.3f};
         int result = momData.breed(&board,dadHex,mockData,5,5);
-        std::cout << "RESULT: " << result;
+        REQUIRE(result==1);
         auto neighbors = momHex->neighbours(&board,2,false);
         int bacteriaCount = 0;
         for (auto n : neighbors)
         {
             if (bacteria(n->getResident())) bacteriaCount++;
         }
+        REQUIRE(momData.energy<100);
+        REQUIRE(momData.protein<100);
         REQUIRE(bacteriaCount==2);
     }
 }
