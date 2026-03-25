@@ -123,8 +123,8 @@ void SimulationEngine::InitNetworkData(uint32_t *species)
     std::vector<uint32_t> checkData(bCapacity);
     glGetNamedBufferSubData(ssboSpecies, 0, bCapacity * sizeof(uint32_t), checkData.data());
 
-    std::cout << "Weryfikacja SSBO na GPU: ";
-    for(int i=0; i<10; i++) std::cout << checkData[i] << " ";
+    //std::cout << "Weryfikacja SSBO na GPU: ";
+    //for(int i=0; i<10; i++) std::cout << checkData[i] << " ";
     std::cout << std::endl;
 
     Shader *initShader = ResourceManager::GetShader("init");
@@ -196,17 +196,17 @@ void SimulationEngine::InitNetworkData(uint32_t *species)
 
     glDeleteBuffers(1,&ssboSpecies);
 
-    std::cout << "Inicjalizacja na GPU zakonczona." << std::endl;
+    //std::cout << "Inicjalizacja na GPU zakonczona." << std::endl;
     size_t weightStartOffset = (size_t)BIASES * bCapacity;
 
     std::vector<float> debugWeights(10);
 
     glGetNamedBufferSubData(ssboNetworks, weightStartOffset * sizeof(float), 10 * sizeof(float), debugWeights.data());
 
-    std::cout << "--- DEBUG WAG (Warstwa 1) ---" << std::endl;
-    for(int i=0; i<10; i++) {
-        std::cout << "Waga " << i << ": " << debugWeights[i] << std::endl;
-    }
+    // std::cout << "--- DEBUG WAG (Warstwa 1) ---" << std::endl;
+    // for(int i=0; i<10; i++) {
+    //     std::cout << "Waga " << i << ": " << debugWeights[i] << std::endl;
+    // }
 }
 
 

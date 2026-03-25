@@ -218,6 +218,40 @@ TEST_CASE("SimulationEngine Inference Process","[engine]")
     }
 }
 
+TEST_CASE("SimulationEngine Network Lifecycle","[engine]")
+{
+    OpenGLTestContext glContext;
+    GameConfigData::setConfigDataFromFile("../config.txt");
+    ResourceManager::LoadComputeShader({"../shaders/process_network.cs.glsl"},"network");
+    ResourceManager::LoadComputeShader({"../shaders/init_weights.cs.glsl"},"init");
+    ResourceManager::LoadComputeShader({"../shaders/reproduce.cs.glsl"},"reproduce");
+    ResourceManager::LoadComputeShader({"../shaders/kill.cs.glsl"},"kill");
+
+    Board board(20,20,nullptr,1);
+    board.getHexagon(0,0)->placeBacteriaC(&board,1);
+    board.getHexagon(0,1)->placeBacteriaC(&board,1);
+    SimulationEngine engine(&board);
+
+    int initialSize = engine.getbSize();
+    REQUIRE(initialSize==2);
+
+    SECTION("Network Reproduction")
+    {
+        int childIdx = initialSize;
+        engine.reproduceNetwork(0,1,childIdx);
+        REQUIRE(engine.getbSize() == initialSize+1);
+        REQUIRE(glGetError() == GL_NO_ERROR);
+    }
+
+    SECTION("Network Termination")
+    {
+        int sizeBefore = engine.getbSize();
+        engine.killNetwork(0);
+        REQUIRE(engine.getbSize() == sizeBefore -1);
+        REQUIRE(glGetError() == GL_NO_ERROR);
+    }
+}
+
 
 
 
