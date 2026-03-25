@@ -8,6 +8,7 @@ class GameConfigData
 {
 public:
     static void setConfigDataFromFile(std::string filename);
+    static bool checkKey(const std::string& key);
     static int getInt(const std::string& key);
     static void setInt(const std::string& key, const std::string& value);
     static float getFloat(const std::string& key);

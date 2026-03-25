@@ -22,6 +22,13 @@ void GameConfigData::setConfigDataFromFile(std::string filename)
     }
 }
 
+bool GameConfigData::checkKey(const std::string& key)
+{
+    if (configMap.contains(key)) return true;
+    return false;
+}
+
+
 int GameConfigData::getInt(const std::string& key)
 {
     if (configMap.contains(key)) return std::stoi(configMap[key]);

@@ -22,6 +22,9 @@
     },
     {
       "name": "freetype"
+    },
+    {
+      "name": "catch2"
     }
   ]
 }

@@ -4,7 +4,7 @@ height=100
 onlyStorage=1
 
 mode=species
-clansCount=20
+clansCount=100
 
 bacteriaPerClan=20
 
